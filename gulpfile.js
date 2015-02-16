@@ -1,7 +1,7 @@
 'use strict';
 
 // change this to your app's name (angular module)
-var appName = 'IonicGulpSeed';
+var appName = 'boson';
 
 
 var gulp = require('gulp');

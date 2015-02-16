@@ -1,59 +1,4 @@
-/** DEPRECATED */
-
-var _search = angular.module('_search', []);
-
-_search.controller('SearchController',
-                  ['$scope',
-                   '$ionicLoading',
-                   '$timeout',
-                   '$ionicModal',
-                   'search',
-                   function($scope, $ionicLoading, $timeout, $ionicModal, search) {
-
-  $scope.showResults = false;
-  $scope.brandId = 'InstaShopper';
-
-  console.log($scope);
-
-  $scope.$on('stickHeader', function(event, brandId) {
-    console.log(brandId);
-    $scope.brandId = brandId;
-    $scope.$digest();
-  });
-
-  $ionicModal.fromTemplateUrl('query-modal.html', {
-    scope: $scope,
-    animation: 'slide-in-up'
-  }).then(function(modal) {
-    $scope.queryModal = modal;
-  });
-
-  $scope.brandIdPresent = function() {
-    return $scope.brandId != null && typeof $scope.brandId != 'undefined';
-  }
-
-  $scope.$on('search', function(event, query) {
-    $ionicLoading.show({template: 'Fetching...'});
-
-    search(query).then(function(result) {
-      $scope.showResults = true;
-      $scope.$broadcast('showResults', result);
-      $ionicLoading.hide();
-      $scope.queryModal.hide();
-    });
-
-  });
-
-
-  $scope.closeSearch = function() {
-    $scope.queryModal.hide();
-  };
-
-  $scope.showSearch = function() {
-    $scope.queryModal.show();
-  };
-
-}]);
+var _dummy = angular.module('services.dummy', []);
 
 
 var items = [];
@@ -71,7 +16,7 @@ items.push({
     sizes: ['S', 'L', 'XL'],
     fit: 'slim fit'
   },
-  adImg: 'http://www.yepme.com/Images/lookbookimages/big-banners/ridersCafe/ridersCafe-2.jpg'
+  adImg: 'https://imageshack.com/i/id4tBDxUj'
 });
 
 i += 1;
@@ -124,7 +69,7 @@ items.push({
     sizes: ['S', 'L', 'XL'],
     fit: 'slim fit'
   },
-  adImg: 'http://www.yepme.com/Images/lookbookimages/big-banners/ridersCafe/ridersCafe-3.jpg'
+  adImg: 'https://imageshack.com/i/eyRdRuzWj'
 });
 
 i += 1;
@@ -163,48 +108,54 @@ angular.forEach([1, 2], function() {
   i += 1;
 });
 
+var expandedQuery =
+	{
+    searchId: '8998934kjlskjd',
+    str: '',
+    expanded: [
+   		{
+   			label: 'descr',
+   			value: "men's casual shirt",
+   			type: 'string'
+   		},
+   		{
+   			label: 'color',
+   			value: ['red', 'blue', 'green'],
+   			type: 'color-array'
+   		},
+   		{
+   			label: 'size',
+   			value: '41',
+   			type: 'string'
+   		},
+   		{
+   			label: 'fit',
+   			value: 'slim fit',
+   			type: 'string'
+   		},
+   		{
+   			label: 'brand',
+   			value: ['levis', 'woodland', 'peter england'],
+   			type: 'string-array'
+   		}
+    ]
+	};
 
-_search.factory('search', ['$q', function($q) {
 
-  return function(query) {
-    var promise = $q.when(query);
-
-    promise = promise.then(function(query) {
-      var defer = $q.defer();
-
-      setTimeout(function() {
-        defer.resolve({
-          'searchId': 'asfasdfadsf',
-          'items': items
-        });
-      }, 1000)
-
-      return defer.promise;
-    });
-
-    return promise;
-  };
-
-}]);
-
-
-_search.factory('fetchMore', ['$q', function($q) {
-
-  return function(searchId) {
-    var promise = $q.when(searchId);
-
-    promise = promise.then(function(searchId) {
-      var defer = $q.defer();
-
-      if(searchId === '') defer.reject('no search id');
-
-      setTimeout(function() {
-        defer.resolve(items);
-      }, 500);
-
-      return defer.promise;
-    });
-
-    return promise;
-  };
-}]);
+_dummy.factory('DummyData',
+function(){
+	return {
+		listings: items,
+		results: function(searchId) {
+			return {
+        items: items,
+			  searchId: searchId,
+        hasMoreContent: true
+      };
+		},
+		query: function(queryStr) {
+      expandedQuery['str'] = queryStr;
+			return expandedQuery;
+		}
+	};
+});

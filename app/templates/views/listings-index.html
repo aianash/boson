@@ -1,0 +1,64 @@
+<ion-view title="InstaShopper">
+
+  <ion-nav-buttons side="right">
+    <button class="button button-clear icon ion-ios7-search-strong"
+            ng-click="openSearch()"></button>
+  </ion-nav-buttons>
+
+	<ion-content>
+
+    <ion-list show-detele="false"
+              show-reorder="false"
+              can-swipe="false"
+              class="listing">
+
+      <ion-item ng-repeat="item in items" class="listing">
+
+        <div listings-sticky-header>
+
+          <div ng-if="item.adImg" class="listing-ad">
+            <div class="lisiting item-image">
+              <img ng-src="{{item.adImg}}" />
+            </div>
+
+            <div class="slanted-border" ></div>
+          </div>
+
+
+          <div class="listing listing-header">
+            <img ng-src="{{item.brandIcon}}" />
+          </div>
+
+          <div class="listing listing-image item-image">
+            <img ng-src="{{item.img}}" />
+          </div>
+
+          <div class="listing item-body">
+            <button class="button"
+                    ng-click="itemSelected(item.id)"
+                    ng-class="{'button-assertive': isItemSelected(item.id)}">
+              SELECT
+            </button>
+            <h2>{{item.title}}</h2>
+            <div class="list">
+              <span class="size-option" ng-repeat="size in item.detail.sizes">{{size}}</span>
+            </div>
+            <p class="descr">{{item.detail.descr}}</p>
+          </div>
+        </div>
+      </ion-item>
+      <!-- <ion-item collection-repeat="item in items"
+                collection-item-width="'100%'"
+                collection-item-height="50"
+                ng-style="{height: 50}">
+        <p>{{item}}</p>
+      </ion-item> -->
+    </ion-list>
+
+   <!-- <ion-refresher on-refresh="onRefresh()"></ion-refresher> -->
+    <ion-infinite-scroll ng-if="moreContent()"
+                         on-infinite="loadMoreData()"
+                         distance="-1%"></ion-infinite-scroll>
+  </ion-content>
+
+</ion-view>

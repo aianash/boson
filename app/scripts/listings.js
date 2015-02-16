@@ -1,3 +1,5 @@
+/** DEPRECATED */
+
 _listings = angular.module('_listings', ['_search']);
 
 

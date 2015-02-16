@@ -1,3 +1,5 @@
+/** DEPRECATED */
+
 var _query = angular.module('_query', []);
 
 _query.factory('Query', ['$q', function($q) {
