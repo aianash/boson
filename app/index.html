@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html ng-app="boson">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no, width=device-width">
+    <title>Boson</title>
+
+
+    <!-- inject:app-styles:css --><!-- endinject -->
+
+  </head>
+  <body ng-controller="BosonController">
+
+    <ion-tabs class="tabs-icon-only tabs-dark">
+
+      <ion-tab title="Search"
+               icon-on="ion-ios7-search-strong"
+               icon-off="ion-ios7-search"
+               ng-controller="SearchController">
+
+        <!-- Header -->
+        <ion-header-bar class="bar-positive">
+          <h1 class="title">{{brandId}}</h1>
+          <button class="button button-icon icon ion-ios7-search-strong"
+                  ng-click="showSearch()"></button>
+        </ion-header-bar>
+
+
+        <!-- Results View -->
+        <ion-content ng-controller="ListingsController">
+
+          <ion-list show-detele="false"
+                    show-reorder="false"
+                    can-swipe="false"
+                    class="listing">
+
+            <ion-item ng-repeat="item in items" class="listing">
+
+              <div listings-sticky-header
+                   ng-if="isListing(item.type)">
+
+                <div ng-if="item.adImg" class="listing-ad">
+                  <div class="lisiting item-image">
+                    <img ng-src="{{item.adImg}}" />
+                  </div>
+
+                  <div class="slanted-border" ></div>
+                </div>
+
+
+                <div class="listing listing-header">
+                  <img ng-src="{{item.brandIcon}}" />
+                </div>
+
+                <div class="listing listing-image item-image">
+                  <img ng-src="{{item.img}}" />
+                </div>
+
+                <div class="listing item-body">
+                  <button class="button"
+                          ng-click="itemSelected(item.id)"
+                          ng-class="{'button-assertive': isItemSelected(item.id)}">
+                    SELECT
+                  </button>
+                  <h2>{{item.title}}</h2>
+                  <div class="list">
+                    <span class="size-option" ng-repeat="size in item.detail.sizes">{{size}}</span>
+                  </div>
+                  <p class="descr">{{item.detail.descr}}</p>
+                </div>
+              </div>
+            </ion-item>
+            <!-- <ion-item collection-repeat="item in items"
+                      collection-item-width="'100%'"
+                      collection-item-height="50"
+                      ng-style="{height: 50}">
+              <p>{{item}}</p>
+            </ion-item> -->
+          </ion-list>
+
+         <!-- <ion-refresher on-refresh="onRefresh()"></ion-refresher> -->
+          <ion-infinite-scroll ng-if="moreContent()"
+                               on-infinite="loadMoreData()"
+                               distance="-1%"></ion-infinite-scroll>
+        </ion-content>
+
+      </ion-tab>
+
+
+
+      <!-- Choose places to visit -->
+      <ion-tab title="Places"
+               icon-on="ion-ios7-location"
+               icon-off="ion-ios7-location-outline"
+               ng-controller="PlacesController">
+
+        <ion-header-bar class="bar-positive">
+          <h1 class="title">Choose Places</h1>
+        </ion-header-bar>
+
+      </ion-tab>
+
+
+      <!-- Invite Friends -->
+      <ion-tab title="Friends"
+               icon-on="ion-ios7-people"
+               icon-off="ion-ios7-people-outline"
+               ng-controller="FriendsController">
+
+        <ion-header-bar class="bar-positive">
+          <h1 class="title">Invite Friends</h1>
+        </ion-header-bar>
+
+      </ion-tab>
+
+
+      <!-- Nearby Hangout -->
+      <ion-tab title="Nearby"
+               icon-on="ion-ios7-wineglass"
+               icon-off="ion-ios7-wineglass-outline"
+               ng-controller="NearbyController">
+
+        <ion-header-bar class="bar-positive">
+          <h1 class="title">Hangout Nearby</h1>
+        </ion-header-bar>
+
+      </ion-tab>
+
+
+      <ion-tab title="Plan"
+               icon-on="ion-ios7-navigate"
+               icon-off="ion-ios7-navigate-outline"
+               ng-controller="PlanController">
+
+        <ion-header-bar class="bar-positive">
+          <h1 class="title">Final Plan</h1>
+        </ion-header-bar>
+
+      </ion-tab>
+
+    </ion-tabs>
+
+    <script id="query-modal.html" type="text/ng-template">
+      <ion-modal-view>
+        <ion-pane ng-controller="QueryController">
+          <form ng-submit="search()">
+            <label class="item item-input">
+              <i class="icon ion-search placeholder-icon"></i>
+              <input  type="text"
+                      ng-model="queryStr"
+                      ng-change="expand()"
+                      name="queryStr"
+                      placeholder="I am looking for ..." />
+            </label>
+
+            <expanded-query></expanded-query>
+          </form>
+        <ion-footer-bar>
+          <button class="button icon ion-ios7-reload"
+                  ng-click="reset()"></button>
+
+          <button class="button button-small button-positive"
+                  ng-click="search()">Search</button>
+
+          <button class="button icon ion-ios7-close-outline"
+                  ng-click="closeSearch()"></button>
+        </ion-footer-bar>
+        </ion-pane>
+
+
+      </ion-modal-view>
+    </script>
+
+
+    <script id="expanded-query.html" type="text/ng-template">
+      <ion-list>
+        <ion-item ng-repeat="comp in query.expanded">
+          <span class="query-comp label">{{comp.label}}</span> : <span ng-bind-html="comp.value | component:comp.type"></span>
+        </ion-item>
+      </ion-list>
+    </script>
+
+
+    <!-- inject:vendor:js --><!-- endinject -->
+    <!-- inject:app:js --><!--endinject -->
+
+    <script src="cordova.js"></script>
+  </body>
+</html>

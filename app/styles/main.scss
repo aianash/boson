@@ -1,0 +1,134 @@
+/* Empty. Add your own CSS if you like */
+.query-comp.label {
+    font-size: 0.9em;
+}
+
+
+.listing .list {
+    padding: 0px;
+}
+
+.item.listing {
+    padding: 0px;
+    margin: 0px;
+    border: 0px;
+    border-bottom: 1px solid #ccc;
+}
+
+.listing.listing-header {
+    padding: 16px;
+    position: relative;
+}
+
+.listing.listing-header img {
+    max-height: 24px;
+}
+
+.listing.listing-image {
+    position: relative;
+}
+
+.listing.item-body {
+    padding: 16px;
+    margin-top: -100px;
+    background-color: #ffffff;
+    opacity: 0.9;
+    position: relative;
+}
+
+.listing.item-body h2 {
+    margin-top: -2px;
+    margin-bottom: 6px;
+}
+
+.listing.item-body .p {
+    margin-top: 0px;
+}
+
+.listing.item-body .list {
+    margin: 0;
+}
+
+.listing.item-body .descr {
+    margin-top: 8px;
+}
+
+.listing.item-body button {
+    position: absolute;
+    right: 16px;
+    border: 1px solid;
+    color: black;
+    line-height: 12px;
+    min-width: 28px;
+    min-height: 30px;
+    font-size: 13px;
+    letter-spacing: 1px;
+}
+
+.listing button.button-assertive {
+    color: white;
+}
+
+.listing .size-option {
+    border: 1px solid #ccc;
+    font-size: 12px;
+    margin-right: 6px;
+    min-width: 24px;
+    text-align: center;
+    display: inline-block;
+}
+
+.listing-ad {
+    z-index: -1;
+    margin-bottom: -50px;
+}
+
+.listing-ad .item-image {
+    height: 230px;
+}
+
+.listing-ad .item-image img {
+    width: auto;
+    height: 100%;
+}
+
+.listing-ad .slanted-border {
+    overflow: hidden;
+    height: 200px;
+    transform: skewY(12deg);
+    content: '';
+    width: 100%;
+    background-color: white;
+    position: absolute;
+    margin-top: -11%;
+}
+
+.slanted-border-top-1:before {
+    display: block;
+    height: 100%;
+    /*transform: skewY(30deg);*/
+    content: '';
+
+    margin: 2em;
+}
+
+.slanted-border-top-2 {
+    overflow: hidden;
+    height: 50%;
+    transform: skewY(-30deg);
+
+    display: block;
+    content: '';
+}
+
+
+.slanted-border-top-2:before {
+    margin: -2em;
+    background-color: white;
+    background-size: 8em 8em;
+
+    display: block;
+    height: 100%;
+    transform: skewY(30deg);
+    /*content: '';*/
+}
