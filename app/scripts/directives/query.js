@@ -22,7 +22,7 @@ _query.filter('component', ['$sce', function($sce) {
 			case "color-array":
 				var html = [];
 				angular.forEach(input, function(value, key){
-					html.push("<i class='icon ion-record' style='color: " + value + ";'></i>");
+					html.push("<i class='icon ion-android-checkbox-blank color-patches' style='color: " + value + ";'></i>");
 				});
 				out = html.join("");
 				break;

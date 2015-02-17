@@ -21,7 +21,6 @@ function($scope, $state, $stateParams, QueryView, $ionicLoading, $timeout, $ioni
   function processResult(results) {
     $scope.items = $scope.items.concat(results.items);
     $scope.hasMoreContent = results.hasMoreContent;
-    // $scope.$digest();
   }
 
   // Fetch results for the view
@@ -33,12 +32,7 @@ function($scope, $state, $stateParams, QueryView, $ionicLoading, $timeout, $ioni
     $ionicLoading.hide();
   });
 
-
-  $scope.$on('refreshSearch', function(event) {
-    console.log("refreshing search");
-    console.log(event);
-  });
-
+  /** NOT WORKING... WIP */
   $scope.$on('stickHeader', function(event, brandId) {
     console.log(brandId);
     $scope.brandId = brandId;
@@ -76,6 +70,24 @@ function($scope, $state, $stateParams, QueryView, $ionicLoading, $timeout, $ioni
     });
   }
 
+  $scope.isStoreInfo = function(type) {
+    return type == 'storeInfo';
+  }
+
+  $scope.isResultEntry = function(type) {
+    return type == 'resultEntry';
+  }
+
+  $scope.storeIcon = function(type) {
+    switch(type) {
+      case 'apparels':
+        return 'ion-tshirt-outline'
+      case 'store':
+        return 'ion-bag'
+    };
+  }
+
+  // TO FIX
   $scope.brandIdPresent = function() {
     return $scope.brandId != null && typeof $scope.brandId != 'undefined';
   }

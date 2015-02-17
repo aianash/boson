@@ -1,4 +1,4 @@
-<ion-modal-view>
+<ion-modal-view class="query">
   <ion-pane ng-controller="QueryController">
     <form ng-submit="search()">
       <label class="item item-input">
@@ -14,13 +14,13 @@
     </form>
 
     <ion-footer-bar>
-      <button class="button icon ion-ios-reload"
+      <button class="button button-clear icon ion-ios-reload"
               ng-click="reset()"></button>
 
-      <button class="button button-small button-positive"
+      <button class="button search button-clear"
               ng-click="search()">Search</button>
 
-      <button class="button icon ion-ios-close-outline"
+      <button class="button button-clear icon ion-ios-close-outline"
               ng-click="close()"></button>
     </ion-footer-bar>
   </ion-pane>

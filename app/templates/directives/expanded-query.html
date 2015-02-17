@@ -1,5 +1,6 @@
-<ion-list>
+<ion-list class="expanded-query">
   <ion-item ng-repeat="comp in query.expanded">
-    <span class="query-comp label">{{comp.label}}</span> : <span ng-bind-html="comp.value | component:comp.type"></span>
+    <span class="query-comp">{{comp.label}}</span>
+    <span class="item-note" ng-bind-html="comp.value | component:comp.type"></span>
   </ion-item>
 </ion-list>
