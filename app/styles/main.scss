@@ -1,8 +1,129 @@
-/* Empty. Add your own CSS if you like */
+.insta-bar {
+    // border-bottom: 2px solid #ccc;
+    background-color: #E17768;
+    // background-color: #9b59b6;
+    color: white;
+}
+
+.insta-bar .settings {
+    color: white;
+}
+
 .query-comp.label {
     font-size: 0.9em;
 }
 
+.offer .icon-wrapper {
+    text-align: center;
+    padding: 15px;
+}
+
+.offer .icon {
+    font-size: 30px;
+    color: #577A9E;
+}
+
+.offer .icon.ion-bag {
+    // color: #8e44ad;
+}
+
+.offer .icon.ion-tshirt-outline {
+    // color: #27ae60;
+}
+
+.offer .offer-descr {
+    margin-top: 5px;
+}
+
+.offer .offer-descr .col,
+.offer .offer-descr .row {
+    padding: 0px;
+}
+
+
+.offer .title,
+.offer .offer-title,
+.listings .search-bar .title {
+    font-weight: bold;
+    color: #2c3e50;
+    font-size: 18px;
+    letter-spacing: 2px
+}
+
+.offer .subtitle,
+.offer .offer-item,
+.listings .search-bar .subtitle {
+    color: #7f8c8d;
+    font-size: 14px;
+}
+
+.offer .offer-item {
+    color: #577A9E;
+}
+
+.offer .title {
+    font-size: 16px;
+    font-weight: normal;
+    letter-spacing: inherit;
+}
+
+.offer .subtitle {
+    font-style: italic;
+    font-size: 12px;
+}
+
+.offer .offer-title {
+    font-size: 16px;
+    color: #577A9E;
+    text-transform: uppercase;
+}
+
+.offer .button {
+    position: absolute;
+    right: 10px;
+    top: 10px;
+}
+
+.offer .button::before {
+    font-size: 40px;
+    color: #E0E0E0;
+}
+
+.offers .item {
+    padding: 0px;
+}
+
+.listings.slider {
+    height: 50%;
+}
+
+.listings .slider-slide {
+    overflow: hidden;
+}
+
+.listings .slider-slide img {
+    height: 50%;
+}
+
+
+.listings .search-icon {
+    text-align: center;
+    padding: 5px;
+}
+
+.listings .search-icon i:first-child {
+    font-size: 50px;
+    color: #E17768;
+    line-height: -1;
+}
+
+.listings .search-icon i:last-child {
+    font-size: 30px;
+    color: white;
+    position: absolute;
+    top: 25px;
+    left: 32px;
+}
 
 .listing .list {
     padding: 0px;

@@ -71,7 +71,10 @@ gulp.task('styles', function() {
   var cssStream = gulp
     .src('bower_components/ionic/css/ionic.min.css');
 
-  return streamqueue({ objectMode: true }, cssStream, sassStream)
+  var ioniconsStream = gulp
+    .src('bower_components/ionicons/css/ionicons.min.css');
+
+  return streamqueue({ objectMode: true }, cssStream, ioniconsStream, sassStream)
     .pipe(plugins.concat('main.css'))
     .pipe(plugins.if(build, plugins.stripCssComments()))
     .pipe(plugins.if(build, plugins.rev()))
@@ -121,7 +124,7 @@ gulp.task('scripts', function() {
 // copy fonts
 gulp.task('fonts', function() {
   return gulp
-    .src(['app/fonts/*.*', 'bower_components/ionic/fonts/*.*'])
+    .src(['app/fonts/*.*', 'bower_components/ionicons/fonts/*.*'])
 
     .pipe(gulp.dest(path.join(targetDir, 'fonts')))
 

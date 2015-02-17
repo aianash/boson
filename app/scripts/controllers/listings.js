@@ -13,13 +13,23 @@ _listings.controller('ListingsController',
 	 'ListingsService',
 function($scope, QueryView, ListingsService) {
 
-  $scope.items = [];
+  $scope.offers = [];
 
   // Fetch default listing
-  ListingsService.fetchListings().then(function(items) {
-    $scope.items = items;
+  ListingsService.fetchListings().then(function(listings) {
+    $scope.ads = listings.ads;
+    $scope.offers = listings.offers;
   });
 
+
+  $scope.offerIcon = function(type) {
+    switch(type) {
+      case 'apparels':
+        return 'ion-tshirt-outline'
+      case 'store':
+        return 'ion-bag'
+    };
+  }
 
   $scope.selectedItems = {};
 
@@ -47,8 +57,8 @@ function($scope, QueryView, ListingsService) {
   $scope.moreContent = ListingsService.hasMoreContent
 
   $scope.loadMoreData = function() {
-    ListingsService.fetchMore($scope.searchId).then(function(items) {
-      $scope.items = $scope.items.concat(items);
+    ListingsService.fetchMore().then(function(offers) {
+      $scope.offers = $scope.offers.concat(offers);
       $scope.$broadcast('scroll.infiniteScrollComplete');
     });
   }

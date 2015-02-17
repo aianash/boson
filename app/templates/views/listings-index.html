@@ -1,58 +1,59 @@
-<ion-view title="InstaShopper">
+<ion-view title="InstaShopper" class="listings">
 
   <ion-nav-buttons side="right">
-    <button class="button button-clear icon ion-ios7-search-strong"
+    <button class="button button-clear icon ion-ios-gear settings"
             ng-click="openSearch()"></button>
   </ion-nav-buttons>
 
 	<ion-content>
 
+    <div class="row search-bar">
+      <a ng-click="openSearch()" class="row">
+        <div class="col search-icon">
+          <i class="icon ion-record"></i>
+          <i class="icon ion-ios-search-strong"></i>
+        </div>
+        <div class="col col-80">
+          <div class="row title">EXPLORE</div>
+          <div class="row subtitle">Find great shopping destinations...</div>
+        </div>
+      </a>
+    </div>
+
+    <ion-slide-box does-continue="true"
+                   auto-play="true"
+                   slide-interval="3000">
+
+      <ion-slide ng-repeat="ad in ads">
+        <img ng-src="{{ad.img}}" />
+      </ion-slide>
+    </ion-slide-box>
+
+
     <ion-list show-detele="false"
               show-reorder="false"
               can-swipe="false"
-              class="listing">
+              class="offers">
 
-      <ion-item ng-repeat="item in items" class="listing">
-
-        <div listings-sticky-header>
-
-          <div ng-if="item.adImg" class="listing-ad">
-            <div class="lisiting item-image">
-              <img ng-src="{{item.adImg}}" />
+      <ion-item ng-repeat="offer in offers">
+        <div class="row offer">
+          <div class="col icon-wrapper">
+            <!-- <i class="icon ion-record"></i> -->
+            <i class="icon" ng-class="offerIcon(offer.storeType)"></i>
+          </div>
+          <div class="col col-80">
+            <div class="row title">{{offer.brand}}</div>
+            <div class="row subtitle">{{offer.address}}</div>
+            <div class="row offer-descr">
+              <div class="col">
+                <div class="row offer-title">{{offer.offer}}</div>
+                <div class="row offer-item">{{offer.itemDescr}}</div>
+              </div>
             </div>
-
-            <div class="slanted-border" ></div>
-          </div>
-
-
-          <div class="listing listing-header">
-            <img ng-src="{{item.brandIcon}}" />
-          </div>
-
-          <div class="listing listing-image item-image">
-            <img ng-src="{{item.img}}" />
-          </div>
-
-          <div class="listing item-body">
-            <button class="button"
-                    ng-click="itemSelected(item.id)"
-                    ng-class="{'button-assertive': isItemSelected(item.id)}">
-              SELECT
-            </button>
-            <h2>{{item.title}}</h2>
-            <div class="list">
-              <span class="size-option" ng-repeat="size in item.detail.sizes">{{size}}</span>
-            </div>
-            <p class="descr">{{item.detail.descr}}</p>
+            <button class="button button-clear icon ion-ios-checkmark"></button>
           </div>
         </div>
       </ion-item>
-      <!-- <ion-item collection-repeat="item in items"
-                collection-item-width="'100%'"
-                collection-item-height="50"
-                ng-style="{height: 50}">
-        <p>{{item}}</p>
-      </ion-item> -->
     </ion-list>
 
    <!-- <ion-refresher on-refresh="onRefresh()"></ion-refresher> -->
