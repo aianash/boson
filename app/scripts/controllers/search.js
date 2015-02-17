@@ -19,7 +19,6 @@ function($scope, $state, $stateParams, QueryView, $ionicLoading, $timeout, $ioni
   $scope.items = [];
 
   function processResult(results) {
-    console.log(results);
     $scope.items = $scope.items.concat(results.items);
     $scope.hasMoreContent = results.hasMoreContent;
     // $scope.$digest();
@@ -34,6 +33,11 @@ function($scope, $state, $stateParams, QueryView, $ionicLoading, $timeout, $ioni
     $ionicLoading.hide();
   });
 
+
+  $scope.$on('refreshSearch', function(event) {
+    console.log("refreshing search");
+    console.log(event);
+  });
 
   $scope.$on('stickHeader', function(event, brandId) {
     console.log(brandId);

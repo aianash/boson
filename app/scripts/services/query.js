@@ -7,7 +7,7 @@ _query.factory('QueryService',
 function($q, DummyData) {
 
 	return {
-		expand: function(queryStr) {
+		expand: function(searchId, queryStr) {
 
 			var promise = $q.when(queryStr);
 
@@ -16,7 +16,7 @@ function($q, DummyData) {
 				var defer = $q.defer();
 
 				setTimeout(function() {
-					defer.resolve(DummyData.query(queryStr));
+					defer.resolve(DummyData.query(queryStr, searchId));
 				}, 500);
 
 				return defer.promise;
@@ -34,18 +34,29 @@ function($ionicModal) {
 
 	var self = this;
 
-	$ionicModal.fromTemplateUrl('templates/modals/query-modal.html', {
+	var promise = $ionicModal.fromTemplateUrl('templates/modals/query-modal.html', {
     animation: 'slide-in-up'
   }).then(function(modal) {
     self.queryModal = modal;
   });
 
 	return {
+		opened: function(fn) {
+			promise.then(function() {
+				self.queryModal.scope.$on('modal.shown', function() {
+					fn();
+				});
+			});
+		},
 		show: function() {
-			self.queryModal.show();
+			promise.then(function() {
+				self.queryModal.show();
+			})
 		},
 		hide: function() {
-			self.queryModal.hide();
+			promise.then(function() {
+				self.queryModal.hide();
+			})
 		}
 	};
 

@@ -9,17 +9,34 @@ _query.controller('QueryController',
    '$q',
    '$timeout',
    '$state',
+   'QueryView',
    'QueryService',
-function($scope, $q, $timeout, $state, QueryService) {
+function($scope, $q, $timeout, $state, QueryView, QueryService) {
 
   $scope.queryStr = '';
   $scope.query = {};
+
+  // returns a random string containing number and alphabets
+  // of length 16
+  function randomSearchId() {
+    return Math.random().toString(36).substr(2).toUpperCase();
+  }
 
   // Update searchId if query has a different searchId
   // Different searchId is possible if server already has
   // the searchId
   $scope.$watch('query', function(nVal, oVal) {
-    $scope.searchId = nVal.searchId || Math.random().toString(36).substr(2);
+    $scope.searchId = nVal.searchId || randomSearchId()
+  });
+
+  // Whenever Query modal is opened
+  // Create a new searchId and also
+  // set this new id in $scope.query
+  // with old searchId for the server to track
+  QueryView.opened(function() {
+    $scope.searchId = randomSearchId();
+    $scope.query.oldSearchId = $scope.query.searchId;
+    $scope.query.searchId = $scope.searchId;
   });
 
   $scope.search = function() {
@@ -35,7 +52,7 @@ function($scope, $q, $timeout, $state, QueryService) {
       promise = $q.when({searchId: $scope.searchId});
 
     promise.then(function(data) {
-      $state.go('boson.listing.search', {searchId: data.searchId}, {reload: true, notify: true});
+      $state.go('boson.listing.search', {searchId: data.searchId});
     });
   }
 
@@ -50,6 +67,10 @@ function($scope, $q, $timeout, $state, QueryService) {
   $scope.reset = function() {
     $scope.query = {};
     $scope.queryStr = '';
+  }
+
+  $scope.close = function() {
+    QueryView.hide();
   }
 
 }]);

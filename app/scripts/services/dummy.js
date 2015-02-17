@@ -110,7 +110,7 @@ angular.forEach([1, 2], function() {
 
 var expandedQuery =
 	{
-    searchId: '8998934kjlskjd',
+    searchId: '',
     str: '',
     expanded: [
    		{
@@ -153,8 +153,9 @@ function(){
         hasMoreContent: true
       };
 		},
-		query: function(queryStr) {
+		query: function(queryStr, searchId) {
       expandedQuery['str'] = queryStr;
+      expandedQuery['searchId'] = searchId;
 			return expandedQuery;
 		}
 	};
