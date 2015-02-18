@@ -11,7 +11,8 @@ var boson =
      'controllers.search',
 
      'directives.listings',
-     'directives.query'
+     'directives.query',
+     'directives.search'
     ]
   );
 

@@ -5,14 +5,21 @@
             ng-click="openSearch()"></button>
   </ion-nav-buttons>
 
-	<ion-content>
+  <div class="item listing fake-header" ng-bind-html="headerElem"></div>
+
+  <ion-content>
+
 
     <ion-list show-detele="false"
               show-reorder="false"
               can-swipe="false"
-              class="listing">
+              class="listing"
+              has-sticky="true">
 
-      <ion-item ng-repeat="item in items" class="listing">
+      <ion-item ng-repeat="item in items"
+                class="listing"
+                id="{{item.id}}"
+                is-sticky="{{isStoreInfo(item.type)}}">
 
         <div ng-if="isStoreInfo(item.type)">
           <div class="row offer">

@@ -6,6 +6,7 @@ var _search =
 
 _search.controller('SearchController',
 	['$scope',
+   '$sce',
    '$state',
    '$stateParams',
    'QueryView',
@@ -13,7 +14,7 @@ _search.controller('SearchController',
    '$timeout',
    '$ionicModal',
    'SearchService',
-function($scope, $state, $stateParams, QueryView, $ionicLoading, $timeout, $ionicModal, SearchService) {
+function($scope, $sce, $state, $stateParams, QueryView, $ionicLoading, $timeout, $ionicModal, SearchService) {
 
   $scope.searchId = $stateParams.searchId;
   $scope.items = [];
@@ -32,13 +33,11 @@ function($scope, $state, $stateParams, QueryView, $ionicLoading, $timeout, $ioni
     $ionicLoading.hide();
   });
 
-  /** NOT WORKING... WIP */
-  $scope.$on('stickHeader', function(event, brandId) {
-    console.log(brandId);
-    $scope.brandId = brandId;
+  $scope.$on('stickHeader', function(event, elem) {
+    var _elem = angular.element(elem);
+    $scope.headerElem = $sce.trustAsHtml(_elem.html());
     $scope.$digest();
   });
-
 
   $scope.selectedItems = {};
 

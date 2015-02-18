@@ -54,7 +54,7 @@ var i = 0;
 
 items.push({
   type: 'storeInfo',
-  storeId: '239023kj2kjjk',
+  id: '1',
   storeType: 'store',
   name: 'Shopper Stop',
   address: 'Forum Mall, Kormangla'
@@ -118,7 +118,7 @@ angular.forEach([1, 2], function() {
 
 items.push({
   type: 'storeInfo',
-  storeId: '39jkajks',
+  id: '2',
   storeType: 'apparels',
   name: 'Levis Showroom',
   address: 'City Talk Plaza, Brigade Road'
