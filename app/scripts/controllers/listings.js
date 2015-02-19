@@ -1,7 +1,8 @@
 var _listings =
 	angular.module('controllers.listings',
 		['services.listings',
-     'services.query'
+     'services.query',
+     'utils'
     ]
 	);
 
@@ -9,9 +10,10 @@ var _listings =
 
 _listings.controller('ListingsController',
 	['$scope',
+   'storeTypeIcon',
    'QueryView',
 	 'ListingsService',
-function($scope, QueryView, ListingsService) {
+function($scope, storeTypeIcon, QueryView, ListingsService) {
 
   $scope.offers = [];
 
@@ -22,39 +24,41 @@ function($scope, QueryView, ListingsService) {
   });
 
 
-  $scope.offerIcon = function(type) {
-    switch(type) {
-      case 'apparels':
-        return 'ion-tshirt-outline'
-      case 'store':
-        return 'ion-bag'
-    };
+
+  $scope.selectedStores = {};
+
+  function selectStore(storeId) {
+    ListingsService.selectStore(storeId);
+    $scope.selectedStores[storeId] = true;
   }
 
-  $scope.selectedItems = {};
-
-  function selectItem(id) {
-    $scope.selectedItems[id] = true;
+  function deselectStore(storeId) {
+    ListingsService.deselectStore(storeId);
+    $scope.selectedStores[storeId] = false;
   }
 
-  function deselectItem(id) {
-    $scope.selectedItems[id] = false;
+
+
+  $scope.isStoreSelected = function(storeId) {
+    return $scope.selectedStores[storeId] == true;
   }
 
-  $scope.isItemSelected = function(id) {
-    return $scope.selectedItems[id] == true;
+  $scope.toggleStore = function(storeId) {
+    if($scope.isStoreSelected(storeId)) deselectStore(storeId)
+    else selectStore(storeId);
   }
-
-  $scope.itemSelected = function(id) {
-    if($scope.isItemSelected(id)) deselectItem(id)
-    else selectItem(id);
-  }
-
 
   $scope.openSearch = QueryView.show;
 
+  $scope.offerIcon = function(type) {
+    return storeTypeIcon(type);
+  };
+
   // Infinite scroll related functions
-  $scope.moreContent = ListingsService.hasMoreContent
+  $scope.moreContent = function() {
+    return ListingsService.hasMoreListings()
+  };
+
 
   $scope.loadMoreData = function() {
     ListingsService.fetchMore().then(function(offers) {

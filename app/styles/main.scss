@@ -25,6 +25,10 @@
     color: #577A9E;
 }
 
+.offer .icon.checked::before {
+    color: #E17768;
+}
+
 .offer .offer-descr {
     margin-top: 5px;
 }

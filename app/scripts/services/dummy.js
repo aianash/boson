@@ -13,6 +13,7 @@ ads.push({img: 'https://imageshack.com/i/eyRdRuzWj'});
 var offers = [];
 
 offers.push({
+  storeId: '29023kl2k',
   storeType: 'apparels',
   brand: 'Levis Showroom',
   address: 'City Talk Plaza, Brigade Road',
@@ -22,6 +23,7 @@ offers.push({
 
 
 offers.push({
+  storeId: '29023ksddsk',
   storeType: 'store',
   brand: 'Shopper Stop',
   address: 'Forum Mall, Kormangla',
@@ -31,6 +33,7 @@ offers.push({
 
 
 offers.push({
+  storeId: '99kskksl2k',
   storeType: 'apparels',
   brand: 'Flying Machine Showroom',
   address: '100ft Road, Indiranagar',
@@ -40,6 +43,7 @@ offers.push({
 
 
 offers.push({
+  storeId: '9309390jksdj',
   storeType: 'store',
   brand: 'Westside',
   address: 'Garuda Mall',

@@ -48,3 +48,33 @@ View the app in browser @ [http://localhost:9000](http://localhost:9000)
 ```bash
 $ gulp -r
 ```
+
+Dev Notes
+---------
+
+### Services and Controllers
+
+```
+                                               +-------------+    /** selected Stores + Collection
+                                               |  StoreCart  |        Diff based data structure **/
+                                               +-------------+
+                                                      ^
+                                                      |  /** Higgs Backend Service API
+                                                      |      Lazy Async Persistence of Store cart data **/
+        +-------------------------------------> +-----+-----+ <---------------------------------------+
+        |                                       | Higgs Api |                                           |
+        |                     +---------------> +-----------+ <---------------------+                 |
+        |                     |               +----^    ^-------+                   |                 |
+        |                     |               |                 |                   |                 |
+        |                     |               |                 |                   |                 |
+        |                     |               |                 |                   |                 |
++-------+--------+   +--------+------+  +-----+------+  +-------+--------+  +-------+-------+  +------+------+
+| ListingService |   | SearchService |  | MapService |  | FriendsService |  | NearbyService |  | PlanService |
++----------------+   +---------------+  +------------+  +----------------+  +---------------+  +-------------+
+        ^                   ^                 ^                 ^                  ^                 ^
+        |                   |                 |                 |                  |                 |
+ +-------------+      +------------+     +---------+     +-------------+     +------------+     +----------+
+ | ListingCtrl |      | SearchCtrl |     | MapCtrl |     | FriendsCtrl |     | NearbyCtrl |     | PlanCtrl |
+ +-------------+      +------------+     +---------+     +-------------+     +------------+     +----------+
+
+```

@@ -1,28 +1,49 @@
-var _search = angular.module('services.search', ['services.dummy']);
+var _search = angular.module('services.search',
+  ['services.dummy',
+   'services.pion']);
 
 _search.factory('SearchService',
 	['$q',
-   'DummyData',
-function($q, DummyData) {
+   'higgs',
+   'pion',
+function($q, higgs, pion) {
 
-	function search(searchId) {
-		var promise = $q.when(searchId);
+  var _SearchService;
 
-    promise = promise.then(function(searchId) {
-      var defer = $q.defer();
+  _SearchService = (function() {
+    function SearchService() {/** constructor */}
 
-      setTimeout(function() {
-        defer.resolve(DummyData.results(searchId));
-      }, 1000)
+    SearchService.prototype.search = function(searchId) {
+      return pion.search(searchId);
+    };
 
-      return defer.promise;
-    });
+    SearchService.prototype.hasMoreResults = function(searchId) {
+      return pion.hasMoreResults;
+    };
 
-    return promise;
-	}
+    SearchService.prototype.nextResults = function(searchId) {
+      return pion.nextResults(searchId);
+    };
 
-	return {
-		search: search
-	};
+    SearchService.prototype.selectStore = function(storeId) {
+      higgs.selectStore(storeId);
+    };
+
+    SearchService.prototype.deselectStore = function(storeId) {
+      higgs.deselectStore(storeId);
+    };
+
+    SearchService.prototype.selectItem = function(itemId, storeId) {
+      higgs.selectItem(itemId, storeId);
+    };
+
+    SearchService.prototype.deselectItem = function(itemId, storeId) {
+      higgs.deselectItem(itemId, storeId);
+    };
+
+    return SearchService;
+  })();
+
+  return new _SearchService();
 
 }]);
