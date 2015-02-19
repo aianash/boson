@@ -2,40 +2,40 @@ var _listings = angular.module('services.listings', ['services.higgs']);
 
 
 _listings.factory('ListingsService',
-	['$q',
-	 'higgs',
+  ['$q',
+   'higgs',
 function($q, higgs) {
 
-	var ListingsService;
+  var ListingsService;
 
-	ListingsService = (function() {
+  ListingsService = (function() {
 
-		function ListingsService() {/** constructor */}
+    function ListingsService() {/** constructor */}
 
-		ListingsService.prototype.fetchListings = function() {
-			return higgs.getListings();
-		};
+    ListingsService.prototype.fetchListings = function() {
+      return higgs.getListings();
+    };
 
-		ListingsService.prototype.fetchMore = function() {
-			return higgs.moreListings();
-		};
+    ListingsService.prototype.fetchMore = function() {
+      return higgs.moreListings();
+    };
 
-		ListingsService.prototype.hasMoreListings = function () {
-			return higgs.hasMoreListings();
-		};
+    ListingsService.prototype.hasMoreListings = function () {
+      return higgs.hasMoreListings();
+    };
 
-		ListingsService.prototype.selectStore = function(storeId) {
-			higgs.selectStore(storeId);
-		};
+    ListingsService.prototype.selectStore = function(storeId) {
+      higgs.selectStore(storeId);
+    };
 
-		ListingsService.prototype.deselectStore = function(storeId) {
-			higgs.deselectStore(storeId);
-		};
+    ListingsService.prototype.deselectStore = function(storeId) {
+      higgs.deselectStore(storeId);
+    };
 
 
-		return ListingsService;
-	})();
+    return ListingsService;
+  })();
 
-	return new ListingsService();
+  return new ListingsService();
 
 }]);

@@ -1,7 +1,7 @@
 var _map = angular.module('controllers.map', []);
 
 _map.controller('MapController',
-	['$scope',
+  ['$scope',
 function($scope) {
 
 }]);

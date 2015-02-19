@@ -6,7 +6,7 @@ var _search =
   );
 
 _search.controller('SearchController',
-	['$scope',
+  ['$scope',
    '$sce',
    '$state',
    '$stateParams',

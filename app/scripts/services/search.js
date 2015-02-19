@@ -3,7 +3,7 @@ var _search = angular.module('services.search',
    'services.pion']);
 
 _search.factory('SearchService',
-	['$q',
+  ['$q',
    'higgs',
    'pion',
 function($q, higgs, pion) {

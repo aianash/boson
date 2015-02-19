@@ -1,18 +1,18 @@
 var _listings =
-	angular.module('controllers.listings',
-		['services.listings',
+  angular.module('controllers.listings',
+    ['services.listings',
      'services.query',
      'utils'
     ]
-	);
+  );
 
 
 
 _listings.controller('ListingsController',
-	['$scope',
+  ['$scope',
    'storeTypeIcon',
    'QueryView',
-	 'ListingsService',
+   'ListingsService',
 function($scope, storeTypeIcon, QueryView, ListingsService) {
 
   $scope.offers = [];

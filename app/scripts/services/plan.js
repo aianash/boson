@@ -9,8 +9,8 @@ var _plan = angular.module('services.plan', []);
  * @return {[type]}          [description]
  */
 _plan.factory('PlanService',
-	['$q',
-	 'StoreCartService',
+  ['$q',
+   'StoreCartService',
 function($q, StoreCartService){
 
 

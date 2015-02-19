@@ -1,70 +1,70 @@
 var _higgs = angular.module('services.higgs',
-	['utils',
-	 'services.dummy']);
+  ['utils',
+   'services.dummy']);
 
 
 
 function StoreCartProvider() {
 
-	var storeCartId = void 0;
+  var storeCartId = void 0;
 
-	this.setStoreCartId = function(id) {
-		storeCartId = id;
-	}
+  this.setStoreCartId = function(id) {
+    storeCartId = id;
+  }
 
-	this.$get = ['randomId64',
-	  function(randomId64) {
-	  	var _StoreCart;
+  this.$get = ['randomId64',
+    function(randomId64) {
+      var _StoreCart;
 
-	  	/**
-	  	 * StoreCart stores data for selected
-	  	 * stores and their collection.
-	  	 *
-	  	 * It maintains a Diff table for persisting
-	  	 * only diff to Higgs service
-	  	 */
-	  	_StoreCart = (function() {
+      /**
+       * StoreCart stores data for selected
+       * stores and their collection.
+       *
+       * It maintains a Diff table for persisting
+       * only diff to Higgs service
+       */
+      _StoreCart = (function() {
 
-	  		function StoreCart(id) { /** constructor */
-	  			this.cartId = id || randomId64();
-	  			this.operations = [];
-	  		}
-
-
-	  		StoreCart.prototype.selectStore = function(storeId) {
-	  			this.operations.push('A:' + storeId);
-	  		};
-
-	  		StoreCart.prototype.deselectStore = function(storeId) {
-	  			this.operations.push('D:' + storeId);
-	  		};
-
-	  		StoreCart.prototype.selectItem = function(itemId, storeId) {
-	  			this.operations.push('A:' + (storeId || '') + '.' + itemId);
-	  		};
-
-	  		StoreCart.prototype.deselectItem = function(itemId, storeId) {
-	  			this.operations.push('D:' + (storeId || '') + '.' + itemId);
-	  		};
+        function StoreCart(id) { /** constructor */
+          this.cartId = id || randomId64();
+          this.operations = [];
+        }
 
 
-	  		/**
-	  		 * returns diff data structure
-	  		 * for lazy persistence
-	  		 */
-	  		StoreCart.prototype.getDiff = function() {
-	  			return this.operations;
-	  		};
+        StoreCart.prototype.selectStore = function(storeId) {
+          this.operations.push('A:' + storeId);
+        };
 
-	  		StoreCart.prototype.diffPersisted = function() {
+        StoreCart.prototype.deselectStore = function(storeId) {
+          this.operations.push('D:' + storeId);
+        };
 
-	  		};
+        StoreCart.prototype.selectItem = function(itemId, storeId) {
+          this.operations.push('A:' + (storeId || '') + '.' + itemId);
+        };
 
-	  		return StoreCart;
-	  	})();
+        StoreCart.prototype.deselectItem = function(itemId, storeId) {
+          this.operations.push('D:' + (storeId || '') + '.' + itemId);
+        };
 
-	  	return new _StoreCart(storeCartId);
-		}];
+
+        /**
+         * returns diff data structure
+         * for lazy persistence
+         */
+        StoreCart.prototype.getDiff = function() {
+          return this.operations;
+        };
+
+        StoreCart.prototype.diffPersisted = function() {
+
+        };
+
+        return StoreCart;
+      })();
+
+      return new _StoreCart(storeCartId);
+    }];
 };
 
 
@@ -73,78 +73,78 @@ function StoreCartProvider() {
 
 function HiggsProvider() {
 
-	var apiVersion = '0.0.1';
+  var apiVersion = '0.0.1';
 
-	this.apiVersion = function(version) {
-		apiVersion = version;
-	};
-
-
-	this.$get = ['$q', 'storeCart', 'DummyData',
-	  function($q, storeCart, DummyData) {
-	  	var _Higgs;
-
-	  	/**
-	  	 * Client for Higgs (backend) APIs
-	  	 * Built-in lazy persistence of store cart
-	  	 */
-	  	_Higgs = (function() {
-
-	  		function Higgs(apiVersion) { /** constructor */
-	  			this.apiVersion = apiVersion;
-	  		};
+  this.apiVersion = function(version) {
+    apiVersion = version;
+  };
 
 
-	  		/** === Higgs APIs [On-going development] === */
+  this.$get = ['$q', 'storeCart', 'DummyData',
+    function($q, storeCart, DummyData) {
+      var _Higgs;
+
+      /**
+       * Client for Higgs (backend) APIs
+       * Built-in lazy persistence of store cart
+       */
+      _Higgs = (function() {
+
+        function Higgs(apiVersion) { /** constructor */
+          this.apiVersion = apiVersion;
+        };
 
 
-	  		/** == Listing APIs */
-	  		Higgs.prototype.getListings = function() {
-	  			return $q.when(DummyData.listings);
-	  		};
-
-				Higgs.prototype.fetchMore = function() {
-					return $q.when(DummyData.listings);
-				};
-
-				Higgs.prototype.hasMoreListings = function () {
-					return false;
-				};
-
-				Higgs.prototype.selectStore = function(storeId) {
-					storeCart.selectStore(storeId);
-				};
-
-				Higgs.prototype.deselectStore = function(storeId) {
-					storeCart.deselectStore(storeId);
-				};
-
-		    Higgs.prototype.selectItem = function(itemId, storeId) {
-		      storeCart.selectItem(itemId, storeId);
-		    };
-
-		    Higgs.prototype.deselectItem = function(itemId, storeId) {
-		      storeCart.deselectItem(itemId, storeId);
-		    };
+        /** === Higgs APIs [On-going development] === */
 
 
-	  		/** == Store Cart APIs == */
+        /** == Listing APIs */
+        Higgs.prototype.getListings = function() {
+          return $q.when(DummyData.listings);
+        };
 
-	  		Higgs.prototype.addStore = function(store) {
+        Higgs.prototype.fetchMore = function() {
+          return $q.when(DummyData.listings);
+        };
 
-	  		};
+        Higgs.prototype.hasMoreListings = function () {
+          return false;
+        };
 
-	  		Higgs.prototype.addCollectionToStore = function(collection, storeId) {
+        Higgs.prototype.selectStore = function(storeId) {
+          storeCart.selectStore(storeId);
+        };
 
-	  		};
+        Higgs.prototype.deselectStore = function(storeId) {
+          storeCart.deselectStore(storeId);
+        };
+
+        Higgs.prototype.selectItem = function(itemId, storeId) {
+          storeCart.selectItem(itemId, storeId);
+        };
+
+        Higgs.prototype.deselectItem = function(itemId, storeId) {
+          storeCart.deselectItem(itemId, storeId);
+        };
 
 
-	  		return Higgs;
+        /** == Store Cart APIs == */
 
-	  	})();
+        Higgs.prototype.addStore = function(store) {
 
-	 	  return new _Higgs(apiVersion);
-	  }];
+        };
+
+        Higgs.prototype.addCollectionToStore = function(collection, storeId) {
+
+        };
+
+
+        return Higgs;
+
+      })();
+
+      return new _Higgs(apiVersion);
+    }];
 }
 
 

@@ -184,57 +184,57 @@ angular.forEach([1, 2], function() {
 /** Query modal data */
 
 var expandedQuery =
-	{
+  {
     searchId: '',
     str: '',
     expanded: [
-   		{
-   			label: 'descr',
-   			value: "men's casual shirt",
-   			type: 'string'
-   		},
-   		{
-   			label: 'color',
-   			value: ['#c0392b', '#2980b9', '#16a085'],
-   			type: 'color-array'
-   		},
-   		{
-   			label: 'size',
-   			value: '41',
-   			type: 'string'
-   		},
-   		{
-   			label: 'fit',
-   			value: 'slim fit',
-   			type: 'string'
-   		},
-   		{
-   			label: 'brand',
-   			value: ['levis', 'woodland', 'peter england'],
-   			type: 'string-array'
-   		}
+      {
+        label: 'descr',
+        value: "men's casual shirt",
+        type: 'string'
+      },
+      {
+        label: 'color',
+        value: ['#c0392b', '#2980b9', '#16a085'],
+        type: 'color-array'
+      },
+      {
+        label: 'size',
+        value: '41',
+        type: 'string'
+      },
+      {
+        label: 'fit',
+        value: 'slim fit',
+        type: 'string'
+      },
+      {
+        label: 'brand',
+        value: ['levis', 'woodland', 'peter england'],
+        type: 'string-array'
+      }
     ]
-	};
+  };
 
 
 _dummy.factory('DummyData',
 function(){
-	return {
-		listings: {
+  return {
+    listings: {
       offers: offers,
       ads: ads
-		},
+    },
     results: function(searchId) {
-			return {
+      return {
         items: items,
-			  searchId: searchId,
+        searchId: searchId,
         hasMoreContent: true
       };
-		},
-		query: function(queryStr, searchId) {
+    },
+    query: function(queryStr, searchId) {
       expandedQuery['str'] = queryStr;
       expandedQuery['searchId'] = searchId;
-			return expandedQuery;
-		}
-	};
+      return expandedQuery;
+    }
+  };
 });
