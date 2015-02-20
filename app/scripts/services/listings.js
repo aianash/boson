@@ -1,4 +1,5 @@
-var _listings = angular.module('services.listings', ['services.higgs']);
+var _listings = angular.module('services.listings',
+  ['services.higgs']);
 
 
 _listings.factory('ListingsService',

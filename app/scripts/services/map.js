@@ -1,27 +1,27 @@
 var _map = angular.module('services.map',
-	['services.higgs']);
+  ['services.higgs']);
 
 _map.factory('MapService',
-	['$q',
-	 'higgs',
+  ['$q',
+   'higgs',
 function($q, higgs) {
 
-	var _MapService;
+  var _MapService;
 
-	_MapService = (function() {
-		function MapService() { /** constructor */ }
+  _MapService = (function() {
+    function MapService() { /** constructor */ }
 
-		MapService.prototype.getLocations = function() {
-			return higgs.getStoreLocations();
-		};
+    MapService.prototype.getLocations = function() {
+      return higgs.getStoreLocations();
+    };
 
-		MapService.prototype.setDestination = function(index, dest) {
-			higgs.setDestination(index, dest);
-		};
+    MapService.prototype.setDestination = function(index, dest) {
+      higgs.setDestination(index, dest);
+    };
 
-		return MapService;
-	})();
+    return MapService;
+  })();
 
-	return new _MapService();
+  return new _MapService();
 
 }]);

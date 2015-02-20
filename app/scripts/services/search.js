@@ -1,6 +1,7 @@
 var _search = angular.module('services.search',
   ['services.dummy',
-   'services.pion']);
+   'services.pion',
+   'services.higgs']);
 
 _search.factory('SearchService',
   ['$q',
