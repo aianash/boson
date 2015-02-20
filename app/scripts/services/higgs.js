@@ -139,6 +139,29 @@ function HiggsProvider() {
         };
 
 
+        /** == Map APIs == */
+        Higgs.prototype.getStoreLocations = function() {
+          return $q.when(DummyData.storeLocations);
+        };
+
+        Higgs.prototype.setDestination = function(index, dest) {
+          // To implement
+        };
+
+
+        /** == Friends API */
+        Higgs.prototype.getNearbyFriends = function() {
+          return $q.when(DummyData.nearbyFriends);
+        };
+
+        Higgs.prototype.addUserToInviteList = function(userId) {
+          // To implement
+        };
+
+        Higgs.prototype.removeUserFromInviteList = function(userId) {
+          // To implement
+        };
+
         return Higgs;
 
       })();

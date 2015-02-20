@@ -1,3 +1,21 @@
+.friends .button {
+    position: absolute;
+    line-height: 12px;
+    font-size: 13px;
+    letter-spacing: 1px;
+    top: 16px;
+    right: 16px;
+    color: #577A9E;
+    font-weight: bold;
+    border: 2px solid #577A9E;
+    padding-bottom: 2px;
+}
+
+.friends .button.invited {
+    background-color: #577A9E;
+    color: white;
+}
+
 .fake-header {
     position: fixed;
     top: 44px;

@@ -65,7 +65,8 @@ function($ionicConfigProvider, $stateProvider, $urlRouterProvider) {
     url: '/map',
     views: {
       map: {
-        template: 'templates/views/map.html'
+        controller: 'MapController',
+        templateUrl: 'templates/views/map.html'
       }
     }
   });
@@ -73,8 +74,9 @@ function($ionicConfigProvider, $stateProvider, $urlRouterProvider) {
   $stateProvider.state('boson.friends', {
     url: '/friends',
     views: {
-      map: {
-        template: 'templates/views/friends.html'
+      friends: {
+        controller: 'FriendsController',
+        templateUrl: 'templates/views/friends.html'
       }
     }
   });
