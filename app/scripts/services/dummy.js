@@ -217,9 +217,79 @@ var expandedQuery =
   };
 
 
+/** Map data */
+
+storeLocations = [
+  [-34.397, 150.644, 0.9]
+];
+
+
+/** Friends data */
+nearbyFriends = [];
+
+nearbyFriends.push({
+  name: 'Rahul Jain',
+  username: 'jainsahab',
+  id: '1',
+  avatar: 'https://imageshack.com/i/idxrtxQMj'
+});
+
+nearbyFriends.push({
+  name: 'Amik Singh',
+  username: 'tiger',
+  id: '2',
+  avatar: 'https://imageshack.com/i/f0IA0Y8Gj'
+});
+
+nearbyFriends.push({
+  name: 'Vishal Gupta',
+  username: 'golupolu',
+  id: '3',
+  avatar: 'https://imageshack.com/i/exAUgkr7j'
+});
+
+nearbyFriends.push({
+  name: 'Sajal Agarwal',
+  username: 'mysterious',
+  id: '4',
+  avatar: 'http://imageshack.com/a/img661/3717/dMwcZr.jpg'
+});
+
+nearbyFriends.push({
+  name: 'Rahul Shankar',
+  username: 'bholenath',
+  id: '5',
+  avatar: 'https://imageshack.com/i/paMWGpapj'
+});
+
+nearbyFriends.push({
+  name: 'Neeraj Gangwar',
+  username: 'gangu',
+  id: '6',
+  avatar: 'http://imageshack.com/a/img673/2847/UgCplV.jpg'
+});
+
+nearbyFriends.push({
+  name: 'Giri Manivannan',
+  username: 'fallen',
+  id: '7',
+  avatar: 'https://imageshack.com/i/exf7Vv0Rj'
+});
+
+nearbyFriends.push({
+  name: 'Albert Einstein',
+  username: 'albert1915',
+  id: '0',
+  avatar: 'http://imageshack.com/a/img673/4937/7yAKQh.jpg'
+});
+
+
+
 _dummy.factory('DummyData',
 function(){
   return {
+    nearbyFriends: nearbyFriends,
+    storeLocations: storeLocations,
     listings: {
       offers: offers,
       ads: ads
