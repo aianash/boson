@@ -7,6 +7,7 @@ var _search =
 
 _search.controller('SearchController',
   ['$scope',
+   '$compile',
    '$sce',
    '$state',
    '$stateParams',
@@ -17,6 +18,7 @@ _search.controller('SearchController',
    'QueryView',
    'SearchService',
 function($scope,
+         $compile,
          $sce,
          $state,
          $stateParams,
@@ -29,6 +31,8 @@ function($scope,
 
   $scope.searchId = $stateParams.searchId;
   $scope.items = [];
+
+  var fakeHeader = angular.element(document.querySelector('div.fake-header'));
 
   function processResult(items) {
     $scope.items = $scope.items.concat(items);
@@ -43,9 +47,11 @@ function($scope,
     $ionicLoading.hide();
   });
 
-  $scope.$on('stickHeader', function(event, elem) {
-    var _elem = angular.element(elem);
-    $scope.headerElem = $sce.trustAsHtml(_elem.html());
+  $scope.$on('stickHeader', function(event, elemPos) {
+    var _elem = angular.element(elemPos.elem);
+    $scope.item = elemPos.item;
+    fakeHeader.html($sce.getTrustedHtml($sce.trustAsHtml(_elem.html())));
+    $compile(fakeHeader.contents())($scope);
     $scope.$digest();
   });
 
@@ -82,12 +88,12 @@ function($scope,
   $scope.selectedStores = {};
 
   function selectStore(storeId) {
-    SearchServices.selectStore(storeId);
+    SearchService.selectStore(storeId);
     $scope.selectedStores[storeId] = 1;
   }
 
   function deselectStore(storeId) {
-    SearchServices.deselectStore(storeId);
+    SearchService.deselectStore(storeId);
     $scope.selectedStores[storeId] = 0;
   }
 
@@ -96,8 +102,9 @@ function($scope,
   };
 
   $scope.toggleStore = function(storeId) {
-    if($scope.isStoreSelected(storeId)) deselectStore(storeId)
+    if($scope.isStoreSelected(storeId)) deselectStore(storeId);
     else selectStore(storeId);
+    return true;
   };
 
   // Infinite scroll related functions

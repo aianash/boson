@@ -8,7 +8,7 @@ _search.directive('hasSticky', function() {
 		$scope.aggregate = $scope.aggregate || {};
 
 		function checkAndNotify() {
-			var minId = 0;
+			var minId = '';
 			var minD = -999999;
 			var found = false;
 			angular.forEach($scope.aggregate, function(val, key) {
@@ -23,15 +23,16 @@ _search.directive('hasSticky', function() {
 						// items above the header (ie with position negative)
 					} else if(val.position < 0 && val.position > minD) {
 						minId = key;
+						minD = val.position;
 					}
 			});
 
-			$scope.$emit('stickHeader', $scope.aggregate[minId].elem);
+			if(minId !== '') $scope.$emit('stickHeader', $scope.aggregate[minId]);
 		}
 
 		if(attrs.hasSticky === 'true') {
 			$scope.$on('stickyPosition', function(event, elemPos) {
-				$scope.aggregate[elemPos.id] = elemPos;
+				$scope.aggregate[elemPos.item.id] = elemPos;
 				checkAndNotify();
 			});
 		}
@@ -68,7 +69,7 @@ _search.directive('isSticky', function() {
 
 	    function _notifyElemPos(event) {
 	    	var top = this.elem.getBoundingClientRect().top;
-	    	$scope.$emit('stickyPosition', {elem: this.elem, position: top, id: this.elem.id});
+	    	$scope.$emit('stickyPosition', {elem: this.elem, position: top, item: this.item});
 	    }
 
 	    function _findScrollableParent(elem) {
