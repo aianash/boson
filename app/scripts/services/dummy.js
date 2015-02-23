@@ -284,6 +284,103 @@ nearbyFriends.push({
 });
 
 
+var plan = {
+  friends: [
+    {
+      id: '1',
+      avatar: 'https://imageshack.com/i/f0IA0Y8Gj'
+    },
+    {
+      id: '3',
+      avatar: 'https://imageshack.com/i/idxrtxQMj'
+    },
+    {
+      id: '2',
+      avatar: 'http://imageshack.com/a/img661/3717/dMwcZr.jpg'
+    }
+  ]
+}
+
+
+plan['destinations'] = []
+
+plan.destinations.push({
+  id: '1',
+  areaName: 'Brigade Road',
+  stores: dstores
+});
+
+plan.destinations.push({
+  id: '2',
+  areaName: 'Kormangla',
+  stores: dstores
+});
+
+var dstores =
+[
+  {
+    id: '1',
+    name: 'Levis Showroom',
+    address: 'City Talk Plaza, Brigade Road',
+    offer: '50% off men\' jeans',
+    collections: [
+      {
+        id: 'i1',
+        img: 'http://staticaky.yepme.com/newcampaign/3293/32932_YPXL_1.jpg'
+      },
+      {
+        id: 'i2',
+        img: 'http://staticaky.yepme.com/newcampaign/3932/39327_YPZM_1.jpg'
+      },
+      {
+        id: 'i3',
+        img: 'http://staticaky.yepme.com/newcampaign/3293/32932_YPXL_1.jpg'
+      },
+      {
+        id: 'i4',
+        img: 'http://staticaky.yepme.com/newcampaign/3932/39327_YPZM_1.jpg'
+      }
+    ]
+  },
+  {
+    id: '2',
+    name: 'Flying Machine Showroom',
+    address: 'Shop No 11, Brigade Road',
+    collections: [
+      {
+        id: 'i5',
+        img: 'http://staticaky.yepme.com/newcampaign/3932/39327_YPZM_1.jpg'
+      },
+      {
+        id: 'i6',
+        img: 'http://staticaky.yepme.com/newcampaign/3293/32932_YPXL_1.jpg'
+      },
+    ]
+  },
+  {
+    id: '3',
+    name: 'Peter England',
+    address: 'Forum Mall, Kormangla',
+    offer: 'Buy 1 get 1 free',
+    collections: [
+      {
+        id: 'i7',
+        img: 'http://staticaky.yepme.com/newcampaign/3293/32932_YPXL_1.jpg'
+      },
+      {
+        id: 'i8',
+        img: 'http://staticaky.yepme.com/newcampaign/3293/32932_YPXL_1.jpg'
+      },
+      {
+        id: 'i9',
+        img: 'http://staticaky.yepme.com/newcampaign/3932/39327_YPZM_1.jpg'
+      }
+    ]
+  }
+];
+
+
+
 
 _dummy.factory('DummyData',
 function(){
@@ -294,6 +391,7 @@ function(){
       offers: offers,
       ads: ads
     },
+    plan: plan,
     results: function(searchId) {
       return {
         items: items,

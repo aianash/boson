@@ -5,9 +5,9 @@
         <img ng-src="{{friend.avatar}}" />
         <h2>{{friend.name}}</h2>
         <p>{{friend.username}}</p>
-        <button class="button button-small"
+        <button class="button button-clear icon ion-ios-checkmark"
                 ng-click="toggleInvitation(friend.id)"
-                ng-class="{invited: isInvited(friend.id)}">+ INVITE</button>
+                ng-class="{invited: isInvited(friend.id)}"></button>
       </ion-item>
     </ion-list>
   </ion-content>

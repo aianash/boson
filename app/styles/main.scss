@@ -1,19 +1,48 @@
+
+.plan .bar-footer {
+    height: 50px;
+    border-top: 1px solid #ddd;
+}
+
+.plan .friends {
+    width: 100%;
+    height: 40px;
+}
+
+.plan .friends .item {
+    display: block;
+    border: none;
+    padding: 0px;
+    float: right;
+    width: 55px;
+    margin: 0;
+    height: 40px;
+    min-height: 0px;
+}
+
+.plan .friends .item-avatar img {
+    width: 40px;
+    top: 0;
+    left: 0;
+}
+
 .friends .button {
     position: absolute;
-    line-height: 12px;
-    font-size: 13px;
+    // line-height: 12px;
+    font-size: 30px;
     letter-spacing: 1px;
     top: 16px;
     right: 16px;
-    color: #577A9E;
-    font-weight: bold;
-    border: 2px solid #577A9E;
     padding-bottom: 2px;
 }
 
-.friends .button.invited {
-    background-color: #577A9E;
-    color: white;
+.friends .button.icon::before {
+    font-size: 40px;
+    color: #E0E0E0;
+}
+
+.friends .button.invited::before {
+    color: #577A9E;
 }
 
 .fake-header {

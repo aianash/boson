@@ -162,6 +162,12 @@ function HiggsProvider() {
           // To implement
         };
 
+
+        /** == Plan APIs */
+        Higgs.prototype.getPlan = function() {
+          return $q.when(DummyData.plan);
+        };
+
         return Higgs;
 
       })();

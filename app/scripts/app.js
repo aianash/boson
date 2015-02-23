@@ -60,7 +60,6 @@ function($ionicConfigProvider, $stateProvider, $urlRouterProvider) {
 
 
 
-  /** STATES NOT YET DEVELOPED */
   $stateProvider.state('boson.map', {
     url: '/map',
     views: {
@@ -81,23 +80,26 @@ function($ionicConfigProvider, $stateProvider, $urlRouterProvider) {
     }
   });
 
-  $stateProvider.state('boson.nearby', {
-    url: '/nearby',
+  $stateProvider.state('boson.plan', {
+    url: '/plan',
     views: {
-      map: {
-        template: 'templates/views/nearby.html'
+      plan: {
+        controller: 'PlanController',
+        templateUrl: 'templates/views/plan.html'
       }
     }
   });
 
-  $stateProvider.state('boson.plan', {
-    url: '/plan',
-    views: {
-      map: {
-        template: 'templates/views/plan.html'
-      }
-    }
-  });
+
+  /** STATES NOT YET DEVELOPED */
+  // $stateProvider.state('boson.nearby', {
+  //   url: '/nearby',
+  //   views: {
+  //     map: {
+  //       template: 'templates/views/nearby.html'
+  //     }
+  //   }
+  // });
 
 }]);
 
