@@ -5,8 +5,9 @@ var _plan = angular.module('controllers.plan',
 
 _plan.controller('PlanController',
   ['$scope',
+   '$ionicPopup',
    'PlanService',
-function($scope, PlanService) {
+function($scope, $ionicPopup, PlanService) {
 
 	var showingStoreId;
 
@@ -22,6 +23,19 @@ function($scope, PlanService) {
 
   $scope.showStore = function(id) {
   	showingStoreId = id;
+  };
+
+  $scope.askToMarkShoppingPlan = function($event){
+  	var confirmPopup = $ionicPopup.confirm({
+  		title: 'Confirm',
+  		template: 'Are you sure you want to close the current plan ?'
+  	});
+
+  	confirmPopup.then(function(res) {
+  		if(res) {
+  			PlanService.closePlan($scope.plan.id);
+  		}
+  	});
   };
 
 }]);

@@ -168,6 +168,10 @@ function HiggsProvider() {
           return $q.when(DummyData.plan);
         };
 
+        Higgs.prototype.closePlan = function() {
+          // to implement
+        };
+
         return Higgs;
 
       })();

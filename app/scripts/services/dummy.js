@@ -410,6 +410,7 @@ var dstores =
 ];
 
 var plan = {
+  id: '234kkls',
   friends: [
     {
       id: '1',

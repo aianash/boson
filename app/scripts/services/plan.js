@@ -15,6 +15,10 @@ function($q, higgs){
 			return higgs.getPlan();
 		};
 
+		PlanService.prototype.closePlan = function(planId) {
+			higgs.closePlan(planId);
+		};
+
 		return PlanService;
 	})();
 
