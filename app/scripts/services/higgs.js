@@ -169,7 +169,7 @@ function HiggsProvider() {
         };
 
         Higgs.prototype.closePlan = function() {
-          // to implement
+          return $q.when({done: true});
         };
 
         return Higgs;

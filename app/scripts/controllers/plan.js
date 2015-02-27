@@ -16,6 +16,9 @@ function($scope, $ionicPopup, PlanService) {
     showingStoreId = plan.destinations[0].stores[0].id;
   });
 
+  $scope.hasPlan = function() {
+  	return !!$scope.plan;
+  };
 
   $scope.isCollapsed = function(id) {
   	return (showingStoreId && showingStoreId === id);
@@ -33,7 +36,9 @@ function($scope, $ionicPopup, PlanService) {
 
   	confirmPopup.then(function(res) {
   		if(res) {
-  			PlanService.closePlan($scope.plan.id);
+  			PlanService.closePlan($scope.plan.id).then(function() {
+  				$scope.plan = void 0;
+  			});
   		}
   	});
   };
