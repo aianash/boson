@@ -283,6 +283,131 @@ nearbyFriends.push({
   avatar: 'http://imageshack.com/a/img673/4937/7yAKQh.jpg'
 });
 
+var dstores =
+[
+  {
+    id: '1',
+    name: 'Levis Showroom',
+    address: 'City Talk Plaza, Brigade Road',
+    offer: '50% off men\' jeans',
+    collections: [
+      {
+        id: 'i1',
+        title: 'Dorita Solid Zipper Dress',
+        brand: 'Levis',
+        detail: {
+          descr: 'Navy blue, woven, printed top, has a V neckline with rucked detail three quarter puff sleeves with button cuffs',
+          sizes: ['S', 'L', 'XL'],
+          fit: 'slim fit'
+        },
+        img: 'http://staticaky.yepme.com/newcampaign/3293/32932_YPXL_1.jpg'
+      },
+      {
+        id: 'i2',
+        title: 'Dorita Solid Zipper Dress',
+        brand: 'Levis',
+        detail: {
+          descr: 'Navy blue, woven, printed top, has a V neckline with rucked detail three quarter puff sleeves with button cuffs',
+          sizes: ['S', 'L', 'XL'],
+          fit: 'slim fit'
+        },
+        img: 'http://staticaky.yepme.com/newcampaign/3932/39327_YPZM_1.jpg'
+      },
+      {
+        id: 'i3',
+        title: 'Dorita Solid Zipper Dress',
+        brand: 'Levis',
+        detail: {
+          descr: 'Navy blue, woven, printed top, has a V neckline with rucked detail three quarter puff sleeves with button cuffs',
+          sizes: ['S', 'L', 'XL'],
+          fit: 'slim fit'
+        },
+        img: 'http://staticaky.yepme.com/newcampaign/3293/32932_YPXL_1.jpg'
+      },
+      {
+        id: 'i4',
+        title: 'Dorita Solid Zipper Dress',
+        brand: 'Levis',
+        detail: {
+          descr: 'Navy blue, woven, printed top, has a V neckline with rucked detail three quarter puff sleeves with button cuffs',
+          sizes: ['S', 'L', 'XL'],
+          fit: 'slim fit'
+        },
+        img: 'http://staticaky.yepme.com/newcampaign/3932/39327_YPZM_1.jpg'
+      }
+    ]
+  },
+  {
+    id: '2',
+    name: 'Flying Machine Showroom',
+    address: 'Shop No 11, Brigade Road',
+    collections: [
+      {
+        id: 'i5',
+        title: 'Dorita Solid Zipper Dress',
+        brand: 'Levis',
+        detail: {
+          descr: 'Navy blue, woven, printed top, has a V neckline with rucked detail three quarter puff sleeves with button cuffs',
+          sizes: ['S', 'L', 'XL'],
+          fit: 'slim fit'
+        },
+        img: 'http://staticaky.yepme.com/newcampaign/3932/39327_YPZM_1.jpg'
+      },
+      {
+        id: 'i6',
+        title: 'Dorita Solid Zipper Dress',
+        brand: 'Levis',
+        detail: {
+          descr: 'Navy blue, woven, printed top, has a V neckline with rucked detail three quarter puff sleeves with button cuffs',
+          sizes: ['S', 'L', 'XL'],
+          fit: 'slim fit'
+        },
+        img: 'http://staticaky.yepme.com/newcampaign/3293/32932_YPXL_1.jpg'
+      },
+    ]
+  },
+  {
+    id: '3',
+    name: 'Peter England',
+    address: 'Forum Mall, Kormangla',
+    offer: 'Buy 1 get 1 free',
+    collections: [
+      {
+        id: 'i7',
+        title: 'Dorita Solid Zipper Dress',
+        brand: 'Levis',
+        detail: {
+          descr: 'Navy blue, woven, printed top, has a V neckline with rucked detail three quarter puff sleeves with button cuffs',
+          sizes: ['S', 'L', 'XL'],
+          fit: 'slim fit'
+        },
+        img: 'http://staticaky.yepme.com/newcampaign/3293/32932_YPXL_1.jpg'
+      },
+      {
+        id: 'i8',
+        title: 'Dorita Solid Zipper Dress',
+        brand: 'Levis',
+        detail: {
+          descr: 'Navy blue, woven, printed top, has a V neckline with rucked detail three quarter puff sleeves with button cuffs',
+          sizes: ['S', 'L', 'XL'],
+          fit: 'slim fit'
+        },
+        img: 'http://staticaky.yepme.com/newcampaign/3293/32932_YPXL_1.jpg'
+      },
+      {
+        id: 'i9',
+        title: 'Dorita Solid Zipper Dress',
+        brand: 'Levis',
+        detail: {
+          descr: 'Navy blue, woven, printed top, has a V neckline with rucked detail three quarter puff sleeves with button cuffs',
+          sizes: ['S', 'L', 'XL'],
+          fit: 'slim fit'
+        },
+        img: 'http://staticaky.yepme.com/newcampaign/3932/39327_YPZM_1.jpg'
+      }
+    ]
+  }
+];
 
 var plan = {
   friends: [
@@ -315,71 +440,6 @@ plan.destinations.push({
   areaName: 'Kormangla',
   stores: dstores
 });
-
-var dstores =
-[
-  {
-    id: '1',
-    name: 'Levis Showroom',
-    address: 'City Talk Plaza, Brigade Road',
-    offer: '50% off men\' jeans',
-    collections: [
-      {
-        id: 'i1',
-        img: 'http://staticaky.yepme.com/newcampaign/3293/32932_YPXL_1.jpg'
-      },
-      {
-        id: 'i2',
-        img: 'http://staticaky.yepme.com/newcampaign/3932/39327_YPZM_1.jpg'
-      },
-      {
-        id: 'i3',
-        img: 'http://staticaky.yepme.com/newcampaign/3293/32932_YPXL_1.jpg'
-      },
-      {
-        id: 'i4',
-        img: 'http://staticaky.yepme.com/newcampaign/3932/39327_YPZM_1.jpg'
-      }
-    ]
-  },
-  {
-    id: '2',
-    name: 'Flying Machine Showroom',
-    address: 'Shop No 11, Brigade Road',
-    collections: [
-      {
-        id: 'i5',
-        img: 'http://staticaky.yepme.com/newcampaign/3932/39327_YPZM_1.jpg'
-      },
-      {
-        id: 'i6',
-        img: 'http://staticaky.yepme.com/newcampaign/3293/32932_YPXL_1.jpg'
-      },
-    ]
-  },
-  {
-    id: '3',
-    name: 'Peter England',
-    address: 'Forum Mall, Kormangla',
-    offer: 'Buy 1 get 1 free',
-    collections: [
-      {
-        id: 'i7',
-        img: 'http://staticaky.yepme.com/newcampaign/3293/32932_YPXL_1.jpg'
-      },
-      {
-        id: 'i8',
-        img: 'http://staticaky.yepme.com/newcampaign/3293/32932_YPXL_1.jpg'
-      },
-      {
-        id: 'i9',
-        img: 'http://staticaky.yepme.com/newcampaign/3932/39327_YPZM_1.jpg'
-      }
-    ]
-  }
-];
-
-
 
 
 _dummy.factory('DummyData',
