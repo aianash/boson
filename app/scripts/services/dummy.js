@@ -442,6 +442,17 @@ plan.destinations.push({
   stores: dstores
 });
 
+plan.destinations.push({
+  id: '3',
+  areaName: 'Indiranagar',
+  stores: dstores
+});
+
+plan.destinations.push({
+  id: '4',
+  areaName: 'Whitefield',
+  stores: dstores
+});
 
 _dummy.factory('DummyData',
 function(){

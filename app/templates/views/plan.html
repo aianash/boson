@@ -18,12 +18,14 @@
 	<div ng-if="hasPlan()">
 		<!-- <div class="fake-header"></div> -->
 		<div class="scroll-options">
-			<a class="scroll-up">
+			<a class="scroll-up"
+				 ng-click="prevDestination()">
 				<i class="icon ion-record"></i>
 				<i class="icon ion-chevron-up"></i>
 			</a>
 
-			<a class="scroll-down">
+			<a class="scroll-down"
+			   ng-click="nextDestination()">
 				<i class="icon ion-record"></i>
 				<i class="icon ion-chevron-down"></i>
 			</a>
@@ -32,7 +34,7 @@
 		<ion-content lazy-scroll>
 
 			<ion-list>
-				<ion-item ng-repeat="dest in plan.destinations" class="dest">
+				<ion-item id="dest{{dest.id}}" ng-repeat="dest in plan.destinations" class="dest">
 					<div class="area">
 						<i class="icon ion-ios-location"></i>
 						{{dest.areaName}}

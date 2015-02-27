@@ -6,14 +6,17 @@ var _plan = angular.module('controllers.plan',
 _plan.controller('PlanController',
   ['$scope',
    '$ionicPopup',
+   '$anchorScroll',
+   '$location',
    'PlanService',
-function($scope, $ionicPopup, PlanService) {
+function($scope, $ionicPopup, $anchorScroll, $location, PlanService) {
 
 	var showingStoreId;
 
   PlanService.getPlan().then(function(plan) {
     $scope.plan = plan;
-    showingStoreId = plan.destinations[0].stores[0].id;
+    currentDestIdx = 0;
+    showingStoreId = plan.destinations[currentDestIdx].stores[0].id;
   });
 
   $scope.hasPlan = function() {
@@ -26,6 +29,24 @@ function($scope, $ionicPopup, PlanService) {
 
   $scope.showStore = function(id) {
   	showingStoreId = id;
+  };
+
+  function moveToDestByIdx(idx) {
+    idx = Math.abs(idx) % $scope.plan.destinations.length;
+    var newHash = 'dest' + ($scope.plan.destinations[idx].id);
+
+    var target = document.getElementById(newHash);
+    target.scrollIntoView(true);
+  }
+
+  $scope.prevDestination = function() {
+    currentDestIdx -= 1;
+    moveToDestByIdx(currentDestIdx);
+  };
+
+  $scope.nextDestination = function() {
+    currentDestIdx += 1;
+    moveToDestByIdx(currentDestIdx);
   };
 
   $scope.askToMarkShoppingPlan = function($event){
