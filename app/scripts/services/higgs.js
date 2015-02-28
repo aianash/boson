@@ -164,6 +164,10 @@ function HiggsProvider() {
 
 
         /** == Plan APIs */
+        Higgs.prototype.getShoppingPlans = function() {
+          return $q.when(DummyData.shoppingplans);
+        };
+
         Higgs.prototype.getPlan = function() {
           return $q.when(DummyData.plan);
         };

@@ -454,9 +454,67 @@ plan.destinations.push({
   stores: dstores
 });
 
+
+var shoppingplans = {};
+
+shoppingplans['myPlans'] = [
+  {
+    id: Math.random().toString(36).substr(2),
+    title: 'Shopping for Holi',
+    dests: [
+      {
+        areaName: 'Brigade Road',
+        numShops: 4,
+      },
+      {
+        areaName: 'Kormangla',
+        numShops: 5
+      }
+    ],
+    date: 1288323623006,
+    friends: 4
+  }
+];
+
+shoppingplans['invitations'] = []
+
+var titles = [
+  "Shopping for tshirts",
+  "Shopping for Amik's shaadi",
+  "There is an ongoing sales"
+];
+
+var from = [
+  "Amik Singh",
+  "Vishal Gupta",
+  "Sajal Agarwal"
+];
+
+angular.forEach([0, 1, 2], function(i) {
+  shoppingplans.invitations.push({
+    id: Math.random().toString(36).substr(2),
+    title: titles[i],
+    from: from[i],
+    dests: [
+      {
+        areaName: 'Brigade Road',
+        numShops: 4,
+      },
+      {
+        areaName: 'Kormangla',
+        numShops: 5
+      }
+    ],
+    date: 1288323623006,
+    friends: 4
+  });
+});
+
+
 _dummy.factory('DummyData',
 function(){
   return {
+    shoppingplans: shoppingplans,
     nearbyFriends: nearbyFriends,
     storeLocations: storeLocations,
     listings: {

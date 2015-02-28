@@ -36,12 +36,77 @@
     color: #444;
 }
 
+
+
+.shopping-plans .item {
+    white-space: normal
+}
+
+.shopping-plans .date {
+    font-size: 12px;
+    font-style: italic;
+    margin-top: 8px;
+    // text-align: right;
+    // position: absolute;
+    // top: 10px;
+}
+
+.shopping-plans .plan-detail,
+.shopping-plans .plan-detail .plan-icon,
+.shopping-plans .plan-detail .plan-descr {
+    padding: 0;
+    white-space: normal;
+}
+
+.shopping-plans .plan-detail .plan-icon {
+    font-size: 22px;
+    padding-top: 4px;
+}
+
+.shopping-plans .plan-detail .plan-descr .shops {
+    white-space: normal;
+}
+
+.shopping-plans .plan-detail .plan-descr .shops span {
+    margin-right: 10px;
+    font-size: 12px;
+    padding: 0 4px;
+    line-height: 1em;
+    border-left: 3px solid #ddd;
+}
+
+
+.shopping-plans .invitations .list {
+    // margin-top: 20px;
+}
+
+.shopping-plans .invitations .friend {
+    text-transform: uppercase;
+    font-size: 12px;
+    margin-bottom: 8px;
+    color: #577A9E;
+    font-weight: bold;
+}
+
+.shopping-plans .invitations .friend span {
+    font-style: italic;
+    color: #666;
+    font-size: 12px;
+    font-weight: normal;
+    text-transform: none;
+}
+
+.shopping-plans .header .title {
+    text-transform: uppercase;
+    font-size: 13px;
+}
+
 // .scroll-options
-.plan .no-plan {
+.shopping-plans .no-plan {
     margin-top: 40px;
 }
 
-.plan .no-plan span {
+.shopping-plans .no-plan span {
     display: block;
     width: 100%;
     text-align: center;
