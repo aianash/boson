@@ -1,12 +1,13 @@
 var boson =
   angular.module('boson',
     ['ionic',
+     'ngCordova',
 
      'controllers.listings',
      'controllers.friends',
      'controllers.map',
      'controllers.nearby',
-     'controllers.plan',
+     'controllers.shoppingplan',
      'controllers.query',
      'controllers.search',
 
@@ -80,16 +81,29 @@ function($ionicConfigProvider, $stateProvider, $urlRouterProvider) {
     }
   });
 
-  $stateProvider.state('boson.plan', {
-    url: '/plan',
+  $stateProvider.state('boson.shoppingplan', {
+    abstract: true,
+    url: '/shoppingplan',
     views: {
-      plan: {
-        controller: 'PlanController',
-        templateUrl: 'templates/views/plan.html'
+      shoppingplan: {
+        template: '<ion-nav-view></ion-nav-view>'
       }
     }
   });
 
+
+  $stateProvider.state('boson.shoppingplan.index', {
+    url: '',
+    templateUrl: 'templates/views/shopping-plan-index.html',
+    controller: 'ShoppingPlanController'
+  });
+
+
+  $stateProvider.state('boson.shoppingplan.detail', {
+    url: '/detail/:planId',
+    templateUrl: 'templates/views/shopping-plan-detail.html',
+    controller: 'ShoppingPlanDetailController'
+  });
 
   /** STATES NOT YET DEVELOPED */
   // $stateProvider.state('boson.nearby', {
