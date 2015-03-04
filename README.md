@@ -36,6 +36,15 @@ $ npm install
 $ bower install
 ```
 
+
+### Install platforms and plugins
+
+```bash
+$ ionic platform add android
+$ cordova -d plugin add /path/to/cloned/phonegap-facebook-plugin --variable APP_ID="800587516688651" --variable APP_NAME="ShopLane"
+$ cordova plugin add org.apache.cordova.splashscreen
+
+```
 ### Run in development mode
 
 ```bash

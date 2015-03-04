@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<widget id="com.ionicframework.boson691665" version="0.0.1" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+<widget id="com.goshoplane.boson" version="0.0.1" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
   <name>boson</name>
   <description>
-        An Ionic Framework and Cordova project.
+        ShopLane app for users to search and plan shopping.
     </description>
-  <author email="hi@ionicframework" href="http://ionicframework.com/">
-      Ionic Framework Team
+  <author email="kumar.ishan89@gmail.com" href="http://goshoplane.com/">
+      Kumar Ishan
     </author>
   <content src="index.html"/>
   <access origin="*"/>
@@ -13,6 +13,14 @@
   <preference name="UIWebViewBounce" value="false"/>
   <preference name="DisallowOverscroll" value="true"/>
   <preference name="BackupWebStorage" value="none"/>
+
+  <preference name="SplashScreen" value="screen" />
+
+  <!-- setting it to large value so that app has enough time before it stops -->
+  <preference name="SplashScreenDelay" value="50000" />
+
+  <preference name="AutoHideSplashScreen" value="false" /> <!-- only works in ios -->
+
   <!-- <preference name="android-minSdkVersion" value="16"/>
   <preference name="android-targetSdkVersion" value="21"/> -->
   <feature name="StatusBar">
