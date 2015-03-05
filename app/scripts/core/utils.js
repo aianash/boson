@@ -1,12 +1,17 @@
-var _utils = angular.module('utils', []);
+angular
+  .module('boson.core')
+  .factory('randomId64', randomId64)
+  .factory('storeTypeIcon', storeTypeIcon)
 
-_utils.factory('randomId64', function() {
+
+
+function randomId64() {
   return function() {
     return Math.random().toString(36).substr(2); // [FIX] less than 16 bit
   };
-});
+}
 
-_utils.factory('storeTypeIcon', function() {
+function storeTypeIcon() {
   return function(type) {
     switch(type) {
       case 'apparels':
@@ -15,4 +20,4 @@ _utils.factory('storeTypeIcon', function() {
         return 'ion-bag'
     };
   }
-});
+}

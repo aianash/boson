@@ -14,12 +14,12 @@
               show-reorder="false"
               can-swipe="false"
               class="listing"
-              has-sticky="true">
+              bon-has-sticky="true">
 
       <ion-item ng-repeat="item in items"
                 class="listing"
                 id="{{item.id}}"
-                is-sticky="{{isStoreInfo(item.type)}}">
+                bon-is-sticky="{{isStoreInfo(item.type)}}">
 
         <!-- Store View -->
         <div ng-if="isStoreInfo(item.type)">

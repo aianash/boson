@@ -1,0 +1,1 @@
+angular.module('boson.shoppingplan', ['services.shoppingplan']);

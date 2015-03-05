@@ -1,17 +1,17 @@
-var _query =
-  angular.module('controllers.query',
-    ['services.query']
-  );
+angular
+  .module('boson.search')
+  .controller('QueryController', QueryController);
 
+QueryController.$inject = [
+  '$scope',
+  '$q',
+  '$timeout',
+  '$state',
+  'QueryModal',
+  'QueryService'
+];
 
-_query.controller('QueryController',
-  ['$scope',
-   '$q',
-   '$timeout',
-   '$state',
-   'QueryView',
-   'QueryService',
-function($scope, $q, $timeout, $state, QueryView, QueryService) {
+function QueryController($scope, $q, $timeout, $state, QueryModal, QueryService) {
 
   $scope.queryStr = '';
   $scope.query = {};
@@ -33,7 +33,7 @@ function($scope, $q, $timeout, $state, QueryView, QueryService) {
   // Create a new searchId and also
   // set this new id in $scope.query
   // with old searchId for the server to track
-  QueryView.opened(function() {
+  QueryModal.opened(function() {
     $scope.searchId = randomSearchId();
     $scope.query.oldSearchId = $scope.query.searchId;
     $scope.query.searchId = $scope.searchId;
@@ -70,7 +70,7 @@ function($scope, $q, $timeout, $state, QueryView, QueryService) {
   }
 
   $scope.close = function() {
-    QueryView.hide();
+    QueryModal.hide();
   }
 
-}]);
+}

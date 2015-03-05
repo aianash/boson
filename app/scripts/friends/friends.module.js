@@ -1,0 +1,1 @@
+angular.module('boson.friends', ['services.friends']);

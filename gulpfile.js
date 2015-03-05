@@ -6,6 +6,7 @@ var appName = 'boson';
 
 var gulp = require('gulp');
 var plugins = require('gulp-load-plugins')();
+var jswrap = require('gulp-js-wrapper');
 var del = require('del');
 var beep = require('beepbeep');
 var express = require('express');
@@ -98,20 +99,25 @@ gulp.task('scripts', function() {
   // prepare angular template cache from html templates
   // (remember to change appName var to desired module name)
   var templateStream = gulp
-    .src('**/*.html', { cwd: 'app/templates'})
-    .pipe(plugins.angularTemplatecache('templates.js', {
-      root: 'templates/',
+    .src('**/*.html', { cwd: 'app/scripts'})
+    .pipe(plugins.angularTemplatecache('app-templates.js', {
       module: appName,
       htmlmin: build && minifyConfig
     }));
 
   var scriptStream = gulp
-    .src(['templates.js', 'app.js', '**/*.js'], { cwd: 'app/scripts' })
+    .src(['templates.js', 'app.module.js', '**/*module*.js', '**/*.js'], { cwd: 'app/scripts' })
 
     .pipe(plugins.if(!build, plugins.changed(dest)));
 
+  var jswrapOpts = {
+    opener: ';(function({params}){ "use strict"; ',
+    safeUndef: true
+  };
+
   return streamqueue({ objectMode: true }, scriptStream, templateStream)
     .pipe(plugins.if(build, plugins.ngAnnotate()))
+    .pipe(jswrap(jswrapOpts))
     .pipe(plugins.if(build, plugins.concat('app.js')))
     .pipe(plugins.if(build, plugins.uglify()))
     .pipe(plugins.if(build, plugins.rev()))
@@ -214,7 +220,7 @@ gulp.task('index', function() {
   // in development mode, it's better to add each file seperately.
   // it makes debugging easier.
   var _getAllScriptSources = function() {
-    var scriptStream = gulp.src(['scripts/app.js', 'scripts/**/*.js'], { cwd: targetDir });
+    var scriptStream = gulp.src(['scripts/app.js', 'scripts/**/*module*.js', 'scripts/**/*.js'], { cwd: targetDir });
     return streamqueue({ objectMode: true }, scriptStream);
   };
 

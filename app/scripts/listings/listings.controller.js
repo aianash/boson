@@ -1,25 +1,36 @@
-var _listings =
-  angular.module('controllers.listings',
-    ['services.listings',
-     'services.query',
-     'utils'
-    ]
-  );
+'use strict'
+
+angular
+  .module('boson.listings')
+  .controller('ListingsController', ListingsController);
 
 
+ListingsController.$inject = [
+  '$scope',
+  '$cordovaSplashscreen',
+  '$cordovaFacebook',
+  '$ionicSideMenuDelegate',
+  'storeTypeIcon',
+  'QueryModal',
+  'ListingsService'
+];
 
-_listings.controller('ListingsController',
-  ['$scope',
-   '$cordovaFacebook',
-   '$ionicSideMenuDelegate',
-   'storeTypeIcon',
-   'QueryView',
-   'ListingsService',
-function($scope, $cordovaFacebook, $ionicSideMenuDelegate, storeTypeIcon, QueryView, ListingsService) {
+function ListingsController(
+  $scope,
+  $cordovaSplashscreen,
+  $cordovaFacebook,
+  $ionicSideMenuDelegate,
+  storeTypeIcon,
+  QueryModal,
+  ListingsService) {
 
   $scope.user = {
     img: 'http://imageshack.com/a/img661/3717/dMwcZr.jpg'
   };
+
+  setTimeout(function() {
+    $cordovaSplashscreen.hide();
+  }, 5000);
 
   setTimeout(function(){
     $ionicSideMenuDelegate.$getByHandle('user').canDragContent(false);
@@ -61,7 +72,7 @@ function($scope, $cordovaFacebook, $ionicSideMenuDelegate, storeTypeIcon, QueryV
     else selectStore(storeId);
   }
 
-  $scope.openSearch = QueryView.show;
+  $scope.openSearch = QueryModal.show;
 
   $scope.offerIcon = function(type) {
     return storeTypeIcon(type);
@@ -113,5 +124,4 @@ function($scope, $cordovaFacebook, $ionicSideMenuDelegate, storeTypeIcon, QueryV
         console.debug(err);
       });
   }
-
-}]);
+}

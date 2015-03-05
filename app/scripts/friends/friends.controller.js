@@ -1,10 +1,14 @@
-var _friends = angular.module('controllers.friends',
-  ['services.friends']);
+'use strict'
 
-_friends.controller('FriendsController',
-  ['$scope',
-   'FriendsService',
-function($scope, FriendsService) {
+angular
+  .module('boson.friends')
+  .controller('FriendsController', FriendsController);
+
+
+
+FriendsController.$inject = ['$scope', 'FriendsService'];
+
+function FriendsController($scope, FriendsService) {
 
   $scope.friends = [];
   $scope.selectedFriends = {};
@@ -32,4 +36,4 @@ function($scope, FriendsService) {
     else addInvitation(userId);
   };
 
-}]);
+}

@@ -219,13 +219,13 @@ var expandedQuery =
 
 /** Map data */
 
-storeLocations = [
+var storeLocations = [
   [-34.397, 150.644, 0.9]
 ];
 
 
 /** Friends data */
-nearbyFriends = [];
+var nearbyFriends = [];
 
 nearbyFriends.push({
   name: 'Rahul Jain',

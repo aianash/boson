@@ -1,6 +1,5 @@
 var _higgs = angular.module('services.higgs',
-  ['utils',
-   'services.dummy']);
+  ['services.dummy']);
 
 
 

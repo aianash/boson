@@ -6,33 +6,33 @@ _plan.factory('ShoppingPlanService',
    'higgs',
 function($q, higgs){
 
-	var _ShoppingPlanService;
+  var _ShoppingPlanService;
 
-	_ShoppingPlanService = (function(){
-		function ShoppingPlanService(){ /** constructor */ }
+  _ShoppingPlanService = (function(){
+    function ShoppingPlanService(){ /** constructor */ }
 
-		ShoppingPlanService.prototype.getPlan = function(planId) {
-			return higgs.getPlan(planId);
-		};
+    ShoppingPlanService.prototype.getPlan = function(planId) {
+      return higgs.getPlan(planId);
+    };
 
-		ShoppingPlanService.prototype.closePlan = function(planId) {
-			return higgs.closePlan(planId);
-		};
+    ShoppingPlanService.prototype.closePlan = function(planId) {
+      return higgs.closePlan(planId);
+    };
 
-		ShoppingPlanService.prototype.getPlans = function() {
-			return higgs.getShoppingPlans();
-		};
+    ShoppingPlanService.prototype.getPlans = function() {
+      return higgs.getShoppingPlans();
+    };
 
-		ShoppingPlanService.prototype.changePlanDate = function(planId, timestamp) {
-			// To implement
-		};
+    ShoppingPlanService.prototype.changePlanDate = function(planId, timestamp) {
+      // To implement
+    };
 
-		ShoppingPlanService.prototype.changePlanTitle = function(planId, title) {
-			// To implement
-		};
+    ShoppingPlanService.prototype.changePlanTitle = function(planId, title) {
+      // To implement
+    };
 
-		return ShoppingPlanService;
-	})();
+    return ShoppingPlanService;
+  })();
 
-	return new _ShoppingPlanService();
+  return new _ShoppingPlanService();
 }]);

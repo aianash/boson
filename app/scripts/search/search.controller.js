@@ -1,33 +1,33 @@
-var _search =
-  angular.module('controllers.search',
-    ['services.search',
-     'services.query',
-     'utils']
-  );
+angular
+  .module('boson.search')
+  .controller('SearchController', SearchController);
 
-_search.controller('SearchController',
-  ['$scope',
-   '$compile',
-   '$sce',
-   '$state',
-   '$stateParams',
-   '$ionicLoading',
-   '$timeout',
-   '$ionicModal',
-   'storeTypeIcon',
-   'QueryView',
-   'SearchService',
-function($scope,
-         $compile,
-         $sce,
-         $state,
-         $stateParams,
-         $ionicLoading,
-         $timeout,
-         $ionicModal,
-         storeTypeIcon,
-         QueryView,
-         SearchService) {
+SearchController.$inject = [
+  '$scope',
+  '$compile',
+  '$sce',
+  '$state',
+  '$stateParams',
+  '$ionicLoading',
+  '$timeout',
+  '$ionicModal',
+  'storeTypeIcon',
+  'QueryModal',
+  'SearchService'
+];
+
+function SearchController(
+  $scope,
+  $compile,
+  $sce,
+  $state,
+  $stateParams,
+  $ionicLoading,
+  $timeout,
+  $ionicModal,
+  storeTypeIcon,
+  QueryModal,
+  SearchService) {
 
   $scope.searchId = $stateParams.searchId;
   $scope.items = [];
@@ -39,7 +39,7 @@ function($scope,
   };
 
   // Fetch results for the view
-  QueryView.hide();
+  QueryModal.hide();
   $ionicLoading.show({template: 'Fetching results...'});
 
   SearchService.search($scope.searchId).then(function(items) {
@@ -127,7 +127,7 @@ function($scope,
     return type == 'resultEntry';
   };
 
-  $scope.openSearch = QueryView.show;
+  $scope.openSearch = QueryModal.show;
   $scope.storeIcon = storeTypeIcon;
 
-}]);
+}
