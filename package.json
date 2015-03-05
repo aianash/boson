@@ -38,7 +38,11 @@
     "streamqueue": "^0.1.1",
     "yargs": "^1.3.3"
   },
-  "scripts" : {
+  "scripts": {
     "gulp": "./node_modules/.bin/gulp"
-  }
+  },
+  "cordovaPlugins": [
+    "/home/kumarishan/Projects/ShopLane/phonegap-facebook-plugin",
+    "org.apache.cordova.splashscreen"
+  ]
 }
