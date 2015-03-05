@@ -10,10 +10,23 @@ var _listings =
 
 _listings.controller('ListingsController',
   ['$scope',
+   '$cordovaFacebook',
+   '$ionicSideMenuDelegate',
    'storeTypeIcon',
    'QueryView',
    'ListingsService',
-function($scope, storeTypeIcon, QueryView, ListingsService) {
+function($scope, $cordovaFacebook, $ionicSideMenuDelegate, storeTypeIcon, QueryView, ListingsService) {
+
+  $scope.user = {
+    img: 'http://imageshack.com/a/img661/3717/dMwcZr.jpg'
+  };
+
+  setTimeout(function(){
+    $ionicSideMenuDelegate.$getByHandle('user').canDragContent(false);
+  }, 500);
+
+  $scope.toggleSideMenu = toggleSideMenu
+  $scope.loginFacebook  = loginFacebook
 
   $scope.offers = [];
 
@@ -65,6 +78,40 @@ function($scope, storeTypeIcon, QueryView, ListingsService) {
       $scope.offers = $scope.offers.concat(offers);
       $scope.$broadcast('scroll.infiniteScrollComplete');
     });
+  }
+
+
+  ///////////////////////////////////////////////
+
+  function toggleSideMenu() {
+    $ionicSideMenuDelegate.$getByHandle('user').toggleRight();
+  }
+
+  function loginFacebook() {
+    $cordovaFacebook.login(['public_profile', 'email', 'user_friends'])
+      .then(function(success) {
+        console.log(success.authResponse.userID);
+        console.log(success.authResponse.accessToken);
+        console.debug(JSON.stringify(success));
+
+        $cordovaFacebook.api('me', ["public_profile"])
+          .then(function(res){
+              console.debug(JSON.stringify(res));
+            }, function(err) {
+              console.log(err);
+          }).then(function() {
+            return $cordovaFacebook.api('me/picture?redirect=false&type=normal', ['public_profile'])
+          }).then(function(success) {
+              $scope.user.img = success.data.url;
+              console.log(JSON.stringify(success));
+            }, function(err) {
+              console.log(err);
+          });
+
+
+      }, function(err) {
+        console.debug(err);
+      });
   }
 
 }]);
