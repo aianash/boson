@@ -62,7 +62,6 @@ function HiggsProvider() {
       Higgs.prototype.login               = login;
 
       Higgs.prototype.getHomeListings     = getHomeListings;
-      Higgs.prototype.createNewShopPlan   = createNewShopPlan;
 
       Higgs.prototype.getFriends          = getFriends;
 
