@@ -132,23 +132,23 @@ function _ShopPlan($q) {
 
 
   function init(data) {
-    this._Keep.merge().thiz(data.stores).in('stores');
+    this._Keep.merge().thiz(data.stores).to('stores');
   }
 
   function addStore(storeId) {
-    this._Keep.addIfNot().thiz({}).in('stores', storeId);
+    this._Keep.add({ifNot: true}).thiz({storeId: {}}).to('stores');
   }
 
   function removeStore(storeId) {
-    this._Keep.remove('stores', storeId).all();
+    this._Keep.remove().thiz(storeId).from('stores');
   }
 
   function addItem(itemId, storeId) {
-    this._Keep.append().thiz(itemId).in('stores', storeId, 'collections');
+    this._Keep.push().thiz(itemId).to('stores', storeId, 'collections');
   }
 
   function removeItem(itemId, storeId) {
-    this._Keep.remove(itemId).from('stores', storeId, 'collections');
+    this._Keep.remove().thiz(itemId).from('stores', storeId, 'collections');
   }
 
 
@@ -164,7 +164,7 @@ function _ShopPlan($q) {
     // If there has been recent addition in stores
     // then use api reqest
     // else fetch from _plan.locations
-    if(this._Keep.hasNewIn('stores'))
+    if(this._Keep.has().any('stores'))
       return this._Piggyback.GET(this._apis.plan.map.locations)
                  .then(function(resp){
                     if(resp.status ===  200 && (typeof resp.data === 'array')) {
@@ -182,7 +182,7 @@ function _ShopPlan($q) {
    * @param  {Object} dest Destination object containing LatLng and order
    */
   function selectDestinationLoc(dest) {
-    this._Keep.append().thiz(dest).in('destinationLocs');
+    this._Keep.push().thiz(dest).to('destinationLocs');
   }
 
 
@@ -192,7 +192,7 @@ function _ShopPlan($q) {
    * @param  {Object} dest  Destincation object with LatLng and order
    */
   function removeDestinationLoc(dest) {
-    this._Keep.remove(dest).from('destinationLocs');
+    this._Keep.remove().thiz(dest).from('destinationLocs');
   }
 
 
@@ -205,18 +205,28 @@ function _ShopPlan($q) {
   function getDestinationLocs() {
     var destinations = [];
     destinations.concat(this._plan.destinationLocs);
-    this._Keep.update(destinations, 'destinationLocs');
-    return destinations;
+    this._Keep.update().thiz(destinations).from('destinationLocs');
+    return _.uniq(destinations);
   }
 
 
   /**
    * Add user to invite list
    *
-   * @param {String} userId User Id
+   * @param {string} userId User Id
    */
   function addUserForInvite(userId) {
-    this._Keep.append().thiz(userId).in('invites');
+    this._Keep.push().thiz(userId).to('invites');
+  }
+
+
+  /**
+   * Remove user from invite list;
+   *
+   * @param  {string} userId User's id
+   */
+  function removeUserFromInvites(userId) {
+    this._Keep.remove().thiz(userId).from('invites');
   }
 
 
@@ -226,7 +236,7 @@ function _ShopPlan($q) {
    */
   function getScheduledInvites() {
     var invites = [];
-    invites.concat(this._Keep.get('invited'));
+    this._Keep.update().thiz(invites).from('invites');
     invites.concat(this._plan.invites);
     return invites;
   }
@@ -239,7 +249,7 @@ function _ShopPlan($q) {
    */
   function getDetail() {
     var self = this;
-    if(this._Keep.hasNew() || this._plan.higgsVersion !== this._plan.version) {
+    if(this._Keep.has().any() || this._plan.higgsVersion !== this._plan.version) {
       return this._Piggyback.GET(this._apis.plan.detail)
                  .then(function(resp) {
                     if(resp.status === 200) {
@@ -319,9 +329,9 @@ function _ShopPlan($q) {
       this._plan.higgsVersion = resp.data.plan_version;
 
       // Update transation data to this._plan data
-      this._Keep.txn(keepTxnId).update(this._plan.stores, 'stores');
-      this._Keep.txn(keepTxnId).update(this._plan.invites, 'invites');
-      this._Keep.txn(keepTxnId).update(this._plan.destinationLocs, 'destinationLocs');
+      this._Keep.txn(keepTxnId).update().thiz(this._plan.stores).from('stores');
+      this._Keep.txn(keepTxnId).update().thiz(this._plan.invites).from('invites');
+      this._Keep.txn(keepTxnId).update().thiz(this._plan.destinationLocs).from('destinationLocs');
       this._Keep.txn(keepTxnId).done(); // mark transaction as done
     }
   }
