@@ -12,7 +12,8 @@ ListingsController.$inject = [
   '$ionicSideMenuDelegate',
   'storeTypeIcon',
   'QueryModal',
-  'ListingsService'
+  'ListingsService',
+  'Higgs'
 ];
 
 function ListingsController(
@@ -22,7 +23,7 @@ function ListingsController(
   $ionicSideMenuDelegate,
   storeTypeIcon,
   QueryModal,
-  ListingsService) {
+  ListingsService, Higgs) {
 
   $scope.user = {
     img: 'http://imageshack.com/a/img661/3717/dMwcZr.jpg'

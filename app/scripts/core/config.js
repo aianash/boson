@@ -1,23 +1,33 @@
-'use strict'
-
 angular
   .module('boson.core')
-  .value('config', config())
-  .config(configure)
+  .provider('config', ConfigProvider)
+  .config(configure);
 
 
-function config() {
-  return {
-    appErrorPrefix: '[Boson App Error]',
-    appTitle: 'ShopLane',
-    version: '0.1.0'
-  };
+function ConfigProvider() {
+
+  this.$get = [config]
+
+  function config() {
+    return {
+      appErrorPrefix: '[Boson App Error]',
+      appTitle: 'ShopLane',
+      version: '0.1.0'
+    };
+  }
 }
 
 
-configure.$inject = ['$ionicConfigProvider', '$stateProvider', '$urlRouterProvider'];
+configure.$inject = ['$ionicConfigProvider', '$stateProvider', '$urlRouterProvider', 'HiggsProvider'];
 
-function configure($ionicConfigProvider, $stateProvider, $urlRouterProvider) {
+function configure($ionicConfigProvider, $stateProvider, $urlRouterProvider, HiggsProvider) {
+
+  /** Configure higgs service provider */
+  HiggsProvider.setHiggsPort(8080);
+  HiggsProvider.setHiggsHost('http://localhost');
+  HiggsProvider.setApiVersion('0.1.0');
+  HiggsProvider.setAppSecret('pomodorotechnique');
+
 
   $ionicConfigProvider.tabs.position('bottom');
 

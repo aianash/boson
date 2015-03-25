@@ -106,7 +106,7 @@ gulp.task('scripts', function() {
     }));
 
   var scriptStream = gulp
-    .src(['templates.js', 'app.module.js', '**/*module*.js', '**/*.js'], { cwd: 'app/scripts' })
+    .src(['templates.js', 'app.module.js', '**/*module*.js', 'core/config.js', '**/*.js'], { cwd: 'app/scripts' })
 
     .pipe(plugins.if(!build, plugins.changed(dest)));
 
