@@ -371,6 +371,25 @@ function _Piggyback($http, $q) {
   /**
    * Add piggyback to the request data (body)
    *
+   * Piggyback request structure is like this
+   *
+   * {
+   *   _piggy_reqs: {
+   *     piggy_txn_id: <transaction id>,
+   *     piggybacks: [
+   *       {
+   *         _piggy_id: this._newPiggyId(),
+   *         _method: method,
+   *         _api: api,
+   *         params: params,
+   *         data: data
+   *       },
+   *       ...
+   *     ]
+   *   }
+   * }
+   *
+   *
    * @param {Object} data Reference to request config data field
    */
   function _addPiggyback(data) {
@@ -398,7 +417,7 @@ function _Piggyback($http, $q) {
 
     this._awaitingPiggybacks[txnId] = awaits;
 
-    return { piggy_txn_id: txnId, piggbacks: this._piggybacks };
+    return { piggy_txn_id: txnId, piggybacks: this._piggybacks };
   }
 
 

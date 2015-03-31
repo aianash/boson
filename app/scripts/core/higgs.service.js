@@ -278,7 +278,7 @@ function HiggsProvider() {
       function _getUserHomeListings() {
         return  this._cache.get('user-listings') ||
                 this._Piggyback
-                  .GET('home/listings', {type: user})
+                  .GET('feeds/user')
                   .then(function(resp) {
                     if(resp.status === 200) {
                       return resp.data;
@@ -295,7 +295,7 @@ function HiggsProvider() {
       function _getCommonHomeListings() {
         return  this._cache.get('common-listings') ||
                 this._Piggyback
-                  .GET('home/listings', {type: common})
+                  .GET('feeds/common')
                   .then(function(resp) {
                     if(resp.status === 200) {
                       return resp.data;
