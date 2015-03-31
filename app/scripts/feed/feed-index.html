@@ -1,17 +1,17 @@
-<ion-view title="InstaShopper" class="listings">
+<ion-view title="Shoplane" class="listings">
 
   <ion-nav-buttons side="right">
-    <button ng-click="toggleSideMenu()" class="button button-clear icon ion-ios-person-outline settings"></button>
+    <button class="button button-clear icon ion-ios-person-outline settings"></button>
   </ion-nav-buttons>
 
-
+<!-- 
     <ion-side-menus delegate-handle="user">
       <ion-side-menu-content>
         <ion-content scrollbar-y="false"
                      has-bouncing="true">
 
           <div class="row search-bar">
-            <a ng-click="openSearch()" class="row">
+            <a ng-click="vm.openSearch()" class="row">
               <div class="col search-icon">
                 <i class="icon ion-record"></i>
                 <i class="icon ion-ios-search-strong"></i>
@@ -27,8 +27,8 @@
                          auto-play="true"
                          slide-interval="3000">
 
-            <ion-slide ng-repeat="ad in ads">
-              <img ng-src="{{ad.img}}" />
+            <ion-slide ng-repeat="ad in vm.posterAds">
+              <img ng-src="{{ad.image}}" />
             </ion-slide>
           </ion-slide-box>
 
@@ -38,10 +38,10 @@
                     can-swipe="false"
                     class="offers">
 
-            <ion-item ng-repeat="offer in offers">
+            <ion-item ng-repeat="offer in vm.offers">
               <div class="row offer">
                 <div class="col icon-wrapper">
-                  <i class="icon" ng-class="offerIcon(offer.storeType)"></i>
+                  <i class="icon" ng-class="vm.offerIcon(offer.storeType)"></i>
                 </div>
                 <div class="col col-80">
                   <div class="row title">{{offer.brand}}</div>
@@ -53,14 +53,13 @@
                     </div>
                   </div>
                   <button class="button button-clear icon ion-ios-checkmark"
-                          ng-click="toggleStore(offer.storeId)"
+                          ng-click="vm.toggleStore(offer.storeId)"
                           ng-class="{'checked': isStoreSelected(offer.storeId)}"></button>
                 </div>
               </div>
             </ion-item>
           </ion-list>
 
-         <!-- <ion-refresher on-refresh="onRefresh()"></ion-refresher> -->
           <ion-infinite-scroll ng-if="moreContent()"
                                on-infinite="loadMoreData()"
                                distance="-1%"></ion-infinite-scroll>
@@ -78,7 +77,7 @@
           <button ng-click="loginFacebook()"
                   class="button button-full icon-left ion-social-facebook button-positive">Login with Facebook</button>
         </ion-footer-bar>
-      </ion-side-menu>
+      </ion-side-menu> -->
     </ion-side-menus>
 
 </ion-view>

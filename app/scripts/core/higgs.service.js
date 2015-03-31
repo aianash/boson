@@ -54,14 +54,22 @@ function HiggsProvider() {
         // 2. PENDING_AUTHORIZATION - user logged in to facebook, yet
         //                           to receive higgs accessToken
         // 3. AUTHORIZED            - we now have higgs accessToken too
-        this._higgsLoginStatus = 'NOT_AUTHORIZED'
+        this._higgsLoginStatus = 'NOT_AUTHORIZED';
+
+
+        // User info object for un-identified (not logged in) user
+        this._johnDoe = {
+          img: 'http://imageshack.com/a/img661/3717/dMwcZr.jpg'
+        };
+
       }
 
       // Public
       Higgs.prototype.isLoggedIn          = isLoggedIn;
       Higgs.prototype.login               = login;
+      Higgs.prototype.getUserInfo         = getUserInfo;
 
-      Higgs.prototype.getHomeListings     = getHomeListings;
+      Higgs.prototype.getFeed             = getFeed;
 
       Higgs.prototype.getFriends          = getFriends;
 
@@ -69,11 +77,11 @@ function HiggsProvider() {
       Higgs.prototype.getShoppingPlan     = getShoppingPlan;
 
       // Private
-      Higgs.prototype._login = _login;
-      Higgs.prototype._getUser = _getUser;
-      Higgs.prototype._getCommonHomeListings = _getCommonHomeListings;
-      Higgs.prototype._getUserHomeListings = _getUserHomeListings;
-      Higgs.prototype._addToCache = _addToCache;
+      Higgs.prototype._login              = _login;
+      Higgs.prototype._getUser            = _getUser;
+      Higgs.prototype._getCommonFeed      = _getCommonFeed;
+      Higgs.prototype._getUserFeed        = _getUserFeed;
+      Higgs.prototype._addToCache         = _addToCache;
 
       return Higgs;
 
@@ -121,25 +129,49 @@ function HiggsProvider() {
         return FB.login()
                  .then(this._login)
                  .then(this._getUser);
-      };
+      }
+
 
 
       /**
-       * Get listings for home page.
-       * If user is logged in then get user specific listing
-       * or get common lisitng
+       * Get User info
        *
-       * [NOTE] to add location data if available
+       * @return {Promise[Oject]} User info object
        */
-      function getHomeListings() {
+      function getUserInfo() {
         var self = this;
 
         return this.isLoggedIn()
-                   .then(getListings);
+                  .then(_getUserInfo);
 
-        function getListings(loggedIn) {
-          if(loggedIn) return self._getUserHomeListings();
-          else return self._getCommonHomeListings();
+        function _getUserInfo(loggedId) {
+          if(!loggedIn) return self._johnDoe;
+          else self._johnDoe // [TO IMPLEMENT] GET /user/info at higgs
+        }
+
+      }
+
+
+
+      /**
+       * Get feed.
+       *
+       * If user is logged in then get user specific feed
+       * otherwise get common feed
+       *
+       * [NOTE] to add location data if available
+       *
+       * @param {Object} filter Sample filter {city: 'bangalore', page: 0}
+       */
+      function getFeed(filter) {
+        var self = this;
+
+        return this.isLoggedIn()
+                   .then(_getFeed);
+
+        function _getFeed(loggedIn) {
+          if(loggedIn) return self._getUserFeed(filter);
+          else return self._getCommonFeed(filter);
         }
       }
 
@@ -271,36 +303,38 @@ function HiggsProvider() {
 
 
       /**
-       * Get user's home listing
+       * Get user's personalized feed
        *
-       * @return {Promise}    Promise that resolves into listings
+       * @param {Object} filter Feed filter {city: 'bangalore', page: 0}
+       * @return {Promise}    Promise that resolves into feed
        */
-      function _getUserHomeListings() {
-        return  this._cache.get('user-listings') ||
+      function _getUserFeed(filter) {
+        return  this._cache.get('user-feed') ||
                 this._Piggyback
-                  .GET('feeds/user')
+                  .GET('feed/user', null, filter)
                   .then(function(resp) {
                     if(resp.status === 200) {
                       return resp.data;
                     } else throw new Error(resp.statusText);
-                  }).then(this._addToCache('user-listings'));
+                  }).then(this._addToCache('user-feed'));
       }
 
 
       /**
-       * Get common home listing
+       * Get common feed
        *
-       * @return {Promise}    Promise that resolves into listings
+       * @param {Object} filter Feed filter {city: 'bangalore', page: 0}
+       * @return {Promise}    Promise that resolves into feed
        */
-      function _getCommonHomeListings() {
-        return  this._cache.get('common-listings') ||
+      function _getCommonFeed(filter) {
+        return  this._cache.get('common-feed') ||
                 this._Piggyback
-                  .GET('feeds/common')
+                  .GET('feed/common', null, filter)
                   .then(function(resp) {
                     if(resp.status === 200) {
                       return resp.data;
                     } else throw new Error(resp.statusText);
-                  }).then(this._addToCache('common-listings'));
+                  }).then(this._addToCache('common-feed'));
       }
 
 
@@ -327,7 +361,7 @@ function HiggsProvider() {
       port: port
     };
 
-    new _Higgs(config);
+    return new _Higgs(config);
   }
 
 }

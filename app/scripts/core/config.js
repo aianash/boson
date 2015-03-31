@@ -31,7 +31,7 @@ function configure($ionicConfigProvider, $stateProvider, $urlRouterProvider, Hig
 
   $ionicConfigProvider.tabs.position('bottom');
 
-  $urlRouterProvider.otherwise('/listings');
+  $urlRouterProvider.otherwise('/feed');
 
   $stateProvider.state('boson', {
     abstract: true,
@@ -42,28 +42,34 @@ function configure($ionicConfigProvider, $stateProvider, $urlRouterProvider, Hig
 
   /** Listing Tab states and substates */
 
-  $stateProvider.state('boson.listing', {
+  $stateProvider.state('boson.feed', {
     abstract: true,
-    url: '/listings',
+    url: '/feed',
     views: {
-      listings: {
+      feed: {
         template: '<ion-nav-view></ion-nav-view>'
       }
     }
   });
 
-  $stateProvider.state('boson.listing.index', {
+  $stateProvider.state('boson.feed.index', {
     url: '',
-    templateUrl: 'listings/listings-index.html',
-    controller: 'ListingsController'
+    templateUrl: 'feed/feed-index.html',
+    controller: 'FeedController',
+    controllerAs: 'vm',
+    resolve: {
+      initFeed: initializeFeed
+    }
   });
 
 
-  $stateProvider.state('boson.listing.search', {
-    url: '/search/:searchId',
-    templateUrl: 'search/search-index.html',
-    controller: 'SearchController'
-  });
+
+  // [TO DO] moving to separate
+  // $stateProvider.state('boson.listing.search', {
+  //   url: '/search/:searchId',
+  //   templateUrl: 'search/search-index.html',
+  //   controller: 'SearchController'
+  // });
 
 
 
@@ -110,4 +116,20 @@ function configure($ionicConfigProvider, $stateProvider, $urlRouterProvider, Hig
     templateUrl: 'shoppingplan/shopping-plan-detail.html',
     controller: 'ShoppingPlanDetailController'
   });
+}
+
+
+
+
+initializeFeed.$inject = ['Feed']
+
+/**
+ * Initializes the Feed by calling Feed.get
+ *
+ * [IMP] should return the Feed service
+ */
+function initializeFeed(Feed) {
+  // [NOTE] To detect using location service
+  Feed.get({city: 'bangalore', page: 0});
+  return Feed;
 }
