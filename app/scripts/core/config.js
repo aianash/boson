@@ -40,16 +40,14 @@ function configure($ionicConfigProvider, $stateProvider, $urlRouterProvider, Hig
 
 
 
-  /** Listing Tab states and substates */
+  /**
+   * Feed Views
+   */
 
   $stateProvider.state('boson.feed', {
     abstract: true,
     url: '/feed',
-    views: {
-      feed: {
-        template: '<ion-nav-view></ion-nav-view>'
-      }
-    }
+    template: '<ion-nav-view></ion-nav-view>'
   });
 
   $stateProvider.state('boson.feed.index', {
@@ -64,58 +62,60 @@ function configure($ionicConfigProvider, $stateProvider, $urlRouterProvider, Hig
 
 
 
-  // [TO DO] moving to separate
-  // $stateProvider.state('boson.listing.search', {
-  //   url: '/search/:searchId',
-  //   templateUrl: 'search/search-index.html',
-  //   controller: 'SearchController'
-  // });
-
-
-
-  $stateProvider.state('boson.map', {
-    url: '/map',
-    views: {
-      map: {
-        controller: 'MapController',
-        templateUrl: 'map/map.html'
-      }
-    }
-  });
-
-  $stateProvider.state('boson.friends', {
-    url: '/friends',
-    views: {
-      friends: {
-        controller: 'FriendsController',
-        templateUrl: 'friends/friends.html'
-      }
-    }
-  });
-
-  $stateProvider.state('boson.shoppingplan', {
+  /**
+   * Searach Views
+   */
+  $stateProvider.state('boson.search', {
     abstract: true,
-    url: '/shoppingplan',
-    views: {
-      shoppingplan: {
-        template: '<ion-nav-view></ion-nav-view>'
-      }
-    }
+    url: '/search',
+    template: '<ion-nav-view></ion-nav-view>'
   });
 
-
-  $stateProvider.state('boson.shoppingplan.index', {
+  $stateProvider.state('boson.search.query', {
     url: '',
-    templateUrl: 'shoppingplan/shopping-plan-index.html',
-    controller: 'ShoppingPlanController'
+    templateUrl: 'search/query-index.html',
+    controller: 'QueryController',
+    controllerAs: 'vm'
   });
 
+  $stateProvider.state('boson.search.result', {
+    url: '/results',
+    templateUrl: 'search/search-result-index.html',
+    controller: 'SearchResultController',
+    controllerAs: 'vm'
+  })
 
-  $stateProvider.state('boson.shoppingplan.detail', {
+
+  /**
+   * ShopPlan Views
+   */
+  $stateProvider.state('boson.shopplan', {
+    abstract: true,
+    url: '/shopplan',
+    template: '<ion-nav-view></ion-nav-view>'
+  });
+
+  $stateProvider.state('boson.shopplan.index', {
+    url: '',
+    templateUrl: 'shopplan/shopplan-index.html',
+    controller: 'ShoppingPlanController',
+    controllerAs: 'vm'
+  });
+
+  $stateProvider.state('boson.shopplan.detail', {
     url: '/detail/:planId',
-    templateUrl: 'shoppingplan/shopping-plan-detail.html',
-    controller: 'ShoppingPlanDetailController'
+    templateUrl: 'shopplan/shopplan-detail.html',
+    controller: 'ShoppingPlanDetailController',
+    controllerAs: 'vm'
   });
+
+  $stateProvider.state('boson.shopplan.create', {
+    url: '',
+    templateUrl: 'shopplan/shopplan-create.html',
+    controller: 'ShopPlanCreateController',
+    controllerAs: 'vm'
+  });
+
 }
 
 

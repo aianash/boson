@@ -267,7 +267,7 @@ gulp.task('watchers', function() {
   gulp.watch('app/images/**', ['images']);
   gulp.watch('app/scripts/**/*.js', ['jsHint', 'scripts', 'index']);
   gulp.watch('./vendor.json', ['vendor']);
-  gulp.watch('app/templates/**/*.html', ['scripts', 'index']);
+  gulp.watch('app/**/*.html', ['scripts', 'index']);
   gulp.watch('app/index.html', ['index']);
   gulp.watch(targetDir + '/**')
     .on('change', plugins.livereload.changed)
