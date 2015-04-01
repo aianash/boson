@@ -1,0 +1,24 @@
+<ion-view class="query">
+
+  <form ng-submit="search()">
+    <label class="item item-input">
+      <i class="icon ion-search placeholder-icon"></i>
+      <input  type="search"
+              ng-model="vm.queryStr"
+              ng-change="vm.showFilters()"
+              name="queryStr"
+              placeholder="I am looking for ..." />
+    </label>
+
+    <bon-expanded-query></bon-expanded-query>
+  </form>
+
+  <ion-footer-bar>
+    <button class="button button-clear icon ion-ios-reload"
+            ng-click="vm.reset()"></button>
+
+    <button class="button search button-clear"
+            ng-click="vm.search()">Search</button>
+  </ion-footer-bar>
+
+</ion-view>

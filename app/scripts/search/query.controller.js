@@ -3,74 +3,53 @@ angular
   .controller('QueryController', QueryController);
 
 QueryController.$inject = [
+  'lodash',
   '$scope',
-  '$q',
-  '$timeout',
+  '$ionicLoading',
   '$state',
-  'QueryModal',
-  'QueryService'
+  'Searcher'
 ];
 
-function QueryController($scope, $q, $timeout, $state, QueryModal, QueryService) {
+function QueryController(_, $scope, $ionicLoading, $state, Searcher) {
 
-  $scope.queryStr = '';
-  $scope.query = {};
+  var vm = this;
 
-  // returns a random string containing number and alphabets
-  // of length 16
-  function randomSearchId() {
-    return Math.random().toString(36).substr(2).toUpperCase();
-  }
+  // queryStr contains the raw query user types
+  // and query in addition contains the chosen filters'
+  // values
+  vm.queryStr = '';
+  vm.query    = {};
+  vm.filters  = {}; // [TO DO]
+  query.sruid = _.now(); // using timestamp as 64 bit search unique id
+                         // searchId is always generated at the app
 
-  // Update searchId if query has a different searchId
-  // Different searchId is possible if server already has
-  // the searchId
-  $scope.$watch('query', function(nVal, oVal) {
-    $scope.searchId = nVal.searchId || randomSearchId()
-  });
+  // ViewModel methods
 
-  // Whenever Query modal is opened
-  // Create a new searchId and also
-  // set this new id in $scope.query
-  // with old searchId for the server to track
-  QueryModal.opened(function() {
-    $scope.searchId = randomSearchId();
-    $scope.query.oldSearchId = $scope.query.searchId;
-    $scope.query.searchId = $scope.searchId;
-  });
+  vm.search       = search;
+  vm.reset        = reset;
+  vm.showFilters  = showFilters;
 
-  $scope.search = function() {
-    // just need to pass the searchId, the server persist the whole query
-    // structure
-    var promise;
 
-    // if somehow the latest queryStr was not updated at
-    // the server.
-    if($scope.query.str != $scope.queryStr)
-      promise = QueryService.expand($scope.searchId, $scope.queryStr);
-    else
-      promise = $q.when({searchId: $scope.searchId});
+  // Updates the query to server
+  // and then go to result view
+  function search() {
+    $ionicLoading.show({template: 'Searching...'});
 
-    promise.then(function(data) {
-      $state.go('boson.listing.search', {searchId: data.searchId});
-    });
-  }
-
-  $scope.expand = function() {
-    QueryService
-      .expand($scope.searchId, $scope.queryStr)
-      .then(function(query) {
-        $scope.query = query;
+    Searcher.updateQuery(query)
+      .then(function(data) {
+        $state.go('boson.search.result', {searchId: vm.query.sruid});
       });
   }
 
-  $scope.reset = function() {
-    $scope.query = {};
-    $scope.queryStr = '';
+  function showFilters() {
+    // [TO DO] Implement a new version of filter
   }
 
-  $scope.close = function() {
-    QueryModal.hide();
+  function reset() {
+    var sruid = vm.query.sruid;
+    vm.query = {sruid: sruid};
+    vm.filters = {};
+    vm.queryStr = '';
   }
 
 }

@@ -63,7 +63,7 @@ function configure($ionicConfigProvider, $stateProvider, $urlRouterProvider, Hig
 
 
   /**
-   * Searach Views
+   * Search Views
    */
   $stateProvider.state('boson.search', {
     abstract: true,
@@ -79,10 +79,13 @@ function configure($ionicConfigProvider, $stateProvider, $urlRouterProvider, Hig
   });
 
   $stateProvider.state('boson.search.result', {
-    url: '/results',
+    url: '/results/:searchId',
     templateUrl: 'search/search-result-index.html',
     controller: 'SearchResultController',
-    controllerAs: 'vm'
+    controllerAs: 'vm',
+    resolve: {
+      initSearcher: initSearcher
+    }
   })
 
 
@@ -127,7 +130,7 @@ function configure($ionicConfigProvider, $stateProvider, $urlRouterProvider, Hig
 
 
 
-initializeFeed.$inject = ['Feed']
+initializeFeed.$inject = ['Feed'];
 
 function initializeFeed(Feed) {
   // [TO DO] To detect city using location service
@@ -137,7 +140,7 @@ function initializeFeed(Feed) {
 
 
 
-initShopPlan.$inject = ['ShopPlan']
+initShopPlan.$inject = ['ShopPlan'];
 
 function initShopPlan(ShopPlan) {
   return ShopPlan.all()
@@ -149,5 +152,13 @@ initShopPlanDetail.$inject = ['$stateParams', 'ShopPlan'];
 
 function initShopPlanDetail($stateParams, ShopPlan) {
   return ShopPlan.get($stateParams.planId)
-    .then(function() { return ShopPlan; })
+    .then(function() { return ShopPlan; });
+}
+
+
+initSearcher.$inject = ['Searcher'];
+
+function initSearcher($stateParams, Searcher) {
+  return Searcher.getResults($stateParams.searchId)
+    .then(function() { return Searcher; });
 }
