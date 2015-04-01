@@ -1,10 +1,10 @@
 angular
   .module('boson.core')
-  .service('ShopPlanFactory', _ShopPlanFactory);
+  .service('ShopPlanFactory', ShopPlanFactory);
 
-_ShopPlanFactory.$inject  = ['$q', 'KeepFactory'];
+ShopPlanFactory.$inject  = ['$q', 'KeepFactory'];
 
-function _ShopPlanFactory($q, KeepFactory) {
+function ShopPlanFactory($q, KeepFactory) {
 
   var ShopPlan = _ShopPlan($q);
 

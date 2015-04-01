@@ -12,7 +12,7 @@ function HiggsProvider() {
   this.setHiggsHost  = setHiggsHost;
   this.setHiggsPort  = setHiggsPort;
 
-  this.$get = ['$q', 'cache', 'Piggyback', 'ShopPlansFactory', 'BucketFactory', 'FB', HiggsFactory];
+  this.$get = ['$q', 'cache', 'PiggybackFactory', 'ShopPlansFactory', 'BucketFactory', 'FB', HiggsFactory];
 
 
   //////////////////////////////////////////////
@@ -23,7 +23,7 @@ function HiggsProvider() {
   function setHiggsPort(p) { port = p }
 
 
-  function HiggsFactory($q, cache, Piggyback, ShopPlansFactory, BucketFactory, FB) {
+  function HiggsFactory($q, cache, PiggybackFactory, ShopPlansFactory, BucketFactory, FB) {
     var _Higgs;
 
     _Higgs = (function() {
@@ -37,7 +37,7 @@ function HiggsProvider() {
         this.appSecret  = config.appSecret; /// NOT USED YET
 
         this._cache = cache;
-        this._Piggyback = Piggyback
+        this._Piggyback = PiggybackFactory
                             .create()
                             .forService('higgs')
                             .atHost(config.host)

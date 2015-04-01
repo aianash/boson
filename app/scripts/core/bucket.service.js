@@ -1,10 +1,10 @@
 angular
   .module('boson.core')
-  .service('BucketFactory', _BucketFactory);
+  .service('BucketFactory', BucketFactory);
 
-_BucketFactory.$inject = ['$q', 'KeepFactory'];
+BucketFactory.$inject = ['$q', 'KeepFactory'];
 
-function _BucketFactory($q, KeepFactory) {
+function BucketFactory($q, KeepFactory) {
   var Bucket = _Bucket($q);
 
   this.create = function(piggyback) {

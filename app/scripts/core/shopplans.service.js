@@ -1,11 +1,11 @@
 angular
   .module('boson.core')
-  .service('ShopPlansFactory', _ShopPlansFactory);
+  .service('ShopPlansFactory', ShopPlansFactory);
 
 
-_ShopPlansFactory.$inject = ['$q', 'ShopPlanFactory'];
+ShopPlansFactory.$inject = ['$q', 'ShopPlanFactory'];
 
-function _ShopPlansFactory($q, ShopPlanFactory) {
+function ShopPlansFactory($q, ShopPlanFactory) {
 
   var ShopPlans = _ShopPlans($q, ShopPlanFactory);
 

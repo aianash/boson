@@ -1,14 +1,14 @@
 angular
   .module('boson.core')
-  .service('Piggyback', _PiggybackFactory);
+  .service('PiggybackFactory', PiggybackFactory);
 
 
-_PiggybackFactory.$inject = ['$http', '$q'];
+PiggybackFactory.$inject = ['$http', '$q'];
 
 /**
  * Factory for creating Piggyback.
  */
-function _PiggybackFactory($http, $q) {
+function PiggybackFactory($http, $q) {
 
   var PiggybackBuilder = _PiggybackBuilder($http, $q);
 
