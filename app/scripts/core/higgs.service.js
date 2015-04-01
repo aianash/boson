@@ -73,8 +73,8 @@ function HiggsProvider() {
 
       Higgs.prototype.getFriends          = getFriends;
 
-      Higgs.prototype.getShoppingPlans    = getShoppingPlans;
-      Higgs.prototype.getShoppingPlan     = getShoppingPlan;
+      Higgs.prototype.getShopPlans        = getShopPlans;
+      Higgs.prototype.getShopPlan         = getShopPlan;
 
       // Private
       Higgs.prototype._login              = _login;
@@ -144,7 +144,7 @@ function HiggsProvider() {
         return this.isLoggedIn()
                   .then(_getUserInfo);
 
-        function _getUserInfo(loggedId) {
+        function _getUserInfo(loggedIn) {
           if(!loggedIn) return self._johnDoe;
           else self._johnDoe // [TO IMPLEMENT] GET /user/info at higgs
         }
@@ -202,7 +202,7 @@ function HiggsProvider() {
        *
        * @return {Array.<ShopPlan>} Array ShopPlan objects with summary details
        */
-      function getShoppingPlans() {
+      function getShopPlans() {
         var self = this;
 
         return this.isLoggedIn()
@@ -219,7 +219,7 @@ function HiggsProvider() {
        * @param  {string} planId   ShopPlan id
        * @return {ShopPlan}        A ShopPlan instance
        */
-      function getShoppingPlan(planId) {
+      function getShopPlan(planId) {
         var self = this;
 
         return this._isLoggedIn()

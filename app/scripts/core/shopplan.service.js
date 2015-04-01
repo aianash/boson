@@ -114,7 +114,7 @@ function _ShopPlan($q) {
 
   ShopPlan.prototype.getDetail = getDetail;
 
-  ShopPlan.prototype.endPlan = endPlan;
+  ShopPlan.prototype.end = end;
 
 
   // Private
@@ -264,7 +264,7 @@ function _ShopPlan($q) {
   /**
    * End plan
    */
-  function endPlan() {
+  function end() {
     this._Piggyback.queue('POST', this._apis.plan.end);
   }
 

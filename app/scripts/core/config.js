@@ -98,15 +98,21 @@ function configure($ionicConfigProvider, $stateProvider, $urlRouterProvider, Hig
   $stateProvider.state('boson.shopplan.index', {
     url: '',
     templateUrl: 'shopplan/shopplan-index.html',
-    controller: 'ShoppingPlanController',
-    controllerAs: 'vm'
+    controller: 'ShopPlanListController',
+    controllerAs: 'vm',
+    resolve: {
+      initShopPlan: initShopPlan
+    }
   });
 
   $stateProvider.state('boson.shopplan.detail', {
     url: '/detail/:planId',
     templateUrl: 'shopplan/shopplan-detail.html',
-    controller: 'ShoppingPlanDetailController',
-    controllerAs: 'vm'
+    controller: 'ShopPlanDetailController',
+    controllerAs: 'vm',
+    resolve: {
+      initShopPlan: initShopPlanDetail
+    }
   });
 
   $stateProvider.state('boson.shopplan.create', {
@@ -123,13 +129,25 @@ function configure($ionicConfigProvider, $stateProvider, $urlRouterProvider, Hig
 
 initializeFeed.$inject = ['Feed']
 
-/**
- * Initializes the Feed by calling Feed.get
- *
- * [IMP] should return the Feed service
- */
 function initializeFeed(Feed) {
-  // [NOTE] To detect using location service
-  Feed.get({city: 'bangalore', page: 0});
-  return Feed;
+  // [TO DO] To detect city using location service
+  return Feed.get({city: 'bangalore', page: 0})
+    .then(function(){ return Feed; });
+}
+
+
+
+initShopPlan.$inject = ['ShopPlan']
+
+function initShopPlan(ShopPlan) {
+  return ShopPlan.all()
+    .then(function(){ return ShopPlan; });
+}
+
+
+initShopPlanDetail.$inject = ['$stateParams', 'ShopPlan'];
+
+function initShopPlanDetail($stateParams, ShopPlan) {
+  return ShopPlan.get($stateParams.planId)
+    .then(function() { return ShopPlan; })
 }
