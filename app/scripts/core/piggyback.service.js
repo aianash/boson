@@ -404,7 +404,7 @@ function _Piggyback($http, $q) {
    * @return {Object} Piggyback request set to be send
    */
   function _getPiggybackReq() {
-    _updateFromSources();
+    this._updateFromSources();
 
     var piggbacks = this._piggybacks;
     this._piggybacks = [];

@@ -29,6 +29,7 @@ function SearchResultController(
   vm.selectedStores = {}; // stores currently selected for bucket list
   vm.noMoreResult   = false;
 
+
   ///////////////////////
   // ViewModel methods //
   ///////////////////////

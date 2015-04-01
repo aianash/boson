@@ -54,6 +54,7 @@ function _Keep() {
   Keep.prototype._getOrCreateMapAt = _getOrCreateMapAt;
   Keep.prototype._getOrCreateArrayAt = _getOrCreateArrayAt;
 
+  return Keep;
 
   //////////////////////////////////////////////////////////////
   /////////////////// Public Functions /////////////////////////

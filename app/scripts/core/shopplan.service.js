@@ -27,8 +27,6 @@ function _ShopPlan($q) {
 
     /**
      * Keep current stores updates to
-     * - stores
-     * - stores.collections
      * - destinationLocs
      * - invites
      *
@@ -56,12 +54,6 @@ function _ShopPlan($q) {
      *  locations: Array.<Object>,     // locations of stores in the map with only latLng and storeId
      *  destinationLocs: Array.<Object>, // destination location with only LatLng
      *  invites: Array.<string>,       // invited users' id
-     *  stores: {                      // Selected store and collections with only id (no detail)
-     *    storeId: {
-     *      id: <same storeId>,
-     *      collections: Array.<itemId>
-     *    }
-     *  }
      * }
      *
      * @type {Object}
@@ -74,7 +66,6 @@ function _ShopPlan($q) {
       locations: [],
       destinationLocs: [],
       invites: [],
-      stores: {}
     };
 
 
@@ -97,11 +88,6 @@ function _ShopPlan($q) {
 
   // Public
   ShopPlan.prototype.init = init;
-  ShopPlan.prototype.addStore = addStore;
-  ShopPlan.prototype.removeStore = removeStore;
-
-  ShopPlan.prototype.addItem = addItem;
-  ShopPlan.prototype.removeItem = removeItem;
 
   ShopPlan.prototype.getMapLocations = getMapLocations;
   ShopPlan.prototype.selectDestinationLoc = selectDestinationLoc;
@@ -132,29 +118,15 @@ function _ShopPlan($q) {
 
 
   function init(data) {
-    this._Keep.merge().thiz(data.stores).to('stores');
-  }
-
-  function addStore(storeId) {
-    this._Keep.add({ifNot: true}).thiz({storeId: {}}).to('stores');
-  }
-
-  function removeStore(storeId) {
-    this._Keep.remove().thiz(storeId).from('stores');
-  }
-
-  function addItem(itemId, storeId) {
-    this._Keep.push().thiz(itemId).to('stores', storeId, 'collections');
-  }
-
-  function removeItem(itemId, storeId) {
-    this._Keep.remove().thiz(itemId).from('stores', storeId, 'collections');
+    // [TO DO]
   }
 
 
   /**
    * Get map locations of stores in the
    * current plan.
+   *
+   * [IMP][TO DO] Important change coming up
    *
    * @return {Array.<Object>} Array of locations{lat: number, lng: number, score: number}
    */
@@ -299,7 +271,6 @@ function _ShopPlan($q) {
    * This mainly contains following data stores in Keep
    * - **destinations** - Array.<Object> - Array of destinations
    * - **invites** - Array.<string> - userId for invites
-   * - **stores** - Object.<Object> - Stores with their collections to add to plan
    *
    * @return {Object} Piggyback object
    */
@@ -329,7 +300,6 @@ function _ShopPlan($q) {
       this._plan.higgsVersion = resp.data.plan_version;
 
       // Update transation data to this._plan data
-      this._Keep.txn(keepTxnId).update().thiz(this._plan.stores).from('stores');
       this._Keep.txn(keepTxnId).update().thiz(this._plan.invites).from('invites');
       this._Keep.txn(keepTxnId).update().thiz(this._plan.destinationLocs).from('destinationLocs');
       this._Keep.txn(keepTxnId).done(); // mark transaction as done

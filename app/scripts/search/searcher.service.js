@@ -38,35 +38,34 @@ function SearcherFactory($q, _, Higgs) {
     ////////////////////
 
     function updateQuery(searchId, query) {
-      return $q.when(true); // to do
+      return Higgs.updateQuery(searchId, query);
     }
 
     function getResults(searchId) {
-      return $q.when({}); // to do
+      return Higgs.getSearchResults(searchId, 0);
     }
 
     function nextResults(searchId, page) {
-      return $q.when({}); // to do
+      return Higgs.getSearchResults(searchId, page);
     }
 
     function addItemToBucket(itemId, storeId) {
-
+      Higgs.addItemToBucket(itemId, storeId);
     }
 
     function addStoreToBucket(storeId) {
-
+      Higgs.addStoreToBucket(storeId);
     }
 
     function removeItemFromBucket(itemId, storeId) {
-
+      Higgs.removeItemFromBucket(itemId, storeId);
     }
 
     function removeStoreFromBucket(storeId) {
-
+      Higgs.removeStoreFromBucket(storeId);
     }
 
   })();
-
 
   return new _Searcher();
 }

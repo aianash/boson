@@ -12,7 +12,7 @@ function HiggsProvider() {
   this.setHiggsHost  = setHiggsHost;
   this.setHiggsPort  = setHiggsPort;
 
-  this.$get = ['$q', 'cache', 'Piggyback', 'ShopPlansFactory', 'FB', HiggsFactory];
+  this.$get = ['$q', 'cache', 'Piggyback', 'ShopPlansFactory', 'BucketFactory', 'FB', HiggsFactory];
 
 
   //////////////////////////////////////////////
@@ -23,7 +23,7 @@ function HiggsProvider() {
   function setHiggsPort(p) { port = p }
 
 
-  function HiggsFactory($q, cache, Piggyback, ShopPlansFactory, FB) {
+  function HiggsFactory($q, cache, Piggyback, ShopPlansFactory, BucketFactory, FB) {
     var _Higgs;
 
     _Higgs = (function() {
@@ -49,6 +49,8 @@ function HiggsProvider() {
 
         this._ShopPlans = ShopPlansFactory.create(this._Piggyback);
 
+        this._Bucket = BucketFactory.create(this._Piggyback);
+
         // Three states for higgs authorization
         // 1. NOT_AUTHORIZED        - user not yet logged in to facebook
         // 2. PENDING_AUTHORIZATION - user logged in to facebook, yet
@@ -65,23 +67,32 @@ function HiggsProvider() {
       }
 
       // Public
-      Higgs.prototype.isLoggedIn          = isLoggedIn;
-      Higgs.prototype.login               = login;
-      Higgs.prototype.getUserInfo         = getUserInfo;
+      Higgs.prototype.isLoggedIn            = isLoggedIn;
+      Higgs.prototype.login                 = login;
+      Higgs.prototype.getUserInfo           = getUserInfo;
 
-      Higgs.prototype.getFeed             = getFeed;
+      Higgs.prototype.addStoreToBucket      = addStoreToBucket;
+      Higgs.prototype.removeStoreFromBucket = removeStoreFromBucket;
 
-      Higgs.prototype.getFriends          = getFriends;
+      Higgs.prototype.addItemToBucket       = addItemToBucket;
+      Higgs.prototype.removeStoreFromBucket = removeStoreFromBucket;
 
-      Higgs.prototype.getShopPlans        = getShopPlans;
-      Higgs.prototype.getShopPlan         = getShopPlan;
+      Higgs.prototype.getFeed               = getFeed;
+
+      Higgs.prototype.getFriends            = getFriends;
+
+      Higgs.prototype.getShopPlans          = getShopPlans;
+      Higgs.prototype.getShopPlan           = getShopPlan;
+
+      Higgs.prototype.updateQuery           = updateQuery;
+      Higgs.prototype.getSearchResults      = getSearchResults;
 
       // Private
-      Higgs.prototype._login              = _login;
-      Higgs.prototype._getUser            = _getUser;
-      Higgs.prototype._getCommonFeed      = _getCommonFeed;
-      Higgs.prototype._getUserFeed        = _getUserFeed;
-      Higgs.prototype._addToCache         = _addToCache;
+      Higgs.prototype._login                = _login;
+      Higgs.prototype._getUser              = _getUser;
+      Higgs.prototype._getCommonFeed        = _getCommonFeed;
+      Higgs.prototype._getUserFeed          = _getUserFeed;
+      Higgs.prototype._addToCache           = _addToCache;
 
       return Higgs;
 
@@ -149,6 +160,23 @@ function HiggsProvider() {
           else self._johnDoe // [TO IMPLEMENT] GET /user/info at higgs
         }
 
+      }
+
+
+      function addStoreToBucket(storeId) {
+        this._Bucket.addStore(storeId);
+      }
+
+      function removeStoreFromBucket(storeId) {
+        this._Bucket.removeStore(storeId);
+      }
+
+      function addItemToBucket(itemId, storeId) {
+        this._Bucket.addItem(itemId, storeId);
+      }
+
+      function removeStoreFromBucket(itemId, storeId) {
+        this._Bucket.removeItem(itemId, storeId);
       }
 
 
@@ -230,6 +258,38 @@ function HiggsProvider() {
       }
 
 
+      /**
+       * Update query for a given searchId
+       *
+       * @param  {Number} searchId search id of which query to update
+       * @param  {Object} query    Query object
+       * @return {Promise}         Promise of update (boolean)
+       */
+      function updateQuery(searchId, query) {
+        return this._Piggyback
+                  .GET('search/query/update/' + searchId, null, query)
+                  .then(function(resp) {
+                    if(resp.status === 200) return resp.data;
+                    else return $q.reject(new Error(resp.statusText));
+                  });
+      }
+
+
+      /**
+       * Get search results for search id
+       *
+       * @param  {Number} searchId search id for which results to fetch
+       * @param  {Number} page     Page number of the search result
+       * @return {Promise}         Promise of search results
+       */
+      function getSearchResults(searchId, page) {
+        return this._Piggyback
+                  .GET('search/results/' + searchId, {page: page})
+                  .then(function(resp) {
+                    if(resp.status === 200) return resp.data;
+                    else return $q.reject(new Error(resp.statusText));
+                  });
+      }
 
       ///////////////////////////////////////////////////
       ////////////////// Private functions //////////////
