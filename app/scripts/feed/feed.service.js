@@ -1,5 +1,3 @@
-'use strict'
-
 angular
   .module('boson.feed')
   .factory('Feed', FeedFactory);

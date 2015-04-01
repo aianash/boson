@@ -1,5 +1,3 @@
-'use strict'
-
 angular
   .module('boson.friends')
   .controller('FriendsController', FriendsController);

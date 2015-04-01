@@ -1,5 +1,3 @@
-'use strict'
-
 angular
   .module('boson.shopplan')
   .factory('ShopPlan', ShopPlanFactory);
