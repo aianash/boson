@@ -119,9 +119,42 @@ function configure($ionicConfigProvider, $stateProvider, $urlRouterProvider, Hig
   });
 
   $stateProvider.state('boson.shopplan.create', {
-    url: '',
+    abstract: true,
+    url: '/create',
     templateUrl: 'shopplan/shopplan-create.html',
     controller: 'ShopPlanCreateController',
+    controllerAs: 'vm',
+    resolve: {
+      initShopPlanner: initShopPlanner
+    }
+  });
+
+  $stateProvider.state('boson.shopplan.create.plans', {
+    url: '/plans',
+    templateUrl: 'shopplan/choose-plans.html',
+    controller: 'ChoosePlansController',
+    controllerAs: 'vm'
+  });
+
+
+  $stateProvider.state('boson.shopplan.create.map', {
+    url: '/map',
+    templateUrl: 'shopplan/map-destinations.html',
+    controller: 'ChooseDestinationsController',
+    controllerAs: 'vm'
+  });
+
+  $stateProvider.state('boson.shopplan.create.friends', {
+    url: '/friends',
+    templateUrl: 'shopplan/invite-friends.html',
+    controller: 'InviteFriendsController',
+    controllerAs: 'vm'
+  });
+
+  $stateProvider.state('boson.shopplan.create.preview', {
+    url: '/preview',
+    templateUrl: 'shopplan/preview-plan.html',
+    controller: 'PreviewPlanController',
     controllerAs: 'vm'
   });
 
@@ -133,6 +166,7 @@ function configure($ionicConfigProvider, $stateProvider, $urlRouterProvider, Hig
 initializeFeed.$inject = ['Feed'];
 
 function initializeFeed(Feed) {
+  return Feed;
   // [TO DO] To detect city using location service
   return Feed.get({city: 'bangalore', page: 0})
     .then(function(){ return Feed; });
@@ -156,9 +190,15 @@ function initShopPlanDetail($stateParams, ShopPlan) {
 }
 
 
-initSearcher.$inject = ['Searcher'];
+initSearcher.$inject = ['$stateParams', 'Searcher'];
 
 function initSearcher($stateParams, Searcher) {
   return Searcher.getResults($stateParams.searchId)
     .then(function() { return Searcher; });
+}
+
+initShopPlanner.$inject = ['ShopPlanner'];
+
+function initShopPlanner(ShopPlanner) {
+  return ShopPlanner;
 }

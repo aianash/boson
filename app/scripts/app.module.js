@@ -11,9 +11,9 @@ angular.module('boson', [
    */
   'boson.feed',
   'boson.search',
-  'boson.shoppingplan',
-  'boson.friends',
-  'boson.map',
+  'boson.shopplan',
+  // 'boson.friends',
+  // 'boson.map',
 ]);
 
 
