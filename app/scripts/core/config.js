@@ -111,8 +111,7 @@ function configure($ionicConfigProvider, $stateProvider, $urlRouterProvider, Hig
   $stateProvider.state('boson.shopplan.detail', {
     url: '/detail/:planId',
     templateUrl: 'shopplan/shopplan-detail.html',
-    controller: 'ShopPlanDetailController',
-    controllerAs: 'vm',
+    controller: 'ShopPlanDetailController as detail',
     resolve: {
       initShopPlan: initShopPlanDetail
     }
@@ -122,8 +121,7 @@ function configure($ionicConfigProvider, $stateProvider, $urlRouterProvider, Hig
     abstract: true,
     url: '/create',
     templateUrl: 'shopplan/shopplan-create.html',
-    controller: 'ShopPlanCreateController',
-    controllerAs: 'vm',
+    controller: 'ShopPlanCreateController as creator',
     resolve: {
       initShopPlanner: initShopPlanner
     }
@@ -132,30 +130,35 @@ function configure($ionicConfigProvider, $stateProvider, $urlRouterProvider, Hig
   $stateProvider.state('boson.shopplan.create.plans', {
     url: '/plans',
     templateUrl: 'shopplan/choose-plans.html',
-    controller: 'ChoosePlansController',
-    controllerAs: 'vm'
+    controller: 'ChoosePlansController as planner',
+    resolve: {
+      initShopPlanner: withShopPlans
+    }
   });
 
 
   $stateProvider.state('boson.shopplan.create.map', {
     url: '/map',
     templateUrl: 'shopplan/map-destinations.html',
-    controller: 'ChooseDestinationsController',
-    controllerAs: 'vm'
+    controller: 'ChooseDestinationsController as map',
+    resolve: {
+      initShopPlanner: withMapLocations
+    }
   });
 
-  $stateProvider.state('boson.shopplan.create.friends', {
+  $stateProvider.state('boson.shopplan.create.invite', {
     url: '/friends',
     templateUrl: 'shopplan/invite-friends.html',
-    controller: 'InviteFriendsController',
-    controllerAs: 'vm'
+    controller: 'InviteFriendsController as invite',
+    resolve: {
+      initShopPlanner: withFriends
+    }
   });
 
   $stateProvider.state('boson.shopplan.create.preview', {
     url: '/preview',
     templateUrl: 'shopplan/preview-plan.html',
-    controller: 'PreviewPlanController',
-    controllerAs: 'vm'
+    controller: 'PreviewPlanController as preview',
   });
 
 }
@@ -197,8 +200,31 @@ function initSearcher($stateParams, Searcher) {
     .then(function() { return Searcher; });
 }
 
+
 initShopPlanner.$inject = ['ShopPlanner'];
 
 function initShopPlanner(ShopPlanner) {
   return ShopPlanner;
+}
+
+
+withShopPlans.$inject = ['initShopPlanner'];
+
+function withShopPlans(ShopPlanner) {
+  return ShopPlanner.initShopPlans();
+}
+
+
+withMapLocations.$inject = ['lodash', 'initShopPlanner'];
+
+function withMapLocations(_, ShopPlanner) {
+  return ShopPlanner.initStoreLocations()
+    .then(_.bind(ShopPlanner.initDestinations, ShopPlanner));
+}
+
+
+withFriends.$inject = ['initShopPlanner'];
+
+function withFriends(ShopPlanner) {
+  return ShopPlanner.initFriends();
 }
