@@ -83,6 +83,8 @@ function HiggsProvider() {
 
       Higgs.prototype.getShopPlans          = getShopPlans;
       Higgs.prototype.getShopPlan           = getShopPlan;
+      Higgs.prototype.getNewShopPlan        = getNewShopPlan;
+      Higgs.prototype.savePlan              = savePlan;
 
       Higgs.prototype.updateQuery           = updateQuery;
       Higgs.prototype.getSearchResults      = getSearchResults;
@@ -228,7 +230,10 @@ function HiggsProvider() {
        * Make sure to use this api only after user
        * has logged in
        *
-       * @return {Array.<ShopPlan>} Array ShopPlan objects with summary details
+       * [NOTE] Each shopplan will necessariy have the
+       * summary data.
+       *
+       * @return {Promise.<Array.<ShopPlan>?} Promise of Array ShopPlan objects with summary details
        */
       function getShopPlans() {
         var self = this;
@@ -244,8 +249,11 @@ function HiggsProvider() {
       /**
        * Get shopping plan for a given id
        *
+       * [NOTE] the shopplan instance may or may not
+       * have the summary/details
+       *
        * @param  {string} planId   ShopPlan id
-       * @return {ShopPlan}        A ShopPlan instance
+       * @return {Promise.<ShopPlan>} Promise of a ShopPlan instance
        */
       function getShopPlan(planId) {
         var self = this;
@@ -255,6 +263,36 @@ function HiggsProvider() {
                     if(loggedIn) return self._ShopPlans.get(planId);
                     else throw new TypeError('Cant get shopping plan for not logged in user')
                   });
+      }
+
+
+      /**
+       * Get new shopping plan
+       *
+       * @return {Promise.<ShopPlan>} Promise of a new shopplan
+       */
+      function getNewShopPlan() {
+        return this._isLoggedIn()
+          .then(function(loggedIn) {
+            if(loggedIn) return self._ShopPlans.create();
+            else $q.reject(new TypeError('Requires user to be logged in'));
+          });
+      }
+
+
+      /**
+       * Save the plan
+       *
+       * @param {Object|Number} param Either plan object with suid or suid or new plan
+       */
+      function savePlan(param) {
+        var suid;
+
+        if(_.isNumber(param)) suid = param;
+        else if(_.isObject(param) && 'suid' in param) suid = param.suid;
+        else if(_.isObject(param) && param.isNewPlan) suid = void 0;
+
+        return this._ShopPlans.save(suid);
       }
 
 

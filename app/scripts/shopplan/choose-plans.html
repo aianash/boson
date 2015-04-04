@@ -5,9 +5,31 @@
 			<a class="row"
 				 ng-click="planner.createNewPlan()">
 				<div class="col"><i class="icon ion-ios-plus-outline"></i></div>
-				<div class="col"><p>Create new plan</p></div>
+				<div class="col"><p>Create a new plan</p></div>
 			</a>
 		</div>
+
+		<ion-list class="plans-list">
+			<ion-item id="plan-{{plan.shopplanId.suid"
+								ng-repeat="plan in planner.shopplans"
+								nb-click="planner.choosePlan(plan.shopplanId.suid)">
+
+				<!-- [TO DO] make changes of the data according to new plan structure  -->
+        <div class="row plan-detail">
+          <div class="col col-10 plan-icon">
+            <i class="icon ion-bag"></i>
+          </div>
+
+          <div class="col col-90 plan-descr">
+            <h2 class="title">{{plan.title}}</h2>
+            <p class="shops">
+              <span ng-repeat="destination in plan.summary.destinations">{{destination.numShops}} shops on {{dest.address.short}}</span>
+            </p>
+          </div>
+        </div>
+
+			</ion-item>
+		</ion-list>
 
 	</ion-content>
 </ion-view>

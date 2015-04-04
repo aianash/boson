@@ -12,22 +12,23 @@ function ChoosePlansController(_, $scope, ShopPlanner) {
 
   var vm = this;
 
+  // list of plans with summary data
+  vm.shopplans      = ShopPlanner.shopplans
+
   vm.choosePlan     = choosePlan;
   vm.createNewPlan  = createNewPlan;
-  vm.shopplans      = ShopPlanner.shopplans;
+
 
   ///////////////////////
   // ViewModel methods //
   ///////////////////////
 
   function choosePlan(planId) {
-    ShopPlanner.chooseExistingShopPlan(planId)
-      .then(_moveToMap);
+    ShopPlanner.chooseExistingShopPlan(planId).then(_moveToMap);
   }
 
   function createNewPlan() {
-    ShopPlanner.createNewPlan()
-      .then(_moveToMap);
+    ShopPlanner.createNewPlan().then(_moveToMap);
   }
 
 

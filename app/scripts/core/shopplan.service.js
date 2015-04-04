@@ -8,12 +8,23 @@ function ShopPlanFactory($q, KeepFactory) {
 
   var ShopPlan = _ShopPlan($q);
 
-  this.create = function(planId, piggyback, planData) {
-    var keep = KeepFactory.create(planId);
+  /**
+   * Create shopplan
+   *
+   * @param  {Object} shopplanId {userId: {uuid}, suid}
+   * @param  {Object} piggyback  Piggyback isntance
+   * @param  {Object} planData   {summary: <Object>, detail: <Object>}
+   *
+   * @return {Object}            ShopPlan instance
+   */
+  this.create = function(shopplanId, piggyback, data) {
+    var keep = KeepFactory.create(shopplanId.suid);
+    return new ShopPlan(shopplanId, piggyback, keep, data);
+  }
 
-    var shopPlan = new ShopPlan(planId, piggyback, keep);
-    if(planData != null) shopPlan.init(planData);
-    return shopPlan;
+  this.createNew = function() {
+    var keep = KeepFactory.create('new-plan');
+    return new ShopPlan();
   }
 }
 
@@ -21,53 +32,32 @@ function ShopPlanFactory($q, KeepFactory) {
 /** Closure over dependencies */
 function _ShopPlan($q) {
 
-  function ShopPlan(planId, piggyback, keep) {
-    this._Piggyback = piggyback;
+  /**
+   * It represents a new empty plan (when no parameter is passed)
+   * Where it holds plan data locally and create the plan on save
+   *
+   * Otherwise when its an existing plan, then it fetches
+   * the data and also holds updates.
+   *
+   * [NOTE]
+   * 1. Revisit Piggy sourcing
+   *
+   * @param {Number} shopplanId {suid: <Number>, userId: {uuid}}
+   * @param {Object} piggyback Piggyback instance
+   * @param {Object} keep      Keep instance
+   */
+  function ShopPlan(shopplanId, piggyback, keep, data) {
+
+    this._Piggyback   = piggyback;
+    this._Keep        = keep;
+
+    this.isNewPlan    = !shopplanId ? true : false;
+    this.isInvitation = false;
 
 
-    /**
-     * Keep current stores updates to
-     * - destinationLocs
-     * - invites
-     *
-     * @type {Keep}
-     */
-    this._Keep = keep;
+    if(!this.isNewPlan && data) this.init(data);
 
-    this._Piggyback.addPiggySource(this._planUpdates); // Mainly source of additions/replace to the plan
-    this._Piggyback.addPiggySource(this._planRemovals);
-
-    /**
-     * Structure
-     *
-     * {
-     *  id: <string>,                  // Plan Id
-     *
-     *  /** Details that are filled after server processing ////
-     *
-     *  destinations: Array.<Object>,  // More elaborate destination with stores and collection details
-     *  friends: Array.<Object>,       // Friends who accepted invites with details
-     *
-     *
-     *  /** Details that are locally stored for easy access and info to be sent to data ////
-     *
-     *  locations: Array.<Object>,     // locations of stores in the map with only latLng and storeId
-     *  destinationLocs: Array.<Object>, // destination location with only LatLng
-     *  invites: Array.<string>,       // invited users' id
-     * }
-     *
-     * @type {Object}
-     */
-    this._plan = {
-      id: planId,
-      destinations: [],
-      friends: [],
-
-      locations: [],
-      destinationLocs: [],
-      invites: [],
-    };
-
+    this.suid = shopplanId.suid;
 
     // Setup Higgs apis used here
     // there should be some config of higgs
@@ -87,26 +77,32 @@ function _ShopPlan($q) {
   }
 
   // Public
-  ShopPlan.prototype.init = init;
+  ShopPlan.prototype.init                 = init;
 
-  ShopPlan.prototype.getMapLocations = getMapLocations;
+  // [TO DO] revisiting apis
+  ShopPlan.prototype.getMapLocations      = getMapLocations;
   ShopPlan.prototype.selectDestinationLoc = selectDestinationLoc;
   ShopPlan.prototype.removeDestinationLoc = removeDestinationLoc;
-  ShopPlan.prototype.getDestinationLocs = getDestinationLocs;
+  ShopPlan.prototype.getDestinationLocs   = getDestinationLocs;
 
+  ShopPlan.prototype.addUserForInvite     = addUserForInvite;
+  ShopPlan.prototype.getScheduledInvites  = getScheduledInvites;
 
-  ShopPlan.prototype.addUserForInvite = addUserForInvite;
-  ShopPlan.prototype.getScheduledInvites = getScheduledInvites;
+  ShopPlan.prototype.getDetail            = getDetail;
 
-  ShopPlan.prototype.getDetail = getDetail;
+  ShopPlan.prototype.save                 = save;
 
-  ShopPlan.prototype.end = end;
+  ShopPlan.prototype.end                  = end;
 
 
   // Private
   ShopPlan.prototype._planRemovals = _planRemovals;
-  ShopPlan.prototype._planUpdates = _planUpdates;
+  ShopPlan.prototype._planUpdates  = _planUpdates;
   ShopPlan.prototype._onPlanUpdate = _onPlanUpdate;
+  ShopPlan.prototype._create       = _create;
+  ShopPlan.prototype._save         = _save;
+  ShopPlan.prototype._setSummary   = _setSummary;
+  ShopPlan.prototype._setDetails   = _setDetails;
 
   return ShopPlan;
 
@@ -116,9 +112,19 @@ function _ShopPlan($q) {
   //////////////////////////////////////////////////////
 
 
-
+  /**
+   * This updates shop plan fields from the
+   * provided data to this instance
+   *
+   * @param  {Object} data ShopPlan data object (as returned from server
+   *                       refer thrift api)
+   */
   function init(data) {
-    // [TO DO]
+    if('title' in data)   this.title             = data.title;
+    if('summary' in data) this.summary           = data.summary;
+    if('friends' in data) this.friends           = data.friends;
+    if('destinations' in data) this.destinations = data.destinations;
+    if('isInvitation' in data) this.isInvitation = data.isInvitation;
   }
 
 
@@ -234,6 +240,15 @@ function _ShopPlan($q) {
 
 
   /**
+   * Save plan
+   */
+  function save() {
+    if(this.isNewPlan) return this._create();
+    else return this._save();
+  }
+
+
+  /**
    * End plan
    */
   function end() {
@@ -305,4 +320,29 @@ function _ShopPlan($q) {
       this._Keep.txn(keepTxnId).done(); // mark transaction as done
     }
   }
+
+
+  function _create() {
+    var self = this;
+    var data = this._Keep.withinTxn().getUpdates();
+
+    return this.Piggyback.POST(this._apis.plan.create, null, data)
+      .then(function(resp) {
+        if(resp.status === 200 && resp.data) {
+          // resp.data is ShopPlan (thrift)
+          self.isNewPlan  = false;
+          self.shopplanId = resp.data;
+          self.suid       = shopplanId.suid;
+
+          self.init(resp.data);
+          return true;
+        } else return false;
+      });
+  }
+
+
+  function _save() {
+
+  }
+
 }

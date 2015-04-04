@@ -20,8 +20,7 @@ function PreviewPlanController(_, $scope, $state, $ionicLoading, ShopPlanner) {
 
   function save() {
     $ionicLoading.show({template: 'Saving plan...'});
-    ShopPlanner.updatePlan()
-      .then(_goToPlans);
+    ShopPlanner.savePlan().then(_goToPlans);
   }
 
   function _goToPlans(success) {

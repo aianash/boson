@@ -3,11 +3,11 @@ angular
   .service('ShopPlansFactory', ShopPlansFactory);
 
 
-ShopPlansFactory.$inject = ['$q', 'ShopPlanFactory'];
+ShopPlansFactory.$inject = ['lodash', '$q', 'ShopPlanFactory'];
 
-function ShopPlansFactory($q, ShopPlanFactory) {
+function ShopPlansFactory(_, $q, ShopPlanFactory) {
 
-  var ShopPlans = _ShopPlans($q, ShopPlanFactory);
+  var ShopPlans = _ShopPlans(_, $q, ShopPlanFactory);
 
   this.create = function(piggyback) {
     return new ShopPlans(piggyback);
@@ -16,7 +16,7 @@ function ShopPlansFactory($q, ShopPlanFactory) {
 
 
 /** Closure over dependencies */
-function _ShopPlans($q, ShopPlanFactory) {
+function _ShopPlans(_, $q, ShopPlanFactory) {
 
   /**
    * Contains ShopPlans for a user
@@ -24,8 +24,18 @@ function _ShopPlans($q, ShopPlanFactory) {
    * @param {PiggyBack} piggyback     A piggyback instance
    */
   function ShopPlans(piggyback) {
+
     this._Piggyback = piggyback;
+
+    // cache of the ShopPlan instance
+    // {suid: <ShopPlan>}
     this._shopplans = {};
+
+    // A ShopPlan instance to be used while creating
+    // a new plan.
+    // After this plan is saved, it will be replaced
+    // with a new instance.
+    this._newPlan   = ShopPlanFactory.createNew();
 
     this._api = {
       plan: {
@@ -35,9 +45,11 @@ function _ShopPlans($q, ShopPlanFactory) {
   }
 
   // Public
-  ShopPlans.prototype.all   = all;
-  ShopPlans.prototype.list  = all; // alias
-  ShopPlans.prototype.get   = get;
+  ShopPlans.prototype.create = create;
+  ShopPlans.prototype.save   = save;
+  ShopPlans.prototype.all    = all;
+  ShopPlans.prototype.list   = all; // alias
+  ShopPlans.prototype.get    = get;
 
   // Private
   ShopPlans.prototype._createShopPlan = _createShopPlan;
@@ -49,31 +61,60 @@ function _ShopPlans($q, ShopPlanFactory) {
   ////////////////// Public Functions //////////////////
   //////////////////////////////////////////////////////
 
+
+  function create() { return this._newPlan; }
+
+
+  /**
+   * Save the given plan or save/create the new plan
+   *
+   * @param  {Number} suid 64 bit Long unique shop plan id
+   * @return {Promise.<bool>}        promise of successs (boolean)
+   */
+  function save(suid) {
+    var self = this;
+
+    if(suid) return this.get(suid).save();
+    else return this._newPlan.save()
+        .then(function(success){
+          if(success)
+            self._newPlan = ShopPlanFactory.createNew(); // after updating create
+                                                         // a fresh new emtpy plan
+                                                         // instance
+          return success;
+        });
+  }
+
+
   /**
    * Get array of shopplans
    *
-   * @return {Array.<ShopPlan>}    Array of ShopPlan instances
+   * @return {Arrsay.<ShopPlan>}    Array of ShopPlan instances
    */
   function all() {
     var self = this;
 
-    return
-      this._Piggyback
-        .GET(this._apis.plan.all)
-        .then(function(resp) {
-          if(resp.status === 200 && Array.isArray(resp.data)) {
-            var shopplans = [];
+    if(!_.isEmtpy(this._shopplans))
+      return _.values(this._shopplans);
+    else
+      return this._Piggyback.GET(this._apis.plan.all)
+          .then(function(resp) { // to verify
+            if(resp.status === 200 && _.isArray(resp.data)) {
+              // response's data is an array of summaries of
+              // shopplan
+              var shopplans =
+                _.map(resp.data, _createShopPlanWithSummary, self);
 
-            angular.forEach(resp.data, function(planData) {
-              shopplan = this._createShopPlan(planData.id, planData);
-              this._shopplans[shopplan.id] = shopplan; // cache the plan too
-              shopplans.push(shopplan);
-            }, self);
+              return shopplans;
+            } else throw new Error(resp.statusText);
+          });
 
-            return shopplans;
+    function _createShopPlanWithSummary(plan) {
+      var shopplan = this._createShopPlan(plan.shopplanId, plan);
+      this._shopplans[shopplan.suid] = shopplan; // caching the plan
+      return shopplan;
+    }
 
-          } else throw new Error(resp.statusText);
-        });
   }
 
 
@@ -84,10 +125,10 @@ function _ShopPlans($q, ShopPlanFactory) {
    * @param  {String} planId ShopPlan id
    * @return {ShopPlan}        ShopPlan object
    */
-  function get(planId) {
-    if(planId in this._shopplans) return this._shopplans[planId];
+  function get(suid) {
+    if(suid in this._shopplans) return this._shopplans[suid];
 
-    var shopPlan = ShopPlanFactory.create(planId, this._Piggyback)
+    var shopplan = ShopPlanFactory.create(suid, this._Piggyback)
     this._shopplans[planId] = shopPlan;
     return shopPlan;
   }
@@ -100,11 +141,11 @@ function _ShopPlans($q, ShopPlanFactory) {
   /**
    * Create ShopPlan instance
    *
-   * @param  {string} planId Shopping plan id
+   * @param  {string} shopplanId Shopping plan id i.e. with userId.uuid and suid
    * @param  {Object} data   Shopping plan data
    * @return {ShopPlan}      ShopPlan instance
    */
-  function _createShopPlan(planId, data) {
+  function _createShopPlan(shopplanId, data) {
     return ShopPlanFactory.create(planId, this._Piggyback, data);
   }
 

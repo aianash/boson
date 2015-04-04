@@ -19,9 +19,16 @@ function ShopPlannerFactory($q, _, $state, Higgs) {
     function ShopPlanner() {
       this._creatingNewPlan = false;
 
+      // Target plan plan that is
+      // chosen to update/create
+      //
+      // This instance will be directly
+      // used to perfirm CRUD operation
+      // in very create plan step.
+      this._planT;
+
       // These variables are updated
       // before a view is created
-      this._planId;
       this.shopplans;
       this.stores;
       this.friends;
@@ -44,7 +51,7 @@ function ShopPlannerFactory($q, _, $state, Higgs) {
     ShopPlanner.prototype.addToInvitation         = addToInvitation;
     ShopPlanner.prototype.removeFromInvitation    = removeFromInvitation;
 
-    ShopPlanner.prototype.updatePlan              = updatePlan;
+    ShopPlanner.prototype.savePlan                = savePlan;
 
     // Private
     ShopPlanner.prototype._setPlanId              = _setPlanId;
@@ -58,6 +65,8 @@ function ShopPlannerFactory($q, _, $state, Higgs) {
     ///////////////////////////////////////////////////
     /////////////// Public functions //////////////////
     ///////////////////////////////////////////////////
+
+    ///////////////////// INITS ///////////////////////
 
     function initShopPlans() {
       return $q.when([])
@@ -80,24 +89,46 @@ function ShopPlannerFactory($q, _, $state, Higgs) {
         .then(_.bind(this._setFriends, this));
     }
 
+
+
+    /**
+     * Function that ensure that plan is
+     * selected in boson.shopplan.create.plans ui
+     *
+     * ifnot goes to that view.
+     */
     function ensurePlanSelected() {
-      if(!this._creatingNewPlan && !this._planId)
-        $state.go('boson.shopplan.create.plans');
+      if(!this._planT) $state.go('boson.shopplan.create.plans');
     }
 
+    /**
+     * Choose an existing plan to update with
+     * new data
+     *
+     * @param  {Number} planId Plan id
+     * @return {Promise.<bool>} Promize of boolean (success)
+     */
     function chooseExistingShopPlan(planId) {
       var self = this;
 
-      return $q.when(true) // [TO DO] higgs api call
-        .then(function(success){ self._setPlanId(planId); return success; });
+      return Higgs.getShopPlan(planId)
+        .then(function(plan) { self._planT = plan; return true; });
     }
 
+    /**
+     * Set a new core.shopplan object to create new plan
+     * with new data
+     *
+     * @return {Promise.<bool>} Promise of boolean (success)
+     */
     function createNewPlan() {
       var self = this;
 
-      return $q.when(_.now()) // [TO DO] Open a create plan ui
-        .then(function(){ self._creatingNewPlan = true; return true; });
+      return Higgs.getNewShopPlan()
+        .then(function(plan) { self._planT = plan; return true; });
     }
+
+
 
 
     function addDestination(location, order) {
@@ -117,11 +148,16 @@ function ShopPlannerFactory($q, _, $state, Higgs) {
     function removeFromInvitation(userId) {}
 
 
-    function updatePlan() {
-      // create a new plan with the data
-      // or update the existing plan
-      return $q.when(true);
+    // Save the the target plan
+    // and remove the target plan selection
+    function savePlan() {
+      return Higgs.savePlan(this._planT)
+        .then(function(success) {
+          if(success) self._planT = void 0;
+          return success;
+        });
     }
+
 
     ///////////////////////////////////////////////////
     /////////////// Private functions /////////////////
