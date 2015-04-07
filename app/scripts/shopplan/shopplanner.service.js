@@ -17,8 +17,6 @@ function ShopPlannerFactory($q, _, $state, Higgs) {
   _ShopPlanner = (function() {
 
     function ShopPlanner() {
-      this._creatingNewPlan = false;
-
       // Target plan plan that is
       // chosen to update/create
       //
@@ -113,13 +111,13 @@ function ShopPlannerFactory($q, _, $state, Higgs) {
      * Choose an existing plan to update with
      * new data
      *
-     * @param  {Number} planId Plan id
+     * @param  {Number} suid ShopPlan unique id
      * @return {Promise.<bool>} Promize of boolean (success)
      */
-    function chooseExistingShopPlan(planId) {
+    function chooseExistingShopPlan(suid) {
       var self = this;
 
-      return Higgs.getShopPlan(planId)
+      return Higgs.getShopPlan(suid)
         .then(function(plan) { self._planT = plan; return true; });
     }
 

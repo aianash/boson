@@ -2,18 +2,18 @@ angular
   .module('boson.core')
   .service('ShopPlanFactory', ShopPlanFactory);
 
-ShopPlanFactory.$inject  = ['$q', 'KeepFactory'];
+ShopPlanFactory.$inject  = ['lodash', '$q', 'KeepFactory'];
 
-function ShopPlanFactory($q, KeepFactory) {
+function ShopPlanFactory(_, $q, KeepFactory) {
 
-  var ShopPlan = _ShopPlan($q);
+  var ShopPlan = _ShopPlan(_, $q);
 
   /**
    * Create shopplan
    *
-   * @param  {Object} shopplanId {userId: {uuid}, suid}
+   * @param  {Object} shopplanId {createdBy: {uuid}, suid}
    * @param  {Object} piggyback  Piggyback isntance
-   * @param  {Object} planData   {summary: <Object>, detail: <Object>}
+   * @param  {Object} planData   (refer to thrift api ShopPlan)
    *
    * @return {Object}            ShopPlan instance
    */
@@ -30,7 +30,7 @@ function ShopPlanFactory($q, KeepFactory) {
 
 
 /** Closure over dependencies */
-function _ShopPlan($q) {
+function _ShopPlan(_, $q) {
 
   /**
    * It represents a new empty plan (when no parameter is passed)
@@ -42,7 +42,7 @@ function _ShopPlan($q) {
    * [NOTE]
    * 1. Revisit Piggy sourcing
    *
-   * @param {Number} shopplanId {suid: <Number>, userId: {uuid}}
+   * @param {Number} shopplanId {suid: <Number>, createdBy: {uuid}}
    * @param {Object} piggyback Piggyback instance
    * @param {Object} keep      Keep instance
    */
@@ -52,6 +52,12 @@ function _ShopPlan($q) {
     this.suid         = shopplanId.suid;
 
     this._Piggyback   = piggyback;
+
+    // Keep is used to store add, update and delete for
+    // destinations and invites
+    // where
+    // - destinations - Array.<Destination>
+    // - invites      - Array.<Friend>
     this._Keep        = keep;
 
     this.isNewPlan    = !shopplanId ? true : false;
@@ -60,6 +66,7 @@ function _ShopPlan($q) {
 
     if(!this.isNewPlan && data) this.init(data);
 
+    // [IMP] [NOTE] To revise after higgs api finalization
     this._apis = {
       plan: {
         update:   'shopplan/' + this.suid + '/update',
@@ -79,13 +86,13 @@ function _ShopPlan($q) {
   ShopPlan.prototype.init                 = init;
   ShopPlan.prototype.getDetailed          = getDetailed;
 
-  // [TO DO] revisiting apis
   ShopPlan.prototype.addDestination       = addDestination;
   ShopPlan.prototype.removeDestionation   = removeDestionation;
   ShopPlan.prototype.updateDestination    = updateDestination;
   ShopPlan.prototype.getStoreLocations    = getStoreLocations;
   ShopPlan.prototype.getDestinations      = getDestinations;
 
+  ShopPlan.prototype.getInvites           = getInvites;
   ShopPlan.prototype.addToInvitation      = addToInvitation;
   ShopPlan.prototype.removeFromInvitation = removeFromInvitation;
 
@@ -113,8 +120,8 @@ function _ShopPlan($q) {
    */
   function init(data) {
     if('title' in data)   this.title             = data.title;
-    if('summary' in data) this.summary           = data.summary;
-    if('friends' in data) this.friends           = data.friends;
+    if('dstores' in data) this.dstores           = data.dstores;
+    if('invites' in data) this.invites           = data.invites;
     if('destinations' in data) this.destinations = data.destinations;
     if('isInvitation' in data) this.isInvitation = data.isInvitation;
   }
@@ -125,10 +132,11 @@ function _ShopPlan($q) {
   /**
    * Select a destination in the plan
    *
-   * @param  {Object} dest Destination object containing LatLng and order
+   * @param  {Object} gpsLocation {lat: <Double>, lng: <Double> }
+   * @return {Promise.<Destionation>} Destination object thus created
    */
   function addDestination(gpsLocation) {
-    destination = {
+    var destination = {
       dtuid: _.now(),
       address: {
         gpsLoc: {
@@ -138,7 +146,7 @@ function _ShopPlan($q) {
       }
     };
 
-    this._Keep.push().thiz(destination).to('destinations');
+    return this._Keep.push().thiz(destination).to('destinations');
   }
 
 
@@ -146,66 +154,105 @@ function _ShopPlan($q) {
    * Remove destination location from the plan
    *
    * @param  {Object} dest  Destincation object with LatLng and order
+   * @return {Promise.<Number>} Promise of destination unique id
    */
-  function removeDestionation(duid) {
-    this._Keep.remove().thiz(dest).from('destinationLocs');
+  function removeDestionation(dtuid) {
+    return $q.when(this._Keep.remove().thiz('dtuid', dtuid}).from('destinations').dtuid);
   }
 
 
   /**
-   * Get only latLng of the destinations
-   * from both persisted and not yet persisted destinations.
+   * Update gps location of the destination
    *
-   * [TO DO] Include updating order
-   *
-   * @return {[type]} [description]
+   * @param {Number} dtuid Destination unique id
+   * @param {Object} gpsLocation {lat: <Double>, lng: <Double> }
+   * @return {Promise.<Destination>} Promise of new Destination
    */
-  function updateDestination(duid, gpsLocation) {
-    var destinations = [];
-    destinations.concat(this._plan.destinationLocs);
-    this._Keep.update().thiz(destinations).from('destinationLocs');
-    return _.uniq(destinations);
+  function updateDestination(dtuid, gpsLocation) {
+    var destination = {
+      dtuid: dtuid,
+      address: {
+        gpsLoc: {
+          lat: gpsLocation.lat,
+          lng: gpsLocation.lng
+        }
+      }
+    };
+
+    return $q.when(this._Keep.update().thiz(destination).where('dtuid', dtuid).to('destinations'));
   }
 
 
   /**
-   * Get destinations with only their location
-   * and order
+   * Get locations of stores in the plan
+   *
+   * @return {Promise.<Array.<DStore>>} [description]
+   */
+  function getStoreLocations() {
+    var self = this;
+
+    return this._Piggyback.GET(this._apis.plan.detail, {fields: ['dstores']})
+      .then(function(resp) {
+        if(resp.status === 200) self.init(resp.data);
+        return self.dstores;
+      });
+  }
+
+
+  /**
+   * Get destinations of a shopplan
+   *
+   * [IMP][TO DO] Update what's fetched from server using the local
+   * additions or updates
+   *
+   * @return {Promise.<Array} [description]
    */
   function getDestinations() {
     var self = this;
 
     return this._Piggyback.GET(this._apis.plan.detail, {fields: ['destinations']})
       .then(function(resp) {
-        if(resp.status === 200) self.destinationLocs = resp.data;
-        return self;
+        if(resp.status === 200) self.init(resp.data);
+        return self.destinations;
       });
   }
 
 
   //////////////////// INVITES RELATED /////////////////////////
 
+  function getInvites() {
+    var self = this;
+
+    return this._Piggyback.GET(this._apis.plan.invites)
+      .then(function(resp) {
+        if(resp.status === 200) self.init(resp.data);
+        return self.invites;
+      });
+  }
+
   /**
    * Add user to invite list
    *
-   * @param {string} userId User Id
+   * @param {Number} uuid User unique id
    */
-  function addToInvitation(userId) {
-    this._Keep.push().thiz(userId).to('invites');
+  function addToInvitation(uuid) {
+    var friend = {uuid: uuid}
+
+    return $q.when(this._Keep.push().thiz(friend).to('invites'));
   }
 
   /**
    * Remove user from invitation
    *
+   * @param {Number} uuid user unique id
    * @return {Promise.<bool>} Promise of success
    */
   function removeFromInvitation(uuid) {
-    var invites = [];
-    this._Keep.update().thiz(invites).from('invites');
-    invites.concat(this._plan.invites);
-    return invites;
+    return $q.when(this._Keep.remove().thiz('uuid', uuid).from('invites'));
   }
 
+
+  ////////////////////// OTHERS /////////////////////////////
 
   /**
    * Get the detailed version of this plan
@@ -237,9 +284,10 @@ function _ShopPlan($q) {
 
   /**
    * End plan
+   * [TO DO]
    */
   function end() {
-    this._Piggyback.queue('POST', this._apis.plan.end);
+    // this._Piggyback.POST('POST', this._apis.plan.end);
   }
 
 
@@ -251,14 +299,14 @@ function _ShopPlan($q) {
 
   function _create() {
     var self = this;
-    var data = this._Keep.withinTxn().getUpdates();
+    var data = this._Keep.withinTxn().getCRUDS();
 
     return this.Piggyback.POST(this._apis.plan.create, null, data)
       .then(function(resp) {
         if(resp.status === 200 && resp.data) {
           // resp.data is ShopPlan (thrift)
           self.isNewPlan  = false;
-          self.shopplanId = resp.data;
+          self.shopplanId = resp.data.shopplanId;
           self.suid       = shopplanId.suid;
 
           self.init(resp.data);
@@ -269,7 +317,17 @@ function _ShopPlan($q) {
 
 
   function _save() {
+    var self = this;
+    var data = this._Keep.withinTxn().getCRUDS();
 
+    return this._Piggyback.POST(this._apis.plan.crud, null, data)
+      .then(function(resp) {
+        if(resp.status === 200 && resp.data) {
+          self.init(resp.data); // return summary atleast
+
+          return true;
+        } else return false;
+      });
   }
 
 }

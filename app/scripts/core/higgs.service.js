@@ -12,7 +12,7 @@ function HiggsProvider() {
   this.setHiggsHost  = setHiggsHost;
   this.setHiggsPort  = setHiggsPort;
 
-  this.$get = ['$q', 'cache', 'PiggybackFactory', 'ShopPlansFactory', 'BucketFactory', 'FB', HiggsFactory];
+  this.$get = ['lodash', '$q', 'cache', 'PiggybackFactory', 'ShopPlansFactory', 'BucketFactory', 'FB', HiggsFactory];
 
 
   //////////////////////////////////////////////
@@ -23,14 +23,17 @@ function HiggsProvider() {
   function setHiggsPort(p) { port = p }
 
 
-  function HiggsFactory($q, cache, PiggybackFactory, ShopPlansFactory, BucketFactory, FB) {
+  function HiggsFactory(_, $q, cache, PiggybackFactory, ShopPlansFactory, BucketFactory, FB) {
     var _Higgs;
 
     _Higgs = (function() {
 
       /**
-       * [Higgs description]
-       * @param {[type]} config [description]
+       * Main API Client for Higgs service
+       *
+       * [NOTE]
+       * - Currently only allows adding items to bucket, later allowing adding stores too
+       * -
        */
       function Higgs(config) {
         this.apiVersion = config.apiVersion;
@@ -67,34 +70,34 @@ function HiggsProvider() {
       }
 
       // Public
-      Higgs.prototype.isLoggedIn            = isLoggedIn;
-      Higgs.prototype.login                 = login;
-      Higgs.prototype.getUserInfo           = getUserInfo;
+      Higgs.prototype.isLoggedIn              = isLoggedIn;
+      Higgs.prototype.login                   = login;
+      Higgs.prototype.getUserInfo             = getUserInfo;
 
-      Higgs.prototype.addStoreToBucket      = addStoreToBucket;
-      Higgs.prototype.removeStoreFromBucket = removeStoreFromBucket;
+      Higgs.prototype.addItemToBucket         = addItemToBucket;
+      Higgs.prototype.removeItemFromBucket    = removeItemFromBucket;
+      Higgs.prototype.getBucketStoreLocations = getBucketStoreLocations;
 
-      Higgs.prototype.addItemToBucket       = addItemToBucket;
-      Higgs.prototype.removeStoreFromBucket = removeStoreFromBucket;
+      Higgs.prototype.getFeed                 = getFeed;
 
-      Higgs.prototype.getFeed               = getFeed;
+      Higgs.prototype.getFriendsForInvite     = getFriendsForInvite;
 
-      Higgs.prototype.getFriends            = getFriends;
 
-      Higgs.prototype.getShopPlans          = getShopPlans;
-      Higgs.prototype.getShopPlan           = getShopPlan;
-      Higgs.prototype.getNewShopPlan        = getNewShopPlan;
-      Higgs.prototype.savePlan              = savePlan;
+      Higgs.prototype.getShopPlans            = getShopPlans;
+      Higgs.prototype.getShopPlan             = getShopPlan;
+      Higgs.prototype.getNewShopPlan          = getNewShopPlan;
+      Higgs.prototype.savePlan                = savePlan;
 
-      Higgs.prototype.updateQuery           = updateQuery;
-      Higgs.prototype.getSearchResults      = getSearchResults;
+
+      Higgs.prototype.updateQuery             = updateQuery;
+      Higgs.prototype.getSearchResults        = getSearchResults;
 
       // Private
-      Higgs.prototype._login                = _login;
-      Higgs.prototype._getUser              = _getUser;
-      Higgs.prototype._getCommonFeed        = _getCommonFeed;
-      Higgs.prototype._getUserFeed          = _getUserFeed;
-      Higgs.prototype._addToCache           = _addToCache;
+      Higgs.prototype._login                  = _login;
+      Higgs.prototype._getUser                = _getUser;
+      Higgs.prototype._getCommonFeed          = _getCommonFeed;
+      Higgs.prototype._getUserFeed            = _getUserFeed;
+      Higgs.prototype._addToCache             = _addToCache;
 
       return Higgs;
 
@@ -126,7 +129,7 @@ function HiggsProvider() {
           else return false;
         }
 
-      };
+      }
 
 
       /**
@@ -165,23 +168,26 @@ function HiggsProvider() {
       }
 
 
-      function addStoreToBucket(storeId) {
-        this._Bucket.addStore(storeId);
-      }
-
-      function removeStoreFromBucket(storeId) {
-        this._Bucket.removeStore(storeId);
-      }
+      //////////////////////// Bucket Related /////////////////////////////
 
       function addItemToBucket(itemId, storeId) {
         this._Bucket.addItem(itemId, storeId);
       }
 
-      function removeStoreFromBucket(itemId, storeId) {
+      function removeItemFromBucket(itemId, storeId) {
         this._Bucket.removeItem(itemId, storeId);
       }
 
+      function getBucketStoreLocations() {
+        return this.isLoggedIn()
+          .then(function(loggedIn) {
+            if(loggedIn) return this._Bucket.getStoreLocations();
+            else return $q.reject(new Error("User is not authenticated"));
+          });
+      }
 
+
+      //////////////////// Feed Related //////////////////////////
 
       /**
        * Get feed.
@@ -206,14 +212,16 @@ function HiggsProvider() {
       }
 
 
+      /////////////////////// User Friends Related//////////////////////////
+
       /**
        * Get user friends
        *
-       * @returns {Promise.<Array>} Promise that resolves to array of friends
+       * @returns {Promise.<Array.<Friend>>} Promise of array of friends
        */
-      function getFriends() {
+      function getFriendsForInvite() {
         return
-          this._cache.get('friends') ||
+          $q.when(this._cache.get('friends')) ||
           this._Piggyback
             .GET('me/friends')
             .then(function(resp) {
@@ -225,12 +233,14 @@ function HiggsProvider() {
       }
 
 
+      //////////////////////// ShopPlans Related //////////////////////////
+
       /**
        * Get all shopping plans of the user.
        * Make sure to use this api only after user
        * has logged in
        *
-       * [NOTE] Each shopplan will necessariy have the
+       * [NOTE] Each shopplan will necessarily have the
        * summary data.
        *
        * @return {Promise.<Array.<ShopPlan>?} Promise of Array ShopPlan objects with summary details
@@ -241,7 +251,7 @@ function HiggsProvider() {
         return this.isLoggedIn()
                   .then(function(loggedIn) {
                     if(loggedIn) return self._ShopPlans.all();
-                    else throw new TypeError('Cant get shopping plans for not logged in user');
+                    else return $q.reject(new TypeError('Cant get shopping plans if user not logged in'));
                   });
       }
 
@@ -252,16 +262,16 @@ function HiggsProvider() {
        * [NOTE] the shopplan instance may or may not
        * have the summary/details
        *
-       * @param  {string} planId   ShopPlan id
+       * @param  {string} suid   ShopPlan unique id
        * @return {Promise.<ShopPlan>} Promise of a ShopPlan instance
        */
-      function getShopPlan(planId) {
+      function getShopPlan(suid) {
         var self = this;
 
         return this._isLoggedIn()
                   .then(function(loggedIn) {
-                    if(loggedIn) return self._ShopPlans.get(planId);
-                    else throw new TypeError('Cant get shopping plan for not logged in user')
+                    if(loggedIn) return self._ShopPlans.get(suid);
+                    else return $q.reject(new TypeError('Cant get shopping plan if user not logged in'));
                   });
       }
 
