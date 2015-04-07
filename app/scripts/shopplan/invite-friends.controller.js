@@ -8,41 +8,76 @@ InviteFriendsController.$inject = [
   'initShopPlanner'
 ];
 
+/**
+ * Controller for editing invites during create plan
+ *
+ * Common object used
+ * friend
+ *  {
+ *    id: { uuid: <Number> }
+ *    name:{
+ *      first: <string>
+ *      last: <string>
+ *      handle: <string>
+ *    }
+ *    avatar: {
+ *      small: <url - string>
+ *    }
+ *    inviteStatus: <constant string>
+ *  }
+ *
+ */
 function InviteFriendsController(_, $scope, ShopPlanner) {
 
   ShopPlanner.ensurePlanSelected();
 
   var vm = this;
 
-  vm.friends = ShopPlanner.friends;
-  vm.invitedFriends = {}
+  vm.friends          = ShopPlanner.friends;
+  vm.invitedFriends   = {};
 
   // ViewModel methods
   vm.toggleInvitation = toggleInvitation;
   vm.isInvited        = isInvited;
 
+  _activate();
 
   ///////////////////////
   // ViewModel methods //
   ///////////////////////
 
-  function toggleInvitation(userId) {
-    if(this.isInvited(userId)) _addInvitation(userId);
-    else _removeInvitation(userId);
+  function toggleInvitation(uuid) {
+    if(this.isInvited(uuid)) _addInvitation(uuid);
+    else _removeInvitation(uuid);
   }
 
-  function isInvited(userId) {
-    return !!vm.invitedFriends[userId]
+  function isInvited(uuid) {
+    return !!vm.invitedFriends[uuid];
   }
 
-  function _addInvitation(userId) {
-    ShopPlanner.addToInvitation(userId)
-    vm.invitedFriends[userId] = true;
+  ///////////////////////
+  // Private functions //
+  ///////////////////////
+
+  function _activate() {
+
+    // Lazily get existing friends
+    ShopPlanner.getExistingInvites()
+      .then(function(invites) {
+        _.forEach(invites, function(friend) {
+          vm.isInvited[friend.id.uuid] = true;
+        });
+      });
   }
 
-  function _removeInvitation(userId) {
-    ShopPlanner.removeFromInvitation(userId);
-    vm.invitedFriends[userId] = false;
+  function _addInvitation(uuid) {
+    ShopPlanner.addToInvitation(uuid);
+    vm.invitedFriends[uuid] = true;
+  }
+
+  function _removeInvitation(uuid) {
+    ShopPlanner.removeFromInvitation(uuid);
+    vm.invitedFriends[uuid] = false;
   }
 
 }

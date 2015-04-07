@@ -46,9 +46,10 @@ function ShopPlannerFactory($q, _, $state, Higgs) {
     ShopPlanner.prototype.getExistingStoreLocs         = getExistingStoreLocs;
     ShopPlanner.prototype.getExistingDestinations      = getExistingDestinations;
     ShopPlanner.prototype.addDestination               = addDestination;
-    ShopPlanner.prototype.removeDestination           = removeDestination;
+    ShopPlanner.prototype.removeDestination            = removeDestination;
     ShopPlanner.prototype.updateDestination            = updateDestination;
 
+    ShopPlanner.prototype.getExistingInvites           = getExistingInvites;
     ShopPlanner.prototype.addToInvitation              = addToInvitation;
     ShopPlanner.prototype.removeFromInvitation         = removeFromInvitation;
 
@@ -162,6 +163,10 @@ function ShopPlannerFactory($q, _, $state, Higgs) {
 
     //////////////////////////// INVITING FRIENDS //////////////////////////////
 
+    function getExistingInvites() {
+      return this._planT.getInvites();
+    }
+
     function addToInvitation(uuid) {
       return this._planT.addToInvitation(uuid);
     }
@@ -176,30 +181,13 @@ function ShopPlannerFactory($q, _, $state, Higgs) {
     // Save the the target plan
     // and remove the target plan selection
     function savePlan() {
+      var self = this;
+
       return Higgs.savePlan(this._planT)
         .then(function(success) {
           if(success) self._planT = void 0;
           return success;
         });
-    }
-
-
-    ///////////////////////////////////////////////////
-    /////////////// Private functions /////////////////
-    ///////////////////////////////////////////////////
-
-    function _setPlanId(planId) {
-      this._planId = planId;
-    }
-
-    function _setDestinations(destinations) {
-      this.destinations = destinations;
-      return this;
-    }
-
-    function _setFriends(friends) {
-      this.friends = friends;
-      return this;
     }
 
   })();
