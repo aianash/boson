@@ -3,7 +3,7 @@
 
 		<div class="row">
 			<a class="row"
-				 ng-click="planner.createNewPlan()">
+				 ng-click="plans.createNewPlan()">
 				<div class="col"><i class="icon ion-ios-plus-outline"></i></div>
 				<div class="col"><p>Create a new plan</p></div>
 			</a>
@@ -11,8 +11,8 @@
 
 		<ion-list class="plans-list">
 			<ion-item id="plan-{{plan.shopplanId.suid"
-								ng-repeat="plan in planner.shopplans"
-								nb-click="planner.choosePlan(plan.shopplanId.suid)">
+								ng-repeat="plan in plans.shopplans"
+								nb-click="plans.choosePlan(plan.shopplanId.suid)">
 
 				<!-- [TO DO] make changes of the data according to new plan structure  -->
         <div class="row plan-detail">

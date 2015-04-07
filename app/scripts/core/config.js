@@ -130,7 +130,7 @@ function configure($ionicConfigProvider, $stateProvider, $urlRouterProvider, Hig
   $stateProvider.state('boson.shopplan.create.plans', {
     url: '/plans',
     templateUrl: 'shopplan/choose-plans.html',
-    controller: 'ChoosePlansController as planner',
+    controller: 'ChoosePlansController as plans',
     resolve: {
       initShopPlanner: withShopPlans
     }
@@ -218,8 +218,7 @@ function withShopPlans(ShopPlanner) {
 withMapLocations.$inject = ['lodash', 'initShopPlanner'];
 
 function withMapLocations(_, ShopPlanner) {
-  return ShopPlanner.initStoreLocations()
-    .then(_.bind(ShopPlanner.initDestinations, ShopPlanner));
+  return ShopPlanner.initStoreLocationsFromBucket();
 }
 
 

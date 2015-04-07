@@ -23,42 +23,36 @@ function ShopPlannerFactory($q, _, $state, Higgs) {
       // chosen to update/create
       //
       // This instance will be directly
-      // used to perfirm CRUD operation
+      // used to perform CRUD operation
       // in very create plan step.
       this._planT;
 
       // These variables are updated
       // before a view is created
       this.shopplans;
-      this.stores;
+      this.bucketStores;
       this.friends;
     }
 
     // Public
-    ShopPlanner.prototype.initShopPlans           = initShopPlans;
-    ShopPlanner.prototype.initStoreLocations      = initStoreLocations;
-    ShopPlanner.prototype.initDestinations        = initDestinations;
-    ShopPlanner.prototype.initFriends             = initFriends;
+    ShopPlanner.prototype.initShopPlans                = initShopPlans;
+    ShopPlanner.prototype.initStoreLocationsFromBucket = initStoreLocationsFromBucket;
+    ShopPlanner.prototype.initFriends                  = initFriends;
 
-    ShopPlanner.prototype.ensurePlanSelected      = ensurePlanSelected;
-    ShopPlanner.prototype.chooseExistingShopPlan  = chooseExistingShopPlan;
-    ShopPlanner.prototype.createNewPlan           = createNewPlan;
+    ShopPlanner.prototype.ensurePlanSelected           = ensurePlanSelected;
+    ShopPlanner.prototype.chooseExistingShopPlan       = chooseExistingShopPlan;
+    ShopPlanner.prototype.createNewPlan                = createNewPlan;
 
-    ShopPlanner.prototype.addDestination          = addDestination;
-    ShopPlanner.prototype.removeDestionation      = removeDestionation;
-    ShopPlanner.prototype.updateDestination       = updateDestination;
+    ShopPlanner.prototype.getExistingStoreLocs         = getExistingStoreLocs;
+    ShopPlanner.prototype.getExistingDestinations      = getExistingDestinations;
+    ShopPlanner.prototype.addDestination               = addDestination;
+    ShopPlanner.prototype.removeDestination           = removeDestination;
+    ShopPlanner.prototype.updateDestination            = updateDestination;
 
-    ShopPlanner.prototype.addToInvitation         = addToInvitation;
-    ShopPlanner.prototype.removeFromInvitation    = removeFromInvitation;
+    ShopPlanner.prototype.addToInvitation              = addToInvitation;
+    ShopPlanner.prototype.removeFromInvitation         = removeFromInvitation;
 
-    ShopPlanner.prototype.savePlan                = savePlan;
-
-    // Private
-    ShopPlanner.prototype._setPlanId              = _setPlanId;
-    ShopPlanner.prototype._setStoreLocations      = _setStoreLocations;
-    ShopPlanner.prototype._setDestinations        = _setDestinations;
-    ShopPlanner.prototype._setShopPlans           = _setShopPlans;
-    ShopPlanner.prototype._setFriends             = _setFriends;
+    ShopPlanner.prototype.savePlan                     = savePlan;
 
     return ShopPlanner;
 
@@ -66,36 +60,49 @@ function ShopPlannerFactory($q, _, $state, Higgs) {
     /////////////// Public functions //////////////////
     ///////////////////////////////////////////////////
 
+
     ///////////////////// INITS ///////////////////////
 
+    // Get list of shop plans (with summary)
     function initShopPlans() {
-      return $q.when([])
-        .then(_.bind(this._setShopPlans, this));
+      var self = this;
+
+      return Higgs.getShopPlans()
+        .then(function(plans) { self.shopplans = plans; return self;});
     }
 
-    function initStoreLocations() {
-      return $q.when({})
-        .then(_.bind(this._setStoreLocations, this));
+    // Get lcoations for store in bucket to show on map
+    //
+    // [TO DO] Bucket should be filtered from a
+    // particulary city or area as defined from
+    // selected shop plan
+    function initStoreLocationsFromBucket() {
+      var self = this;
+
+      return Higgs.getBucketStoreLocations()
+        .then(function(storeLocs) { self.bucketStoreLocs = storeLocs; return self;});
     }
 
-    function initDestinations() {
-      if(!!this._creatingNewPlan) return $q.when(true);
-      else return $q.when({}) // get existeing destinations
-            .then(_.bind(this._setDestinations, this));
-    }
-
+    // Get friends to invite; already invited ones
+    // for an existing plan will be fetched later
+    //
+    // [TO DO] Friends should be filtered based on
+    // location
     function initFriends() {
-      return $q.when({})
-        .then(_.bind(this._setFriends, this));
+      var self = this;
+
+      return Higgs.getFriendsForInvite()
+        .then(function(friends) { self.friends = friends; return self; });
     }
 
 
+    ///////////////////// CHOOSING PLANS ////////////////////////
 
     /**
      * Function that ensure that plan is
      * selected in boson.shopplan.create.plans ui
      *
-     * ifnot goes to that view.
+     * if not go to plan selection view.
      */
     function ensurePlanSelected() {
       if(!this._planT) $state.go('boson.shopplan.create.plans');
@@ -130,23 +137,41 @@ function ShopPlannerFactory($q, _, $state, Higgs) {
 
 
 
+    ////////////////////////// CHOOSING DESTINATIONS /////////////////////////
 
-    function addDestination(location, order) {
-      return $q.when({destId: _.now(), location: location, order: order});
+    function getExistingStoreLocs() {
+      return this._planT.isNewPlan ? $q.when([]) : this._planT.getStoreLocations();
     }
 
-    function removeDestionation(destId) {
-      return $q.when(destId);
+    function getExistingDestinations() {
+      return this._planT.isNewPlan ? $q.when([]) : this._planT.getDestinations();
     }
 
-    function updateDestination(destId, location, order) {
-      return $q.when({destId: destId, location: location, order: order});
+    function addDestination(gpsLocation) {
+      return this._planT.addDestination(gpsLocation);
     }
 
-    function addToInvitation(userId) {}
+    function removeDestination(dtuid) {
+      return this._planT.removeDestionation(dtuid);
+    }
 
-    function removeFromInvitation(userId) {}
+    function updateDestination(dtuid, gpsLocation) {
+      return this._planT.updateDestination(dtuid, gpsLocation);
+    }
 
+
+    //////////////////////////// INVITING FRIENDS //////////////////////////////
+
+    function addToInvitation(uuid) {
+      return this._planT.addToInvitation(uuid);
+    }
+
+    function removeFromInvitation(uuid) {
+      return this._planT.removeFromInvitation(uuid);
+    }
+
+
+    //////////////////////////// SAVING PLAN //////////////////////////////
 
     // Save the the target plan
     // and remove the target plan selection
@@ -165,17 +190,6 @@ function ShopPlannerFactory($q, _, $state, Higgs) {
 
     function _setPlanId(planId) {
       this._planId = planId;
-    }
-
-
-    function _setShopPlans(plans) {
-      this.shopplans = plans;
-      return this;
-    }
-
-    function _setStoreLocations(stores) {
-      this.stores = stores;
-      return this;
     }
 
     function _setDestinations(destinations) {
