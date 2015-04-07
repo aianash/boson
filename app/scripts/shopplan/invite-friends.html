@@ -1,6 +1,14 @@
 <ion-view>
-	<ion-content class="has-tabs-top">
-		Invite friends
-	</ion-content>
-
+  <ion-content class="friends">
+    <ion-list>
+      <ion-item ng-repeat="friend in invites.friends" class="item-avatar">
+        <img ng-src="{{friend.avatar}}" />
+        <h2>{{friend.name.first}} {{friend.name.last}}</h2>
+        <p>{{friend.name.handle}}</p>
+        <button class="button button-clear icon ion-ios-checkmark"
+                ng-click="invites.toggleInvitation(friend.uuid)"
+                ng-class="{invited: invites.isInvited(friend.uuid)}"></button>
+      </ion-item>
+    </ion-list>
+  </ion-content>
 </ion-view>

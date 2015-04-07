@@ -130,26 +130,26 @@ function _Piggyback($http, $q) {
   }
 
   // Public
-  Piggyback.prototype.queue = queue;
-  Piggyback.prototype.status = status;
-  Piggyback.prototype.useAccessToken = useAccessToken;
-  Piggyback.prototype.setAccessToken = setAccessToken;
-  Piggyback.prototype.GET = GET;
-  Piggyback.prototype.POST = POST;
-  Piggyback.prototype.addPiggySource = addPiggySource;
+  Piggyback.prototype.queue                    = queue;
+  Piggyback.prototype.status                   = status;
+  Piggyback.prototype.useAccessToken           = useAccessToken;
+  Piggyback.prototype.setAccessToken           = setAccessToken;
+  Piggyback.prototype.GET                      = GET;
+  Piggyback.prototype.POST                     = POST;
+  Piggyback.prototype.addPiggySource           = addPiggySource;
 
   // Private
   Piggyback.prototype._handlePiggybackResponse = _handlePiggybackResponse
-  Piggyback.prototype._hydrateRequestConfig = _hydrateRequestConfig;
-  Piggyback.prototype._addPiggyback = _addPiggyback;
-  Piggyback.prototype._getPiggybackReq = _getPiggybackReq;
-  Piggyback.prototype._updateFromSources = _updateFromSources;
-  Piggyback.prototype._setupPiggyback = _setupPiggyback;
-  Piggyback.prototype._isPiggybackSane = _isPiggybackSane;
-  Piggyback.prototype._addAccessToken = _addAccessToken;
-  Piggyback.prototype._newPiggyId = _newPiggyId;
-  Piggyback.prototype._newPiggyTxnId = _newPiggyTxnId;
-  Piggyback.prototype._purge = _purge;
+  Piggyback.prototype._hydrateRequestConfig    = _hydrateRequestConfig;
+  Piggyback.prototype._addPiggyback            = _addPiggyback;
+  Piggyback.prototype._getPiggybackReq         = _getPiggybackReq;
+  Piggyback.prototype._updateFromSources       = _updateFromSources;
+  Piggyback.prototype._setupPiggyback          = _setupPiggyback;
+  Piggyback.prototype._isPiggybackSane         = _isPiggybackSane;
+  Piggyback.prototype._addAccessToken          = _addAccessToken;
+  Piggyback.prototype._newPiggyId              = _newPiggyId;
+  Piggyback.prototype._newPiggyTxnId           = _newPiggyTxnId;
+  Piggyback.prototype._purge                   = _purge;
 
   return Piggyback;
 

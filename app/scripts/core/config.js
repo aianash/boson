@@ -149,7 +149,7 @@ function configure($ionicConfigProvider, $stateProvider, $urlRouterProvider, Hig
   $stateProvider.state('boson.shopplan.create.invite', {
     url: '/friends',
     templateUrl: 'shopplan/invite-friends.html',
-    controller: 'InviteFriendsController as invite',
+    controller: 'InviteFriendsController as invites',
     resolve: {
       initShopPlanner: withFriends
     }

@@ -29,14 +29,14 @@ function _Bucket($q) {
      * @type {Keep}
      */
     this._Keep = keep;
-    this._Piggyback.addPiggySource(this._bucketUpdates);
-    this._Piggyback.addPiggySource(this._bucketRemovals);
+    // this._Piggyback.addPiggySource(this._bucketUpdates);
+    // this._Piggyback.addPiggySource(this._bucketRemovals);
 
     this._apis = {
       bucket: {
         update: 'bucket/udate',
         remove: 'bucket/remove',
-        get:    'bucket/get'
+        get:    'bucket/get',
         map: {
           locations: 'bucket/map/locations'
         }
