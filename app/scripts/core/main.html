@@ -1,32 +1,34 @@
-<ion-nav-bar class="insta-bar">
-
-  <ion-nav-buttons side="left">
-    <button class="button button-icon ion-bag"></button>
-    <button class="button button-icon ion-ios-search"></button>
-    <button class="button button-icon ion-ios-navigate-outline"></button>
-  </ion-nav-buttons>
-
-  <ion-nav-buttons side="right">
-    <button class="button button-icon ion-ios-person-outline"></button>
-  </ion-nav-buttons>
-
-</ion-nav-bar>
-
-
 <ion-side-menus delegate-handle="user">
+
   <ion-side-menu-content>
+    <ion-nav-bar class="insta-bar" no-tap-scroll="true" ng-controller="NavBarController as nav">
+
+      <ion-nav-buttons side="left">
+        <button class="button button-icon ion-bag"
+                ng-click="nav.goToFeed()"></button>
+        <button class="button button-icon ion-ios-search"
+                ng-click="nav.goToSearch()"></button>
+        <button class="button button-icon ion-ios-navigate-outline"
+                ng-click="nav.goToShopPlans()"></button>
+      </ion-nav-buttons>
+
+      <ion-nav-buttons side="right">
+        <button class="button button-icon ion-ios-person-outline"
+                ng-click="nav.toggleSideMenu()"></button>
+      </ion-nav-buttons>
+
+    </ion-nav-bar>
+
     <ion-nav-view></ion-nav-view>
   </ion-side-menu-content>
 
   <ion-side-menu side="right">
-    <ion-content scrollbar-y="false">
+    <ion-content scrollbar-y="false" ng-controller="SideMenuController as sidemenu">
+      {{sidemenu.userInfo.name.handle}}
       <div class="user">
-        <img ng-src="{{user.img}}" />
+        <img ng-src="{{sidemenu.userInfo.avatar.medium}}" />
       </div>
     </ion-content>
-    <ion-footer-bar>
-      <button ng-click="loginFacebook()"
-              class="button button-full icon-left ion-social-facebook button-positive">Login with Facebook</button>
-    </ion-footer-bar>
   </ion-side-menu>
+
 </ion-side-menus>

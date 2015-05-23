@@ -216,7 +216,7 @@ function _Piggyback($http, $q) {
    * @param {String} accessToken Access token
    */
   function setAccessToken(accessToken) {
-    if(typeof accesstoken === 'string') this._accessToken = accessToken;
+    if(typeof accessToken === 'string') this._accessToken = accessToken;
   }
 
 
@@ -232,9 +232,9 @@ function _Piggyback($http, $q) {
     var config = {
       url: this._endpoint + api,
       method: 'GET',
-      data: data || {},
+      data: data,
       params: params || {},
-      dontPiggyback: dontPiggyback || false
+      dontPiggyback: true // dontPiggyback || false
     };
 
     this._hydrateRequestConfig(config);
@@ -263,7 +263,7 @@ function _Piggyback($http, $q) {
       headers: {
         'Content-Type': 'text/json'
       },
-      dontPiggyback: dontPiggyback || false,
+      dontPiggyback: true // dontPiggyback || false,
     };
 
     this._hydrateRequestConfig(config);
@@ -472,7 +472,7 @@ function _Piggyback($http, $q) {
    * @param {Object} params reference $http request config params
    */
   function _addAccessToken(params) {
-    params.access_token = this._accessToken;
+    params.accessToken = this._accessToken;
   }
 
 

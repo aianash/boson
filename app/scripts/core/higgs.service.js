@@ -12,7 +12,7 @@ function HiggsProvider() {
   this.setHiggsHost  = setHiggsHost;
   this.setHiggsPort  = setHiggsPort;
 
-  this.$get = ['lodash', '$q', '$localForage', 'cache', 'PiggybackFactory', 'ShopPlansFactory', 'BucketFactory', 'FB', HiggsFactory];
+  this.$get = ['lodash', '$rootScope', '$q', '$localForage', 'cache', 'PiggybackFactory', 'ShopPlansFactory', 'BucketFactory', 'FB', HiggsFactory];
 
 
   //////////////////////////////////////////////
@@ -23,7 +23,7 @@ function HiggsProvider() {
   function setHiggsPort(p) { port = p }
 
 
-  function HiggsFactory(_, $q, $localForage, cache, PiggybackFactory, ShopPlansFactory, BucketFactory, FB) {
+  function HiggsFactory(_, $rootScope, $q, $localForage, cache, PiggybackFactory, ShopPlansFactory, BucketFactory, FB) {
     var _Higgs;
 
     _Higgs = (function() {
@@ -66,11 +66,7 @@ function HiggsProvider() {
         // get higgs token fron persistent store
         // if available
         $localForage.getItem('higgsAccessToken')
-          .then(function(token) {
-            self._Piggyback.setAccessToken(token);
-            self._higgsAccessToken = token;
-            self._isLoggedIn = true;
-          });
+          .then(_.bind(this._processAccessToken, this));
 
         // get user info from persistent store
         // if available
@@ -108,6 +104,7 @@ function HiggsProvider() {
       Higgs.prototype._getCommonFeed          = _getCommonFeed;
       Higgs.prototype._getUserFeed            = _getUserFeed;
       Higgs.prototype._addToCache             = _addToCache;
+      Higgs.prototype._processAccessToken     = _processAccessToken;
 
       return Higgs;
 
@@ -140,9 +137,8 @@ function HiggsProvider() {
        */
       function getUserInfo() {
         var self = this;
-
         if(this._userInfo) return $q.when(this._userInfo);
-        else if(!this.isLoggedIn) return $q.when(this._johnDoe);
+        else if(!this._isLoggedIn) return $q.when(this._johnDoe);
         else
           return this._Piggyback
             .GET('me')
@@ -258,7 +254,6 @@ function HiggsProvider() {
        * @return {Promise.<ShopPlan>} Promise of a ShopPlan instance
        */
       function getShopPlan(suid) {
-        var self = this;
 
         return this._isLoggedIn()
                   .then(function(loggedIn) {
@@ -372,10 +367,7 @@ function HiggsProvider() {
                   // These are long lived server token, so pesist them
                   return $localForage.setItem('higgsAccessToken', token)
                     .then(function() {
-                      self._higgsAccessToken = token;
-                      self._isLoggedIn = true;
-                      self._Piggyback.setAccessToken(token);
-                      return true;
+                      return self._processAccessToken(token);
                     });
                 }
                 console.error(JSON.stringify(resp));
@@ -453,6 +445,22 @@ function HiggsProvider() {
           self._cache.put(key, data);
           return data
         }
+      }
+
+
+      /**
+       * [_processAccessToken description]
+       * @param  {[type]} token [description]
+       * @return {[type]}       [description]
+       */
+      function _processAccessToken(token) {
+        if(typeof token === 'string') {
+          this._higgsAccessToken = token;
+          this._isLoggedIn = true;
+          this._Piggyback.setAccessToken(token);
+          $rootScope.$broadcast('user:loggedIn', {});
+          return true;
+        } else return false;
       }
 
     })();

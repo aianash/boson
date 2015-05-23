@@ -30,7 +30,7 @@ function configure($ionicConfigProvider, $stateProvider, $urlRouterProvider, $lo
 
   /** Configure higgs service provider */
   HiggsProvider.setHiggsPort(9000);
-  HiggsProvider.setHiggsHost('192.168.1.38');
+  HiggsProvider.setHiggsHost('192.168.1.35');
   HiggsProvider.setApiVersion('1');
   HiggsProvider.setClientId('boson-app');
 
@@ -75,8 +75,7 @@ function configure($ionicConfigProvider, $stateProvider, $urlRouterProvider, $lo
   $stateProvider.state('boson.feed.index', {
     url: '',
     templateUrl: 'feed/feed-index.html',
-    controller: 'FeedController',
-    controllerAs: 'vm',
+    controller: 'FeedController as feed',
     resolve: {
       initFeed: initializeFeed
     }
@@ -121,8 +120,7 @@ function configure($ionicConfigProvider, $stateProvider, $urlRouterProvider, $lo
   $stateProvider.state('boson.shopplan.index', {
     url: '',
     templateUrl: 'shopplan/shopplan-index.html',
-    controller: 'ShopPlanListController',
-    controllerAs: 'vm',
+    controller: 'ShopPlanListController as vm',
     resolve: {
       initShopPlan: initShopPlan
     }
