@@ -9,6 +9,7 @@ angular.module('boson', [
   /**
    * Feature areas
    */
+  'boson.login',
   'boson.feed',
   'boson.search',
   'boson.shopplan'

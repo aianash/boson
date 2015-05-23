@@ -6,6 +6,7 @@ angular.module('boson.core', [
    * Angular modules
    */
   'ngCordova',
+  'LocalForageModule',
 
   /**
    * Reusable cross app modules

@@ -18,26 +18,48 @@ function ConfigProvider() {
 }
 
 
-configure.$inject = ['$ionicConfigProvider', '$stateProvider', '$urlRouterProvider', 'HiggsProvider'];
+configure.$inject = ['$ionicConfigProvider', '$stateProvider', '$urlRouterProvider', '$localForageProvider', 'HiggsProvider'];
 
-function configure($ionicConfigProvider, $stateProvider, $urlRouterProvider, HiggsProvider) {
+function configure($ionicConfigProvider, $stateProvider, $urlRouterProvider, $localForageProvider, HiggsProvider) {
+
+  /** Configure localforage */
+  $localForageProvider.config({
+    name        : 'boson-store',
+    description : 'boson local storage for apps data'
+  });
 
   /** Configure higgs service provider */
-  HiggsProvider.setHiggsPort(8080);
-  HiggsProvider.setHiggsHost('http://localhost');
-  HiggsProvider.setApiVersion('0.1.0');
-  HiggsProvider.setAppSecret('pomodorotechnique');
+  HiggsProvider.setHiggsPort(9000);
+  HiggsProvider.setHiggsHost('192.168.1.38');
+  HiggsProvider.setApiVersion('1');
+  HiggsProvider.setClientId('boson-app');
 
 
   $ionicConfigProvider.tabs.position('bottom');
 
-  $urlRouterProvider.otherwise('/feed');
+  $urlRouterProvider.otherwise('/login');
 
   $stateProvider.state('boson', {
     abstract: true,
     templateUrl: 'core/main.html'
   });
 
+
+  /**
+   * Login View
+   */
+
+  $stateProvider.state('boson.login', {
+    abstract: true,
+    url: '/login',
+    template: '<ion-nav-view></ion-nav-view>'
+  });
+
+  $stateProvider.state('boson.login.index', {
+    url: '',
+    templateUrl: 'login/login-index.html',
+    controller: 'LoginController as login'
+  });
 
 
   /**
@@ -74,15 +96,13 @@ function configure($ionicConfigProvider, $stateProvider, $urlRouterProvider, Hig
   $stateProvider.state('boson.search.query', {
     url: '',
     templateUrl: 'search/query-index.html',
-    controller: 'QueryController',
-    controllerAs: 'vm'
+    controller: 'QueryController as qc'
   });
 
   $stateProvider.state('boson.search.result', {
-    url: '/results/:searchId',
+    url: '/results/:sruid',
     templateUrl: 'search/search-result-index.html',
-    controller: 'SearchResultController',
-    controllerAs: 'vm',
+    controller: 'SearchResultController as src',
     resolve: {
       initSearcher: initSearcher
     }
@@ -196,7 +216,7 @@ function initShopPlanDetail($stateParams, ShopPlan) {
 initSearcher.$inject = ['$stateParams', 'Searcher'];
 
 function initSearcher($stateParams, Searcher) {
-  return Searcher.getResults($stateParams.searchId)
+  return Searcher.getResults($stateParams.sruid, 0)
     .then(function() { return Searcher; });
 }
 

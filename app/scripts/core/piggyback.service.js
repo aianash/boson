@@ -28,13 +28,13 @@ function _PiggybackBuilder($http, $q) {
    */
   function PiggybackBuilder() {}
 
-  PiggybackBuilder.prototype.forService = forService;
-  PiggybackBuilder.prototype.atHost     = atHost;
-  PiggybackBuilder.prototype.atPort     = atPort;
-  PiggybackBuilder.prototype.forApiVersion = forApiVersion;
-  PiggybackBuilder.prototype.useAccessToken = useAccessToken;
+  PiggybackBuilder.prototype.forService       = forService;
+  PiggybackBuilder.prototype.atHost           = atHost;
+  PiggybackBuilder.prototype.atPort           = atPort;
+  PiggybackBuilder.prototype.forApiVersion    = forApiVersion;
+  PiggybackBuilder.prototype.useAccessToken   = useAccessToken;
   PiggybackBuilder.prototype.withCustomPrefix = withCustomPrefix;
-  PiggybackBuilder.prototype.build = build;
+  PiggybackBuilder.prototype.build            = build;
 
   return PiggybackBuilder;
 
@@ -76,7 +76,7 @@ function _PiggybackBuilder($http, $q) {
   function build() {
 
     this.customPrefix =
-      (typeof this.customPrefix !== 'undefined' ? this.customPrefix + '/' : '')
+      (typeof this.customPrefix !== 'undefined' ? this.customPrefix : '')
 
     var endpoint = 'http://'
                    + this.host + ':'
@@ -119,7 +119,7 @@ function _Piggyback($http, $q) {
     this._piggySources = [];
     this._deferreds = {};
 
-    this._endpoint = endpoint + '/';
+    this._endpoint = endpoint;
     this.name = name;
 
     // If acces_token is enabled then
@@ -256,11 +256,14 @@ function _Piggyback($http, $q) {
    */
   function POST(api, params, data, dontPiggyback) {
     var config = {
-      url: this.endpoint + api,
+      url: this._endpoint + api,
       method: 'POST',
       data: data || {},
       params: params || {},
-      dontPiggyback: dontPiggyback || false
+      headers: {
+        'Content-Type': 'text/json'
+      },
+      dontPiggyback: dontPiggyback || false,
     };
 
     this._hydrateRequestConfig(config);

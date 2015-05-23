@@ -27,14 +27,14 @@ var args = require('yargs')
     .alias('b', 'build')
     .alias('r', 'run')
     .default('build', false)
-    .default('port', 9000)
+    .default('port', 9001)
     .argv;
 
 var build = args.build || args.emulate || args.run;
 var emulate = args.emulate;
 var run = args.run;
 var port = args.port;
-var targetDir = path.resolve(build ? 'www' : '.tmp');
+var targetDir = 'www' // path.resolve(build ? 'www' : '.tmp');
 
 // if we just use emualate or run without specifying platform, we assume iOS
 // in this case the value returned from yargs would just be true
@@ -70,7 +70,7 @@ gulp.task('styles', function() {
       .pipe(plugins.autoprefixer('last 1 Chrome version', 'last 3 iOS versions', 'last 3 Android versions'))
 
   var cssStream = gulp
-    .src('bower_components/ionic/css/ionic.min.css');
+    .src('bower_components/ionic/release/css/ionic.min.css');
 
   var ioniconsStream = gulp
     .src('bower_components/ionicons/css/ionicons.min.css');
@@ -292,70 +292,9 @@ gulp.task('default', function(done) {
       'vendor'
     ],
     'index',
-    build ? 'noop' : 'watchers',
-    build ? 'noop' : 'serve',
+    // build ? 'noop' : 'watchers',
+    // build ? 'noop' : 'serve',
     emulate ? 'ionic:emulate' : 'noop',
     run ? 'ionic:run' : 'noop',
     done);
 });
-
-
-
-
-
-
-
-
-
-/** OLD BUILD FILE */
-
-// var gulp = require('gulp');
-// var gutil = require('gulp-util');
-// var bower = require('bower');
-// var concat = require('gulp-concat');
-// var sass = require('gulp-sass');
-// var minifyCss = require('gulp-minify-css');
-// var rename = require('gulp-rename');
-// var sh = require('shelljs');
-
-// var paths = {
-//   sass: ['./scss/**/*.scss']
-// };
-
-// gulp.task('default', ['sass']);
-
-// gulp.task('sass', function(done) {
-//   gulp.src('./scss/ionic.app.scss')
-//     .pipe(sass())
-//     .pipe(gulp.dest('./www/css/'))
-//     .pipe(minifyCss({
-//       keepSpecialComments: 0
-//     }))
-//     .pipe(rename({ extname: '.min.css' }))
-//     .pipe(gulp.dest('./www/css/'))
-//     .on('end', done);
-// });
-
-// gulp.task('watch', function() {
-//   gulp.watch(paths.sass, ['sass']);
-// });
-
-// gulp.task('install', ['git-check'], function() {
-//   return bower.commands.install()
-//     .on('log', function(data) {
-//       gutil.log('bower', gutil.colors.cyan(data.id), data.message);
-//     });
-// });
-
-// gulp.task('git-check', function(done) {
-//   if (!sh.which('git')) {
-//     console.log(
-//       '  ' + gutil.colors.red('Git is not installed.'),
-//       '\n  Git, the version control system, is required to download Ionic.',
-//       '\n  Download git here:', gutil.colors.cyan('http://git-scm.com/downloads') + '.',
-//       '\n  Once git is installed, run \'' + gutil.colors.cyan('gulp install') + '\' again.'
-//     );
-//     process.exit(1);
-//   }
-//   done();
-// });

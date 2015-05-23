@@ -5,25 +5,25 @@ angular
 
 function HiggsProvider() {
 
-  var apiVersion, appSecret, host, port;
+  var apiVersion, clientId, host, port;
 
   this.setApiVersion = setApiVersion;
-  this.setAppSecret  = setAppSecret;
+  this.setClientId   = setClientId;
   this.setHiggsHost  = setHiggsHost;
   this.setHiggsPort  = setHiggsPort;
 
-  this.$get = ['lodash', '$q', 'cache', 'PiggybackFactory', 'ShopPlansFactory', 'BucketFactory', 'FB', HiggsFactory];
+  this.$get = ['lodash', '$q', '$localForage', 'cache', 'PiggybackFactory', 'ShopPlansFactory', 'BucketFactory', 'FB', HiggsFactory];
 
 
   //////////////////////////////////////////////
 
   function setApiVersion(version) { apiVersion = version; }
-  function setAppSecret(secret) { appSecret = secret }
+  function setClientId(id) { clientId = id }
   function setHiggsHost(h) { host = h }
   function setHiggsPort(p) { port = p }
 
 
-  function HiggsFactory(_, $q, cache, PiggybackFactory, ShopPlansFactory, BucketFactory, FB) {
+  function HiggsFactory(_, $q, $localForage, cache, PiggybackFactory, ShopPlansFactory, BucketFactory, FB) {
     var _Higgs;
 
     _Higgs = (function() {
@@ -37,7 +37,7 @@ function HiggsProvider() {
        */
       function Higgs(config) {
         this.apiVersion = config.apiVersion;
-        this.appSecret  = config.appSecret; /// NOT USED YET
+        this.clientId   = config.clientId; /// NOT USED YET
 
         this._cache = cache;
         this._Piggyback = PiggybackFactory
@@ -45,7 +45,7 @@ function HiggsProvider() {
                             .forService('higgs')
                             .atHost(config.host)
                             .atPort(config.port)
-                            .withCustomPrefix('higgs')
+                            .withCustomPrefix('v')
                             .forApiVersion(apiVersion)
                             .useAccessToken(true)
                             .build();
@@ -54,24 +54,34 @@ function HiggsProvider() {
 
         this._Bucket = BucketFactory.create(this._Piggyback);
 
-        // Three states for higgs authorization
-        // 1. NOT_AUTHORIZED        - user not yet logged in to facebook
-        // 2. PENDING_AUTHORIZATION - user logged in to facebook, yet
-        //                           to receive higgs accessToken
-        // 3. AUTHORIZED            - we now have higgs accessToken too
-        this._higgsLoginStatus = 'NOT_AUTHORIZED';
-
-
         // User info object for un-identified (not logged in) user
         this._johnDoe = {
           img: 'http://imageshack.com/a/img661/3717/dMwcZr.jpg'
         };
 
+        this._isLoggedIn = false;
+
+        var self = this;
+
+        // get higgs token fron persistent store
+        // if available
+        $localForage.getItem('higgsAccessToken')
+          .then(function(token) {
+            self._Piggyback.setAccessToken(token);
+            self._higgsAccessToken = token;
+            self._isLoggedIn = true;
+          });
+
+        // get user info from persistent store
+        // if available
+        $localForage.getItem('userInfo')
+          .then(function(info) {
+            self._userInfo = info;
+          });
       }
 
       // Public
-      Higgs.prototype.isLoggedIn              = isLoggedIn;
-      Higgs.prototype.login                   = login;
+      Higgs.prototype.loginUsingFacebook      = loginUsingFacebook;
       Higgs.prototype.getUserInfo             = getUserInfo;
 
       Higgs.prototype.addItemToBucket         = addItemToBucket;
@@ -93,7 +103,7 @@ function HiggsProvider() {
       Higgs.prototype.getSearchResults        = getSearchResults;
 
       // Private
-      Higgs.prototype._login                  = _login;
+      Higgs.prototype._loginToHiggs           = _loginToHiggs;
       Higgs.prototype._getUser                = _getUser;
       Higgs.prototype._getCommonFeed          = _getCommonFeed;
       Higgs.prototype._getUserFeed            = _getUserFeed;
@@ -107,44 +117,18 @@ function HiggsProvider() {
       /////////////// Public functions //////////////////
       ///////////////////////////////////////////////////
 
-      /**
-       * 1. Check if user is logged in
-       * 2. If logged then login in higgs too
-       *
-       * @return {Promise[Boolean]} true if logged in else false
-       */
-      function isLoggedIn() {
-
-        if(this._higgsLoginStatus === 'AUTHORIZED') return $q.when(true);
-        else if(this._higgsLoginStatus === 'NOT_AUTHORIZED')
-          return FB.isLoggedIn()
-                   .then(this._login)
-                   .then(mapResponse);
-
-        else if(this._higgsLoginStatus === 'PENDING_AUTHORIZATION')
-          return FB.isLoggedIn().then(mapResponse);
-
-        function mapResponse(fbResponse) {
-          if(fbResponse.status === 'connected') return true;
-          else return false;
-        }
-
-      }
-
 
       /**
        * 1. LogIn using facebook
-       * 2. Also logIn to higgs
-       * 3. Get user info if logged in
+       * 2. Then log in to higgs using the facebook token
        *
        * Use only when user is confirmed not logged in
        *
-       * @return {Promise[Object]} user profile data
+       * @return {Promise.<Boolean>}   success (true or false)
        */
-      function login() {
+      function loginUsingFacebook() {
         return FB.login()
-                 .then(this._login)
-                 .then(this._getUser);
+                 .then(_.bind(this._loginToHiggs, this));
       }
 
 
@@ -157,14 +141,22 @@ function HiggsProvider() {
       function getUserInfo() {
         var self = this;
 
-        return this.isLoggedIn()
-                  .then(_getUserInfo);
-
-        function _getUserInfo(loggedIn) {
-          if(!loggedIn) return self._johnDoe;
-          else self._johnDoe // [TO IMPLEMENT] GET /user/info at higgs
-        }
-
+        if(this._userInfo) return $q.when(this._userInfo);
+        else if(!this.isLoggedIn) return $q.when(this._johnDoe);
+        else
+          return this._Piggyback
+            .GET('me')
+            .then(function(resp) {
+              if(resp.status === 200) {
+                var info = resp.data;
+                return $localForage.setItem('userInfo', info)
+                  .then(function() {
+                    self._userInfo = info;
+                    return info;
+                  });
+              }
+              return $q.reject(new Error('Couldn\'t get user info'));
+            });
       }
 
 
@@ -308,18 +300,21 @@ function HiggsProvider() {
 
       /**
        * Update query for a given searchId
+       * [NOTE] Right now it's just storing the data
+       * locally. But soon the update will be persisted
+       * to database.
        *
-       * @param  {Number} searchId search id of which query to update
+       * @param  {Number} sruid    search id of which query to update
        * @param  {Object} query    Query object
        * @return {Promise}         Promise of update (boolean)
        */
-      function updateQuery(searchId, query) {
-        return this._Piggyback
-                  .GET('search/query/update/' + searchId, null, query)
-                  .then(function(resp) {
-                    if(resp.status === 200) return resp.data;
-                    else return $q.reject(new Error(resp.statusText));
-                  });
+      function updateQuery(sruid, query) {
+        this._sruid = sruid
+        this._query = {
+          "queryText": query.queryStr,
+          "pageIndex": 1,
+          "pageSize" : 10
+        }
       }
 
 
@@ -330,9 +325,9 @@ function HiggsProvider() {
        * @param  {Number} page     Page number of the search result
        * @return {Promise}         Promise of search results
        */
-      function getSearchResults(searchId, page) {
+      function getSearchResults(sruid, page) {
         return this._Piggyback
-                  .GET('search/results/' + searchId, {page: page})
+                  .POST('search/' + sruid, {}, this._query, true)
                   .then(function(resp) {
                     if(resp.status === 200) return resp.data;
                     else return $q.reject(new Error(resp.statusText));
@@ -346,54 +341,54 @@ function HiggsProvider() {
 
       /**
        * Login to Higgs with the fbResponse
-       * 1. piggybacks data for higgs login request
-       * if fbResponse.status is connected
-       * 2. returns the fbResponse back
+       * 1. If fb's reponse has the status connected then
+       *    get higgs access token using facebook auth info
+       * 2. set the higgs access token in Piggyback
+       *    and locally store the acess token too
+       * 3. Return whether the higgs login was successful
        *
-       * @param {Object} fbResponse   Response from FB Login
+       * @param  {Object}  fbResponse  Response from FB Login
+       * @return {Promise} success     Whether higgs login is successful
        */
-      function _login(fbResponse) {
+      function _loginToHiggs(fbResponse) {
+        var self = this;
+        console.log(JSON.stringify(fbResponse));
         if(fbResponse.status === 'connected') {
           var userId = fbResponse.authResponse.userID;
           var fbAccessToken = fbResponse.authResponse.accessToken;
 
-          var data = {
-            fbUserId: userId,
-            fbAccessToken: fbAccessToken,
-            appSecret: this.appSecret
+          var fbAuthInfo = {
+            fbUserId: {'uuid': parseInt(userId)},
+            token   : fbAccessToken,
+            clientId: this.clientId
           };
 
-          // [IMP] Piggyback higgs login for next higgs api request
-          this._Piggyback.queue('higgs', 'login', data)
-              .then(this._onLogin);
-
-          // [IMP] Set FB AccessToken until we have Higgs AccessToken
-          // This will serve as an AccessToken for ShopPlan requests
-          this._Piggyback.setAccessToken('FB_' + fbAccessToken);
-
-          this._higgsLoginStatus = 'PENDING_AUTHORIZATION';
+          // Get Higgs Access Token using facebook info
+          return this._Piggyback
+              .POST('oauth/token', {}, fbAuthInfo)
+              .then(function(resp) {
+                if(resp.status === 200) {
+                  var token = resp.data.token;
+                  // These are long lived server token, so pesist them
+                  return $localForage.setItem('higgsAccessToken', token)
+                    .then(function() {
+                      self._higgsAccessToken = token;
+                      self._isLoggedIn = true;
+                      self._Piggyback.setAccessToken(token);
+                      return true;
+                    });
+                }
+                console.error(JSON.stringify(resp));
+                return $q.reject(new Error("Couldn't login to Higgs"));
+              });
+        } else if(fbResponse.status === 'not_authorized') {
+          // the user is logged in to Facebook but didnot authorize
+          // the app
+          return false;
+        } else {
+          // user is not logged in to Facebook
+          return false;
         }
-
-        return fbResponse;
-      }
-
-
-      /**
-       * Handler for higgs api login PiggyResponse
-       *
-       * @param  {Object} resp (PiggyResp) from higgs api '/login'
-       * @returns {Object} Returns back the original response object
-       */
-      function _onLogin(resp) {
-        var data = resp.data;
-
-        if(resp.status === 200) {
-          this._higgsLoginStatus = data.status;
-          this._higgsAccessToken = data.access_token;
-          this._Piggyback.setAccessToken(this._higgsAccessToken);
-        } else this._higgsLoginStatus = 'NOT_AUTHORIZED';
-
-        return resp;
       }
 
 
@@ -464,7 +459,7 @@ function HiggsProvider() {
 
     var config = {
       apiVersion: apiVersion,
-      appSecret: appSecret,
+      clientId: clientId,
       host: host,
       port: port
     };
