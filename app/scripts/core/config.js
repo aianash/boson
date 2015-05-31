@@ -1,7 +1,10 @@
 angular
   .module('boson.core')
   .provider('config', ConfigProvider)
-  .config(configure);
+  .constant('$ionicLoadingConfig', {
+    templateUrl: 'core/loading.html',
+    noBackdrop: true
+  }).config(configure);
 
 
 function ConfigProvider() {
@@ -29,19 +32,26 @@ function configure($ionicConfigProvider, $stateProvider, $urlRouterProvider, $lo
   });
 
   /** Configure higgs service provider */
-  HiggsProvider.setHiggsPort(9000);
-  HiggsProvider.setHiggsHost('192.168.1.35');
+  HiggsProvider.setHiggsPort(8100);
+  HiggsProvider.setHiggsHost('localhost');
+  if(ionic.Platform.isAndroid()) {
+    HiggsProvider.setHiggsPort(9000);
+    HiggsProvider.setHiggsHost('192.168.1.41');
+  }
   HiggsProvider.setApiVersion('1');
   HiggsProvider.setClientId('boson-app');
 
 
-  $ionicConfigProvider.tabs.position('bottom');
+  // $ionicConfigProvider.tabs.position('bottom');
+  $ionicConfigProvider.views.transition('none');
+  $ionicConfigProvider.scrolling.jsScrolling(true);
+  $ionicConfigProvider.views.maxCache(0);
 
   $urlRouterProvider.otherwise('/login');
 
   $stateProvider.state('boson', {
     abstract: true,
-    templateUrl: 'core/main.html'
+    template: '<ion-nav-view></ion-nav-view>'
   });
 
 
@@ -50,30 +60,30 @@ function configure($ionicConfigProvider, $stateProvider, $urlRouterProvider, $lo
    */
 
   $stateProvider.state('boson.login', {
-    abstract: true,
     url: '/login',
-    template: '<ion-nav-view></ion-nav-view>'
-  });
-
-  $stateProvider.state('boson.login.index', {
-    url: '',
     templateUrl: 'login/login-index.html',
     controller: 'LoginController as login'
   });
 
+  // Registering a new user should be a different step
+  // which includes adding friends and other informations
+
+
+  /**
+   * Home view where we have tabs and access
+   * to user's info
+   */
+  $stateProvider.state('boson.home', {
+    abstract: true,
+    templateUrl: 'core/main.html'
+  });
 
   /**
    * Feed Views
    */
 
   $stateProvider.state('boson.feed', {
-    abstract: true,
     url: '/feed',
-    template: '<ion-nav-view></ion-nav-view>'
-  });
-
-  $stateProvider.state('boson.feed.index', {
-    url: '',
     templateUrl: 'feed/feed-index.html',
     controller: 'FeedController as feed',
     resolve: {
@@ -82,30 +92,43 @@ function configure($ionicConfigProvider, $stateProvider, $urlRouterProvider, $lo
   });
 
 
-
   /**
    * Search Views
    */
+
   $stateProvider.state('boson.search', {
     abstract: true,
     url: '/search',
-    template: '<ion-nav-view></ion-nav-view>'
-  });
-
-  $stateProvider.state('boson.search.query', {
-    url: '',
-    templateUrl: 'search/query-index.html',
-    controller: 'QueryController as qc'
+    template: '<ion-nav-view name="fabContent"></ion-nav-view><ion-nav-view name="mainContent"></ion-nav-view>'
   });
 
   $stateProvider.state('boson.search.result', {
     url: '/results/:sruid',
-    templateUrl: 'search/search-result-index.html',
-    controller: 'SearchResultController as src',
-    resolve: {
-      initSearcher: initSearcher
+    views: {
+      'mainContent': {
+        templateUrl: 'search/search-result-index.html',
+        controller: 'SearchResultController as src',
+        resolve: {
+          initSearcher: initSearcher
+        }
+      },
+      'fabContent': {
+        template: '<button id="show-map" ng-click="goToShopPlanCreate()" class="spin button button-fab button-fab-bottom-right show-map"><i class="icon ion-ios-location"></i></button>',
+        controller: function ($scope, $timeout, $state, $ionicHistory) {
+          $scope.goToShopPlanCreate = function() {
+            $ionicHistory.nextViewOptions({
+              disableAnimate: true
+            });
+            $state.go('boson.shopplan.createmap');
+          }
+
+          $timeout(function () {
+            document.getElementById('show-map').classList.toggle('on');
+          }, 500);
+        }
+      }
     }
-  })
+  });
 
 
   /**
@@ -114,7 +137,8 @@ function configure($ionicConfigProvider, $stateProvider, $urlRouterProvider, $lo
   $stateProvider.state('boson.shopplan', {
     abstract: true,
     url: '/shopplan',
-    template: '<ion-nav-view></ion-nav-view>'
+    // template: '<ion-nav-view ></ion-nav-view>'
+    template: '<ion-nav-view name="fabContent"></ion-nav-view><ion-nav-view name="mainContent"></ion-nav-view>'
   });
 
   $stateProvider.state('boson.shopplan.index', {
@@ -135,48 +159,17 @@ function configure($ionicConfigProvider, $stateProvider, $urlRouterProvider, $lo
     }
   });
 
-  $stateProvider.state('boson.shopplan.create', {
-    abstract: true,
-    url: '/create',
-    templateUrl: 'shopplan/shopplan-create.html',
-    controller: 'ShopPlanCreateController as creator',
-    resolve: {
-      initShopPlanner: initShopPlanner
+  $stateProvider.state('boson.shopplan.createmap', {
+    url: '/createmap',
+    views: {
+      'mainContent' : {
+        templateUrl: 'shopplan/map-destinations.html',
+        controller: 'ChooseDestinationsController as map',
+        resolve: {
+          initShopPlanner: withBucketStores
+        }
+      }
     }
-  });
-
-  $stateProvider.state('boson.shopplan.create.plans', {
-    url: '/plans',
-    templateUrl: 'shopplan/choose-plans.html',
-    controller: 'ChoosePlansController as plans',
-    resolve: {
-      initShopPlanner: withShopPlans
-    }
-  });
-
-
-  $stateProvider.state('boson.shopplan.create.map', {
-    url: '/map',
-    templateUrl: 'shopplan/map-destinations.html',
-    controller: 'ChooseDestinationsController as map',
-    resolve: {
-      initShopPlanner: withMapLocations
-    }
-  });
-
-  $stateProvider.state('boson.shopplan.create.invite', {
-    url: '/friends',
-    templateUrl: 'shopplan/invite-friends.html',
-    controller: 'InviteFriendsController as invites',
-    resolve: {
-      initShopPlanner: withFriends
-    }
-  });
-
-  $stateProvider.state('boson.shopplan.create.preview', {
-    url: '/preview',
-    templateUrl: 'shopplan/preview-plan.html',
-    controller: 'PreviewPlanController as preview',
   });
 
 }
@@ -211,11 +204,14 @@ function initShopPlanDetail($stateParams, ShopPlan) {
 }
 
 
-initSearcher.$inject = ['$stateParams', 'Searcher'];
+initSearcher.$inject = ['$stateParams', '$ionicLoading', 'Searcher'];
 
-function initSearcher($stateParams, Searcher) {
-  return Searcher.getResults($stateParams.sruid, 0)
-    .then(function() { return Searcher; });
+function initSearcher($stateParams, $ionicLoading, Searcher) {
+  return Searcher.getResults($stateParams.sruid)
+    .then(function() {
+      $ionicLoading.hide();
+      return Searcher;
+    });
 }
 
 
@@ -233,10 +229,16 @@ function withShopPlans(ShopPlanner) {
 }
 
 
-withMapLocations.$inject = ['lodash', 'initShopPlanner'];
+withBucketStores.$inject = ['$ionicLoading', 'lodash', 'ShopPlanner'];
 
-function withMapLocations(_, ShopPlanner) {
-  return ShopPlanner.initStoreLocationsFromBucket();
+function withBucketStores($ionicLoading, _, ShopPlanner) {
+  $ionicLoading.show({delay: 200});
+
+  return ShopPlanner.getBucketStores()
+    .then(function() {
+      $ionicLoading.hide();
+      return ShopPlanner;
+    });
 }
 
 

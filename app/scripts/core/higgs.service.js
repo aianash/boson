@@ -61,6 +61,12 @@ function HiggsProvider() {
 
         this._isLoggedIn = false;
 
+        // testing
+        this._isLoggedIn = true;
+        var token = "eyJraWQiOiJoaWdncy1vYXV0aC1rZXkiLCJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJoaWdncyIsImF1ZCI6ImJvc29uLWFwcCIsImV4cCI6MTQzNTMzNTg4NywianRpIjoiaExrYWgxZlNkUnJic1pqOXNTSU16dyIsImlhdCI6MTQzMjc0Mzg4NywibmJmIjoxNDMyNzQzNzY3LCJzdWIiOiJ1c2VyIiwidXVpZCI6MTUyNTUzOTM5OTkxMTM4MzA0LCJhcGlzIjpbImFsbCJdfQ.daaErReK_xV7ZC6N5_Ys7tivwXGsjxYpfOWCZAl_x8QUu3Q7xQlm7X7KtFDZ4P9mfak1OWONiTnmHoltk6VoIeH8X8ARtvzJwr6Klhu68SC9U_gq_Ow_1_-7nYYXiKOkBqwiaHDE6G1QAQGWVWOV8D9vdh89wWBEIP4CO9dRZpgbrwXGNPgJRaScpx1J93KOwec38wk2Gy8ts282NGAlqYhgvLNS2GNttZvcrgUtMznFZcmxIMnX_L89YtV8YdJvq2hzyQpyeAqaazF4MwyEUcB_n8rhq3jF9679paXaNzVsWkLsjGY_cKXUIOSpL07KKfks7ygXcn8PDQH4HdVgQQ";
+        this._Piggyback.setAccessToken(token);
+        this._higgsAccessToken = token;
+
         var self = this;
 
         // get higgs token fron persistent store
@@ -77,34 +83,34 @@ function HiggsProvider() {
       }
 
       // Public
-      Higgs.prototype.loginUsingFacebook      = loginUsingFacebook;
-      Higgs.prototype.getUserInfo             = getUserInfo;
+      Higgs.prototype.loginUsingFacebook   = loginUsingFacebook;
+      Higgs.prototype.getUserInfo          = getUserInfo;
 
-      Higgs.prototype.addItemToBucket         = addItemToBucket;
-      Higgs.prototype.removeItemFromBucket    = removeItemFromBucket;
-      Higgs.prototype.getBucketStoreLocations = getBucketStoreLocations;
+      Higgs.prototype.addItemToBucket      = addItemToBucket;
+      Higgs.prototype.removeItemFromBucket = removeItemFromBucket;
+      Higgs.prototype.getBucketStores      = getBucketStores;
 
-      Higgs.prototype.getFeed                 = getFeed;
+      Higgs.prototype.getFeed              = getFeed;
 
-      Higgs.prototype.getFriendsForInvite     = getFriendsForInvite;
-
-
-      Higgs.prototype.getShopPlans            = getShopPlans;
-      Higgs.prototype.getShopPlan             = getShopPlan;
-      Higgs.prototype.getNewShopPlan          = getNewShopPlan;
-      Higgs.prototype.savePlan                = savePlan;
+      Higgs.prototype.getFriendsForInvite  = getFriendsForInvite;
 
 
-      Higgs.prototype.updateQuery             = updateQuery;
-      Higgs.prototype.getSearchResults        = getSearchResults;
+      Higgs.prototype.getShopPlans         = getShopPlans;
+      Higgs.prototype.getShopPlan          = getShopPlan;
+      Higgs.prototype.getNewShopPlan       = getNewShopPlan;
+      Higgs.prototype.savePlan             = savePlan;
+
+
+      Higgs.prototype.updateQuery          = updateQuery;
+      Higgs.prototype.getSearchResults     = getSearchResults;
 
       // Private
-      Higgs.prototype._loginToHiggs           = _loginToHiggs;
-      Higgs.prototype._getUser                = _getUser;
-      Higgs.prototype._getCommonFeed          = _getCommonFeed;
-      Higgs.prototype._getUserFeed            = _getUserFeed;
-      Higgs.prototype._addToCache             = _addToCache;
-      Higgs.prototype._processAccessToken     = _processAccessToken;
+      Higgs.prototype._loginToHiggs        = _loginToHiggs;
+      Higgs.prototype._getUser             = _getUser;
+      Higgs.prototype._getCommonFeed       = _getCommonFeed;
+      Higgs.prototype._getUserFeed         = _getUserFeed;
+      Higgs.prototype._addToCache          = _addToCache;
+      Higgs.prototype._processAccessToken  = _processAccessToken;
 
       return Higgs;
 
@@ -166,12 +172,10 @@ function HiggsProvider() {
         this._Bucket.removeItem(itemId, storeId);
       }
 
-      function getBucketStoreLocations() {
-        return this.isLoggedIn()
-          .then(function(loggedIn) {
-            if(loggedIn) return this._Bucket.getStoreLocations();
-            else return $q.reject(new Error("User is not authenticated"));
-          });
+      function getBucketStores() {
+        if(this._isLoggedIn) {
+          return this._Bucket.getStores();
+        } else $q.reject(new Error("User is not logged in"));
       }
 
 
@@ -322,7 +326,7 @@ function HiggsProvider() {
        */
       function getSearchResults(sruid, page) {
         return this._Piggyback
-                  .POST('search/' + sruid, {}, this._query, true)
+                  .POST('search/' + sruid, {}, this._query)
                   .then(function(resp) {
                     if(resp.status === 200) return resp.data;
                     else return $q.reject(new Error(resp.statusText));
@@ -347,13 +351,12 @@ function HiggsProvider() {
        */
       function _loginToHiggs(fbResponse) {
         var self = this;
-        console.log(JSON.stringify(fbResponse));
         if(fbResponse.status === 'connected') {
           var userId = fbResponse.authResponse.userID;
           var fbAccessToken = fbResponse.authResponse.accessToken;
 
           var fbAuthInfo = {
-            fbUserId: {'uuid': parseInt(userId)},
+            fbUserId: {'uuid': userId},
             token   : fbAccessToken,
             clientId: this.clientId
           };

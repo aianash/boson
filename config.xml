@@ -13,17 +13,20 @@
   <preference name="UIWebViewBounce" value="false"/>
   <preference name="DisallowOverscroll" value="true"/>
   <preference name="BackupWebStorage" value="none"/>
+  <preference name="SplashScreen" value="screen"/>
+  <preference name="orientation" value="portrait"/>
+  <preference name="SplashScreenDelay" value="50000"/>
+  <preference name="AutoHideSplashScreen" value="false"/>
 
-  <preference name="SplashScreen" value="screen" />
-
-  <!-- setting it to large value so that app has enough time before it stops -->
-  <preference name="SplashScreenDelay" value="50000" />
-
-  <preference name="AutoHideSplashScreen" value="false" /> <!-- only works in ios -->
-
-  <!-- <preference name="android-minSdkVersion" value="16"/>
-  <preference name="android-targetSdkVersion" value="21"/> -->
   <feature name="StatusBar">
     <param name="ios-package" value="CDVStatusBar" onload="true"/>
   </feature>
+  <platform name="android">
+    <splash src="resources/android/splash/drawable-port-ldpi-screen.png" density="port-ldpi"/>
+    <splash src="resources/android/splash/drawable-port-mdpi-screen.png" density="port-mdpi"/>
+    <splash src="resources/android/splash/drawable-port-hdpi-screen.png" density="port-hdpi"/>
+    <splash src="resources/android/splash/drawable-port-xhdpi-screen.png" density="port-xhdpi"/>
+    <splash src="resources/android/splash/drawable-port-xxhdpi-screen.png" density="port-xxhdpi"/>
+    <splash src="resources/android/splash/drawable-port-xxxhdpi-screen.png" density="port-xxxhdpi"/>
+  </platform>
 </widget>

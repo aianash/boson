@@ -1,81 +1,82 @@
-<ion-view class="listings">
+<ion-view hide-nav-bar="true">
 
-  <ion-content>Feeds</ion-content>
+  <div id="feed-actions-alt" class="actions not-visible">
+    <button class="button button-fab flat icon ion-search"
+            ng-click="feed.goToSearch()"></button>
+    <button class="button button-fab flat icon ion-ios-heart"></button>
+    <button class="button button-fab flat icon ion-bag"></button>
+    <button class="button button-fab flat icon ion-person"></button>
+  </div>
 
-<!-- [Work in progress]
-    <ion-side-menus delegate-handle="user">
-      <ion-side-menu-content>
-        <ion-content scrollbar-y="false"
-                     has-bouncing="true">
-
-          <div class="row search-bar">
-            <a ng-click="vm.openSearch()" class="row">
-              <div class="col search-icon">
-                <i class="icon ion-record"></i>
-                <i class="icon ion-ios-search-strong"></i>
-              </div>
-              <div class="col col-80">
-                <div class="row title">EXPLORE</div>
-                <div class="row subtitle">Find great shopping destinations...</div>
-              </div>
-            </a>
-          </div>
-
-          <ion-slide-box does-continue="true"
-                         auto-play="true"
-                         slide-interval="3000">
-
-            <ion-slide ng-repeat="ad in vm.posterAds">
-              <img ng-src="{{ad.image}}" />
-            </ion-slide>
-          </ion-slide-box>
+  <ion-content id="feed-page" class="feed-page" has-bouncing="true" overflow-scroll="true">
+<!-- 
+    <div class="background-post">
+      <img src="http://imagizer.imageshack.us/v2/640x480q90/673/fYKMcb.jpg" />
+    </div>
+ -->
+    <div class="brand-tagline">
+      <i class="icon ion-quote"></i>
+      <p>Each pair is so different.</p>
+      <p>Each one tells a different story.</p>
+      <i class="icon ion-quote last"></i>
+    </div>
 
 
-          <ion-list show-detele="false"
-                    show-reorder="false"
-                    can-swipe="false"
-                    class="offers">
+    <div id="feed" class="feed columns">
+      <!-- <div ion-affix data-affix-within-parent-with-class="feed"  class="actions"> -->
+      <div id="feed-actions" class="actions">
+        <button class="button button-fab flat icon ion-search"
+                ng-click="feed.goToSearch()"></button>
+        <button class="button button-fab flat icon ion-ios-heart"></button>
+        <button class="button button-fab flat icon ion-bag"></button>
+        <button class="button button-fab flat icon ion-person"></button>
+      </div>
 
-            <ion-item ng-repeat="offer in vm.offers">
-              <div class="row offer">
-                <div class="col icon-wrapper">
-                  <i class="icon" ng-class="vm.offerIcon(offer.storeType)"></i>
-                </div>
-                <div class="col col-80">
-                  <div class="row title">{{offer.brand}}</div>
-                  <div class="row subtitle">{{offer.address}}</div>
-                  <div class="row offer-descr">
-                    <div class="col">
-                      <div class="row offer-title">{{offer.offer}}</div>
-                      <div class="row offer-item">{{offer.itemDescr}}</div>
-                    </div>
-                  </div>
-                  <button class="button button-clear icon ion-ios-checkmark"
-                          ng-click="vm.toggleStore(offer.storeId)"
-                          ng-class="{'checked': isStoreSelected(offer.storeId)}"></button>
-                </div>
-              </div>
-            </ion-item>
-          </ion-list>
-
-          <ion-infinite-scroll ng-if="moreContent()"
-                               on-infinite="loadMoreData()"
-                               distance="-1%"></ion-infinite-scroll>
-
-        </ion-content>
-      </ion-side-menu-content>
-
-      <ion-side-menu side="right">
-        <ion-content scrollbar-y="false">
-          <div class="user">
-            <img ng-src="{{user.img}}" />
-          </div>
-        </ion-content>
-        <ion-footer-bar>
-          <button ng-click="loginFacebook()"
-                  class="button button-full icon-left ion-social-facebook button-positive">Login with Facebook</button>
-        </ion-footer-bar>
-      </ion-side-menu> -->
-    </ion-side-menus>
+      <div class="entry">
+        <img src="http://imagizer.imageshack.us/v2/320x240q90/673/dUsfNv.jpg" />
+        <p>I took a viagra, got stuck in me throat, i've had a stiff neck for hours.</p>
+      </div>
+      <div class="entry">
+        <img src="http://imagizer.imageshack.us/v2/320x240q90/661/b7B7Aa.jpg" />
+        <p>Your entrance was good, his was better.</p>
+      </div>
+      <div class="entry">
+        <img src="http://imagizer.imageshack.us/v2/320x240q90/673/lQJ1xH.jpg" />
+        <p>Here she comes to wreck the day.</p>
+      </div>
+      <div class="entry">
+        <img src="http://imagizer.imageshack.us/v2/320x240q90/661/ydjkV8.jpg" />
+      </div>
+      <div class="entry">
+        <img src="http://imagizer.imageshack.us/v2/320x240q90/661/73Bv58.jpg" />
+        <p>look at that, it's exactly three seconds before i honk your nose and pull your underwear over your head.</p>
+      </div>
+      <div class="entry">
+        <img src="http://imagizer.imageshack.us/v2/320x240q90/673/HC58Bv.jpg" />
+      </div>
+      <div class="entry">
+        <img src="http://imagizer.imageshack.us/v2/320x240q90/673/dUsfNv.jpg" />
+        <p>I took a viagra, got stuck in me throat, i've had a stiff neck for hours.</p>
+      </div>
+      <div class="entry">
+        <img src="http://imagizer.imageshack.us/v2/320x240q90/661/b7B7Aa.jpg" />
+        <p>Your entrance was good, his was better.</p>
+      </div>
+      <div class="entry">
+        <img src="http://imagizer.imageshack.us/v2/320x240q90/673/lQJ1xH.jpg" />
+        <p>Here she comes to wreck the day.</p>
+      </div>
+      <div class="entry">
+        <img src="http://imagizer.imageshack.us/v2/320x240q90/661/ydjkV8.jpg" />
+      </div>
+      <div class="entry">
+        <img src="http://imagizer.imageshack.us/v2/320x240q90/661/73Bv58.jpg" />
+        <p>look at that, it's exactly three seconds before i honk your nose and pull your underwear over your head.</p>
+      </div>
+      <div class="entry">
+        <img src="http://imagizer.imageshack.us/v2/320x240q90/673/HC58Bv.jpg" />
+      </div>
+    </div>
+  </ion-content>
 
 </ion-view>

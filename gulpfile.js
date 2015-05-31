@@ -69,13 +69,16 @@ gulp.task('styles', function() {
   var sassStream = plugins.rubySass('app/styles/main.scss', options)
       .pipe(plugins.autoprefixer('last 1 Chrome version', 'last 3 iOS versions', 'last 3 Android versions'))
 
-  var cssStream = gulp
-    .src('bower_components/ionic/release/css/ionic.min.css');
+  var ionicStream = gulp
+    .src('bower_components/ionic/release/css/ionic.css');
 
-  var ioniconsStream = gulp
-    .src('bower_components/ionicons/css/ionicons.min.css');
+  // var ioniconsStream = gulp
+  //   .src('bower_components/ionicons/css/ionicons.css');
 
-  return streamqueue({ objectMode: true }, cssStream, ioniconsStream, sassStream)
+  var ionicMaterialStream = gulp
+    .src('bower_components/ionic-material/dist/ionic.material.css');
+
+  return streamqueue({ objectMode: true }, ionicStream, ionicMaterialStream, sassStream)
     .pipe(plugins.concat('main.css'))
     .pipe(plugins.if(build, plugins.stripCssComments()))
     .pipe(plugins.if(build, plugins.rev()))

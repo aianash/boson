@@ -33,25 +33,20 @@ function ShopPlannerFactory($q, _, $state, Higgs) {
     }
 
     // Public
-    ShopPlanner.prototype.initShopPlans                = initShopPlans;
-    ShopPlanner.prototype.initStoreLocationsFromBucket = initStoreLocationsFromBucket;
-    ShopPlanner.prototype.initFriends                  = initFriends;
+    ShopPlanner.prototype.getBucketStores         = getBucketStores;
+    ShopPlanner.prototype.createNewPlan           = createNewPlan;
 
-    ShopPlanner.prototype.ensurePlanSelected           = ensurePlanSelected;
-    ShopPlanner.prototype.chooseExistingShopPlan       = chooseExistingShopPlan;
-    ShopPlanner.prototype.createNewPlan                = createNewPlan;
+    ShopPlanner.prototype.getExistingStoreLocs    = getExistingStoreLocs;
+    ShopPlanner.prototype.getExistingDestinations = getExistingDestinations;
+    ShopPlanner.prototype.addDestination          = addDestination;
+    ShopPlanner.prototype.removeDestination       = removeDestination;
+    ShopPlanner.prototype.updateDestination       = updateDestination;
 
-    ShopPlanner.prototype.getExistingStoreLocs         = getExistingStoreLocs;
-    ShopPlanner.prototype.getExistingDestinations      = getExistingDestinations;
-    ShopPlanner.prototype.addDestination               = addDestination;
-    ShopPlanner.prototype.removeDestination            = removeDestination;
-    ShopPlanner.prototype.updateDestination            = updateDestination;
+    ShopPlanner.prototype.getExistingInvites      = getExistingInvites;
+    ShopPlanner.prototype.addToInvitation         = addToInvitation;
+    ShopPlanner.prototype.removeFromInvitation    = removeFromInvitation;
 
-    ShopPlanner.prototype.getExistingInvites           = getExistingInvites;
-    ShopPlanner.prototype.addToInvitation              = addToInvitation;
-    ShopPlanner.prototype.removeFromInvitation         = removeFromInvitation;
-
-    ShopPlanner.prototype.savePlan                     = savePlan;
+    ShopPlanner.prototype.savePlan                = savePlan;
 
     return ShopPlanner;
 
@@ -60,38 +55,16 @@ function ShopPlannerFactory($q, _, $state, Higgs) {
     ///////////////////////////////////////////////////
 
 
-    ///////////////////// INITS ///////////////////////
-
-    // Get list of shop plans (with summary)
-    function initShopPlans() {
+    /**
+     * Get bucket stores to show on map
+     *
+     * @return {Promise.<Object>}   Bucket stores
+     */
+    function getBucketStores() {
       var self = this;
 
-      return Higgs.getShopPlans()
-        .then(function(plans) { self.shopplans = plans; return self;});
-    }
-
-    // Get lcoations for store in bucket to show on map
-    //
-    // [TO DO] Bucket should be filtered from a
-    // particulary city or area as defined from
-    // selected shop plan
-    function initStoreLocationsFromBucket() {
-      var self = this;
-
-      return Higgs.getBucketStoreLocations()
-        .then(function(storeLocs) { self.bucketStoreLocs = storeLocs; return self;});
-    }
-
-    // Get friends to invite; already invited ones
-    // for an existing plan will be fetched later
-    //
-    // [TO DO] Friends should be filtered based on
-    // location
-    function initFriends() {
-      var self = this;
-
-      return Higgs.getFriendsForInvite()
-        .then(function(friends) { self.friends = friends; return self; });
+      return Higgs.getBucketStores()
+        .then(function(stores) { self.bucketStores = stores; return stores; });
     }
 
 

@@ -38,11 +38,12 @@ function _ShopPlans(_, $q, ShopPlanFactory) {
     // a new plan.
     // After this plan is saved, it will be replaced
     // with a new instance.
-    this._newPlan   = ShopPlanFactory.createNew();
+    this._newPlan   = ShopPlanFactory.createNew(piggyback);
 
-    this._api = {
+    this._apis = {
       plan: {
-        all: 'shopplan/all'
+        all: 'shopplan/all',
+        get: function(suid) { return '/shopplan/' + suid; }
       }
     };
   }
@@ -143,7 +144,7 @@ function _ShopPlans(_, $q, ShopPlanFactory) {
 
     if(suid in this._shopplans) return $q.when(this._shopplans[suid]);
     else
-      return this._Piggyback.GET(this._apis.plan.get)
+      return this._Piggyback.GET(this._apis.plan.get(suid), {fields: ['destinations', 'invites']})
         .then(function(resp) {
           if(resp.status === 200 && _.isObject(resp.data)) {
             var shopplan = self._createShopPlanWithSummary(resp.data);

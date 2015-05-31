@@ -1,11 +1,19 @@
-<ion-view class="login">
+<ion-view>
 
-	<ion-content>
-	<!-- Put a slider and logo too -->
-		<button class="button button-full button-positive"
-						ng-click="login.loginUsingFacebook()">
-			Facebook
-		</button>
+	<ion-content class="login fullscreen">
+		<!-- Put a slider and logo too -->
+
+		<div class="button-bar">
+			<button class="button button-full icon-left ion-social-facebook social-button"
+							ng-click="login.loginUsingFacebook()">
+				Facebook
+			</button>
+			<button class="button button-full icon-left ion-social-google social-button"
+							ng-click="login.loginUsingFacebook()">
+				Google+
+			</button>
+		</div>
+
 	</ion-content>
 
 </ion-view>

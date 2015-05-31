@@ -19,12 +19,12 @@ function ShopPlanFactory(_, $q, KeepFactory) {
    */
   this.create = function(shopplanId, piggyback, data) {
     var keep = KeepFactory.create(shopplanId.suid);
-    return new ShopPlan(shopplanId, piggyback, keep, data);
+    return new ShopPlan(piggyback, keep, shopplanId, data);
   }
 
-  this.createNew = function() {
+  this.createNew = function(piggyback) {
     var keep = KeepFactory.create('new-plan');
-    return new ShopPlan();
+    return new ShopPlan(piggyback, keep);
   }
 }
 
@@ -33,7 +33,7 @@ function ShopPlanFactory(_, $q, KeepFactory) {
 function _ShopPlan(_, $q) {
 
   /**
-   * It represents a new empty plan (when no parameter is passed)
+   * It represents a new empty plan (when only keep is passed)
    * Where it holds plan data locally and create the plan on save
    *
    * Otherwise when its an existing plan, then it fetches
@@ -46,10 +46,11 @@ function _ShopPlan(_, $q) {
    * @param {Object} piggyback Piggyback instance
    * @param {Object} keep      Keep instance
    */
-  function ShopPlan(shopplanId, piggyback, keep, data) {
-
-    this.shopplanId   = shopplanId;
-    this.suid         = shopplanId.suid;
+  function ShopPlan(piggyback, keep, shopplanId, data) {
+    if(shopplanId) {
+      this.shopplanId = shopplanId;
+      this.suid       = shopplanId.suid;
+    }
 
     this._Piggyback   = piggyback;
 
@@ -58,24 +59,22 @@ function _ShopPlan(_, $q) {
     // where
     // - destinations - Array.<Destination>
     // - invites      - Array.<Friend>
+    // - dstores      - Array.<DStore>
     this._Keep        = keep;
 
     this.isNewPlan    = !shopplanId ? true : false;
-    this.isInvitation = false;
 
+    this.isInvitation = false;
 
     if(!this.isNewPlan && data) this.init(data);
 
     // [IMP] [NOTE] To revise after higgs api finalization
     this._apis = {
       plan: {
-        update:   'shopplan/' + this.suid + '/update',
-        end:      'shopplan/' + this.suid + '/end',
-        detail:   'shppplan/' + this.suid + '/detail',
-        remove:   'shopplan/' + this.suid + '/remove',
-        map: {
-          locations: 'shopplan/' + this.suid + '/map/locations'
-        }
+        create:   'shopplan/create',
+        // cud:      'shopplan/' + this.suid,
+        end:      'shopplan/' + this.suid,
+        detail:   'shopplan/' + this.suid
       }
     };
 
@@ -120,10 +119,10 @@ function _ShopPlan(_, $q) {
    */
   function init(data) {
     if('title' in data)   this.title             = data.title;
+    if('isInvitation' in data) this.isInvitation = data.isInvitation;
     if('dstores' in data) this.dstores           = data.dstores;
     if('invites' in data) this.invites           = data.invites;
     if('destinations' in data) this.destinations = data.destinations;
-    if('isInvitation' in data) this.isInvitation = data.isInvitation;
   }
 
 
@@ -157,7 +156,7 @@ function _ShopPlan(_, $q) {
    * @return {Promise.<Number>} Promise of destination unique id
    */
   function removeDestionation(dtuid) {
-    return $q.when(this._Keep.remove().thiz('dtuid', dtuid}).from('destinations').dtuid);
+    return $q.when(this._Keep.remove().thiz({'dtuid': dtuid}).from('destinations').dtuid);
   }
 
 
@@ -223,7 +222,7 @@ function _ShopPlan(_, $q) {
   function getInvites() {
     var self = this;
 
-    return this._Piggyback.GET(this._apis.plan.invites)
+    return this._Piggyback.GET(this._apis.plan.detail, {fields: ['invites']})
       .then(function(resp) {
         if(resp.status === 200) self.init(resp.data);
         return self.invites;
@@ -262,7 +261,7 @@ function _ShopPlan(_, $q) {
   function getDetailed() {
     var self = this;
 
-    return this.Piggyback.GET(this._apis.plan.detail)
+    return this.Piggyback.GET(this._apis.plan.detail, {fields: ['invites', 'destinations', 'dstores']})
       .then(function(resp) {
         if(resp.status === 200) {
           self.init(resp.data);
@@ -284,10 +283,9 @@ function _ShopPlan(_, $q) {
 
   /**
    * End plan
-   * [TO DO]
    */
   function end() {
-    // this._Piggyback.POST('POST', this._apis.plan.end);
+    return this._Piggyback.DELETE(this._apis.plan.end);
   }
 
 
@@ -299,9 +297,9 @@ function _ShopPlan(_, $q) {
 
   function _create() {
     var self = this;
-    var data = this._Keep.withinTxn().getCRUDS();
+    var cud  = this._Keep.withinTxn().getCUDS();
 
-    return this.Piggyback.POST(this._apis.plan.create, null, data)
+    return this.Piggyback.POST(this._apis.plan.create, null, cud)
       .then(function(resp) {
         if(resp.status === 200 && resp.data) {
           // resp.data is ShopPlan (thrift)
@@ -318,9 +316,9 @@ function _ShopPlan(_, $q) {
 
   function _save() {
     var self = this;
-    var data = this._Keep.withinTxn().getCRUDS();
+    var cud  = this._Keep.withinTxn().getCUDS();
 
-    return this._Piggyback.POST(this._apis.plan.crud, null, data)
+    return this._Piggyback.POST(this._apis.plan.cud, null, cud)
       .then(function(resp) {
         if(resp.status === 200 && resp.data) {
           self.init(resp.data); // return summary atleast

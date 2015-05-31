@@ -1,6 +1,7 @@
 angular.module('boson.core', [
 
   'ionic',
+  'ionic-material',
 
   /**
    * Angular modules

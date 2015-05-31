@@ -26,11 +26,11 @@ function NavBarController(
   //////////////////////////////////////
 
   function goToFeed() {
-    $state.go('boson.feed.index');
+    $state.go('boson.home.feed');
   }
 
   function goToSearch() {
-    $state.go('boson.search.query');
+    $state.go('boson.home.search');
   }
 
   function goToShopPlans() {

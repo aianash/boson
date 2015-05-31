@@ -3,65 +3,100 @@ angular
   .controller('SearchResultController', SearchResultController);
 
 SearchResultController.$inject = [
+  'lodash',
   '$scope',
+  '$state',
   '$compile',
   '$sce',
+  '$ionicHistory',
   '$ionicLoading',
+  '$ionicModal',
   'storeTypeIcon',
+  'ionicMaterialInk',
   'initSearcher'
 ];
 
 function SearchResultController(
+  _,
   $scope,
+  $state,
   $compile,
   $sce,
+  $ionicHistory,
   $ionicLoading,
+  $ionicModal,
   storeTypeIcon,
+  ionicMaterialInk,
   Searcher) {
+
+  $ionicModal.fromTemplateUrl('search/search-query.modal.html', {
+    scope: $scope,
+    animation: 'appear',
+    focusFirstInput: true,
+    hardwareBackButtonClose: false
+  }).then(function(modal) {
+    $scope.searchModal = modal;
+  });
+
+  $scope.$on('$destroy', function() {
+    $scope.searchModal.remove();
+  });
 
   var vm = this;
 
   vm.searchId = Searcher.sruid;
-  vm.result   = Searcher.result;
+  vm.items    = _.flatten(_.map(Searcher.result, function(store) {
+    return store.items;
+  }));
   vm.page     = Searcher.page;
 
   vm.selectedItems  = {}; // items currently selected fro bucket list
   vm.selectedStores = {}; // stores currently selected for bucket list
   vm.noMoreResult   = false;
 
+  vm.itemHeight = window.innerWidth * 480 / 640 + 100;
 
   ///////////////////////
   // ViewModel methods //
   ///////////////////////
 
-  vm.isItemSelected = isItemSelected;
-  vm.toggleItem     = toggleItem;
-  vm.isStoreSelected= isStoreSelected;
-  vm.toggleStore    = toggleStore;
-  vm.hasMoreResults = hasMoreResults;
-  vm.loadMoreResults= loadMoreResults;
-  vm.storeIcon      = storeTypeIcon;
-  vm.isStoreInfo    = isStoreInfo;
-  vm.isResultEntry  = isResultEntry;
+  vm.isItemSelected     = isItemSelected;
+  vm.toggleItem         = toggleItem;
+  vm.isStoreSelected    = isStoreSelected;
+  vm.toggleStore        = toggleStore;
+  vm.hasMoreResults     = hasMoreResults;
+  vm.loadMoreResults    = loadMoreResults;
+  vm.storeIcon          = storeTypeIcon;
+  vm.goToShopPlanCreate = goToShopPlanCreate;
+  vm.goBack             = goBack;
+  vm.goHome             = goHome;
+  vm.openSearch         = openSearch;
+
+  vm.toString = function(obj) {
+    return JSON.stringify(obj, null, 2);
+  }
 
   _init();
+
+  ionicMaterialInk.displayEffect();
 
 
   /////////////////////////////////////
   // ViewModel method implementation //
   /////////////////////////////////////
 
-  function isItemSelected(itemId) {
-    return vm.selectedItems[itemId] == true;
+  function isItemSelected(item) {
+    if(item) return vm.selectedItems[itemIdKey(item.itemId)] === true;
+    else return false;
   }
 
-  function toggleItem(itemId, storeId) {
-    if(vm.isItemSelected(itemId)) _deselectItem(itemId, storeId)
-    else _selectItem(itemId, storeId);
+  function toggleItem(item) {
+    if(vm.isItemSelected(item)) _deselectItem(item.itemId)
+    else _selectItem(item.itemId);
   }
 
   function isStoreSelected(storeId) {
-    return vm.selectedStores[storeId] > 0; // covers the case of undefined too;
+    return vm.selectedStores[storeIdKey(storeId)] > 0; // covers the case of undefined too;
   }
 
   function toggleStore(storeId) {
@@ -91,14 +126,9 @@ function SearchResultController(
       });
   }
 
-  function isStoreInfo(type) {
-    return type == 'storeInfo';
+  function goToShopPlanCreate() {
+    $state.go('boson.shopplan.createmap');
   }
-
-  function isResultEntry(type) {
-    return type == 'resultEntry';
-  }
-
 
 
   /////////////////////
@@ -127,26 +157,46 @@ function SearchResultController(
   }
 
   // Make sure you dont selec the whole store
-  function _selectItem(itemId, storeId) {
-    Searcher.addItemToBucket(itemId, storeId);
-    vm.selectedItems[itemId] = true;
-    vm.selectedStores[storeId] = (vm.selectedStores[storeId] || 0) + 1;
+  function _selectItem(itemId) {
+    Searcher.addItemToBucket(itemId);
+    vm.selectedItems[itemIdKey(itemId)] = true;
+    vm.selectedStores[storeIdKey(itemId.storeId)] = (vm.selectedStores[storeIdKey(itemId.storeId)] || 0) + 1;
   }
 
-  function _deselectItem(itemId, storeId) {
-    Searcher.removeItemFromBucket(itemId, storeId);
-    vm.selectedItems[itemId] = false;
-    vm.selectedStores[storeId] = vm.selectedStores[storeId] - 1;
+  function _deselectItem(itemId) {
+    Searcher.removeItemFromBucket(itemId);
+    vm.selectedItems[itemIdKey(itemId)] = false;
+    vm.selectedStores[storeIdKey(itemId.storeId)] = vm.selectedStores[storeIdKey(itemId.storeId)] - 1;
   }
 
   function _selectStore(storeId) {
     Searcher.addStoreToBucket(storeId);
-    vm.selectedStores[storeId] = 1;
+    vm.selectedStores[storeIdKey(storeId)] = 1;
   }
 
   function _deselectStore(storeId) {
     Searcher.removeStoreFromBucket(storeId);
-    vm.selectedStores[storeId] = 0;
+    vm.selectedStores[storeIdKey(storeId)] = 0;
+  }
+
+  function itemIdKey(itemId) {
+    return itemId.storeId.stuid + "-" + itemId.cuid;
+  }
+
+  function storeIdKey(storeId) {
+    return storeId.stuid;
+  }
+
+  function goBack() {
+    $ionicHistory.goBack();
+  }
+
+  function goHome() {
+    $state.go('boson.feed');
+  }
+
+  function openSearch() {
+    $scope.searchModal.show();
   }
 
 }

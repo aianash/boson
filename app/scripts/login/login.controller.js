@@ -4,6 +4,7 @@ angular
 
 LoginController.$inject = [
   '$state',
+  '$ionicHistory',
   '$ionicActionSheet',
   '$timeout',
   '$cordovaSplashscreen',
@@ -13,6 +14,7 @@ LoginController.$inject = [
 
 function LoginController(
   $state,
+  $ionicHistory,
   $ionicActionSheet,
   $timeout,
   $cordovaSplashscreen,
@@ -21,7 +23,7 @@ function LoginController(
 
   $timeout(function() {
     if(Higgs._isLoggedIn) skip();
-    $cordovaSplashscreen.hide();
+    else $cordovaSplashscreen.hide();
   }, 1000);
 
   var vm = this;
@@ -39,7 +41,7 @@ function LoginController(
 
   function loginUsingFacebook() {
     Higgs.loginUsingFacebook()
-         .then(_goToFeed, _showError('Facebook Login Failed.'))
+         .then(_goToFeed, _showError('Facebook login failed. Please try again.'))
   }
 
   function loginUsingGPlus() {
@@ -55,11 +57,15 @@ function LoginController(
   }
 
   function skip() {
-    $state.go('boson.feed.index');
+    $ionicHistory.nextViewOptions({
+      disableBack: true,
+      historyRoot: true
+    });
+    $state.go('boson.feed');
   }
 
   function _goToFeed(success) {
-    if(success) $state.go('boson.feed.index');
+    if(success) $state.go('boson.feed');
   }
 
   function _showError(msg) {
