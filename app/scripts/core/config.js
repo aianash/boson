@@ -35,8 +35,8 @@ function configure($ionicConfigProvider, $stateProvider, $urlRouterProvider, $lo
   HiggsProvider.setHiggsPort(8100);
   HiggsProvider.setHiggsHost('localhost');
   if(ionic.Platform.isAndroid()) {
-    HiggsProvider.setHiggsPort(9000);
-    HiggsProvider.setHiggsHost('192.168.1.41');
+    HiggsProvider.setHiggsPort(8080);
+    HiggsProvider.setHiggsHost('higgs.goshoplane.com');
   }
   HiggsProvider.setApiVersion('1');
   HiggsProvider.setClientId('boson-app');

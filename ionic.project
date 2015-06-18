@@ -4,7 +4,7 @@
   "proxies": [
   	{
   	  "path": "/v1",
-  	  "proxyUrl": "http://192.168.1.41:9000/v1"
+  	  "proxyUrl": "http://higgs.goshoplane.com:8080/v1"
   	}
   ]
 }
