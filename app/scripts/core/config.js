@@ -70,15 +70,6 @@ function configure($ionicConfigProvider, $stateProvider, $urlRouterProvider, $lo
 
 
   /**
-   * Home view where we have tabs and access
-   * to user's info
-   */
-  $stateProvider.state('boson.home', {
-    abstract: true,
-    templateUrl: 'core/main.html'
-  });
-
-  /**
    * Feed Views
    */
 
