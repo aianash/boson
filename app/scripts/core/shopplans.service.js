@@ -34,23 +34,15 @@ function _ShopPlans(_, $q, ShopPlanFactory) {
     // {suid: <ShopPlan>}
     this._shopplans = {};
 
-    // A ShopPlan instance to be used while creating
-    // a new plan.
-    // After this plan is saved, it will be replaced
-    // with a new instance.
-    this._newPlan   = ShopPlanFactory.createNew(piggyback);
-
     this._apis = {
       plan: {
         all: 'shopplan/all',
-        get: function(suid) { return '/shopplan/' + suid; }
+        get: function(suid) { return 'shopplan/' + suid; }
       }
     };
   }
 
   // Public
-  ShopPlans.prototype.create                     = create;
-  ShopPlans.prototype.save                       = save;
   ShopPlans.prototype.all                        = all;
   ShopPlans.prototype.list                       = all; // alias
   ShopPlans.prototype.get                        = get;
@@ -64,42 +56,6 @@ function _ShopPlans(_, $q, ShopPlanFactory) {
   //////////////////////////////////////////////////////
   ////////////////// Public Functions //////////////////
   //////////////////////////////////////////////////////
-
-
-  /**
-   * Get/Create a new ShopPlan object
-   *
-   * @return {ShopPlan} ShopPlan object
-   */
-  function create() { return this._newPlan; }
-
-
-  /**
-   * Save the given plan or save/create the new plan
-   *
-   * @param  {Number} suid 64 bit Long unique shop plan id
-   * @return {Promise.<bool>}        promise of successs (boolean)
-   */
-  function save(suid) {
-    var self = this;
-
-    if(suid) return this.get(suid).save();
-    else
-      return this._newPlan.save()
-        .then(function(success){
-          if(success) {
-            self._shopplans[self._newPlan.suid] = self._newPlan; // now its a complete plan
-                                                                 // so cache it
-
-            self._newPlan = ShopPlanFactory.createNew(); // after updating create
-                                                         // a fresh new emtpy plan
-                                                         // instance
-          }
-
-          return success;
-        });
-  }
-
 
   /**
    * Get array of shopplans, with summary data for each shopplan
@@ -141,16 +97,13 @@ function _ShopPlans(_, $q, ShopPlanFactory) {
    */
   function get(suid) {
     var self = this;
-
     if(suid in this._shopplans) return $q.when(this._shopplans[suid]);
     else
-      return this._Piggyback.GET(this._apis.plan.get(suid), {fields: ['destinations', 'invites']})
+      return this._Piggyback.GET(this._apis.plan.get(suid), {fields: 'Title,Stores,Destinations'})
         .then(function(resp) {
           if(resp.status === 200 && _.isObject(resp.data)) {
             var shopplan = self._createShopPlanWithSummary(resp.data);
-
             self._shopplans[shopplan.suid] = shopplan; // cache
-
             return shopplan;
           } else return $q.reject(new Error(resp.statusText));
         });
@@ -161,31 +114,6 @@ function _ShopPlans(_, $q, ShopPlanFactory) {
   /////////////////// Private Functions ///////////////////////////
   /////////////////////////////////////////////////////////////////
 
-
-  // Create new ShopPlan object and init with summary
-  //
-  // @param {Object.<ShopPlan>} plan Plan with following summary (refer thrift apis)
-  //  {
-  //    shopplanId: {
-  //      userId: {uuid: <Number>}
-  //      suid: <Number>
-  //    }
-  //    title: <string>
-  //    destinations: [
-  //      {
-  //        dtuid: <Number>
-  //        address: {
-  //          gpsLoc: {lat: <Double>, lng: <Double}
-  //          title: <string>
-  //          short: <string>
-  //        }
-  //        numShops: <Number>
-  //      },
-  //      ...
-  //    ]
-  //    isInvitation: <Bool>
-  //  }
-  // @return  {Object.<ShopPlan>} ShopPlan object
   function _createShopPlanWithSummary(plan) {
     return ShopPlanFactory.create(plan.shopplanId, this._Piggyback, plan);
   }

@@ -67,7 +67,6 @@ function SearchResultController(
   vm.hasMoreResults     = hasMoreResults;
   vm.loadMoreResults    = loadMoreResults;
   vm.storeIcon          = storeTypeIcon;
-  vm.goToShopPlanCreate = goToShopPlanCreate;
   vm.goBack             = goBack;
   vm.goHome             = goHome;
   vm.openSearch         = openSearch;
@@ -124,10 +123,6 @@ function SearchResultController(
           }
 
       });
-  }
-
-  function goToShopPlanCreate() {
-    $state.go('boson.shopplan.createmap');
   }
 
 

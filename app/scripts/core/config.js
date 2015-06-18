@@ -42,7 +42,6 @@ function configure($ionicConfigProvider, $stateProvider, $urlRouterProvider, $lo
   HiggsProvider.setClientId('boson-app');
 
 
-  // $ionicConfigProvider.tabs.position('bottom');
   $ionicConfigProvider.views.transition('none');
   $ionicConfigProvider.scrolling.jsScrolling(true);
   $ionicConfigProvider.views.maxCache(0);
@@ -67,7 +66,6 @@ function configure($ionicConfigProvider, $stateProvider, $urlRouterProvider, $lo
 
   // Registering a new user should be a different step
   // which includes adding friends and other informations
-
 
   /**
    * Feed Views
@@ -110,7 +108,7 @@ function configure($ionicConfigProvider, $stateProvider, $urlRouterProvider, $lo
             $ionicHistory.nextViewOptions({
               disableAnimate: true
             });
-            $state.go('boson.shopplan.createmap');
+            $state.go('boson.shopplancreate.map');
           }
 
           $timeout(function () {
@@ -128,8 +126,7 @@ function configure($ionicConfigProvider, $stateProvider, $urlRouterProvider, $lo
   $stateProvider.state('boson.shopplan', {
     abstract: true,
     url: '/shopplan',
-    // template: '<ion-nav-view ></ion-nav-view>'
-    template: '<ion-nav-view name="fabContent"></ion-nav-view><ion-nav-view name="mainContent"></ion-nav-view>'
+    template: '<ion-nav-view></ion-nav-view>'
   });
 
   $stateProvider.state('boson.shopplan.index', {
@@ -137,35 +134,35 @@ function configure($ionicConfigProvider, $stateProvider, $urlRouterProvider, $lo
     templateUrl: 'shopplan/shopplan-index.html',
     controller: 'ShopPlanListController as vm',
     resolve: {
-      initShopPlan: initShopPlan
+      shopplans: initShopPlans
     }
   });
 
   $stateProvider.state('boson.shopplan.detail', {
-    url: '/detail/:planId',
+    url: '/:suid',
     templateUrl: 'shopplan/shopplan-detail.html',
     controller: 'ShopPlanDetailController as detail',
     resolve: {
-      initShopPlan: initShopPlanDetail
+      shopplan: initShopPlanDetail
     }
   });
 
-  $stateProvider.state('boson.shopplan.createmap', {
-    url: '/createmap',
-    views: {
-      'mainContent' : {
-        templateUrl: 'shopplan/map-destinations.html',
-        controller: 'ChooseDestinationsController as map',
-        resolve: {
-          initShopPlanner: withBucketStores
-        }
-      }
+  $stateProvider.state('boson.shopplancreate', {
+    abstract: true,
+    url: '/shopplancreate',
+    template: '<ion-nav-view></ion-nav-view>'
+  });
+
+  $stateProvider.state('boson.shopplancreate.map', {
+    url: '/map',
+    templateUrl: 'shopplan/map-destinations.html',
+    controller: 'ChooseDestinationsController as map',
+    resolve: {
+      initShopPlanner: withBucketStores
     }
   });
 
 }
-
-
 
 
 initializeFeed.$inject = ['Feed'];
@@ -178,20 +175,17 @@ function initializeFeed(Feed) {
 }
 
 
+initShopPlans.$inject = ['Higgs'];
 
-initShopPlan.$inject = ['ShopPlan'];
-
-function initShopPlan(ShopPlan) {
-  return ShopPlan.all()
-    .then(function(){ return ShopPlan; });
+function initShopPlans(Higgs) {
+  return Higgs.getShopPlans()
 }
 
 
-initShopPlanDetail.$inject = ['$stateParams', 'ShopPlan'];
+initShopPlanDetail.$inject = ['$stateParams', 'Higgs'];
 
-function initShopPlanDetail($stateParams, ShopPlan) {
-  return ShopPlan.get($stateParams.planId)
-    .then(function() { return ShopPlan; });
+function initShopPlanDetail($stateParams, Higgs) {
+  return Higgs.getShopPlan($stateParams.suid)
 }
 
 
@@ -206,20 +200,6 @@ function initSearcher($stateParams, $ionicLoading, Searcher) {
 }
 
 
-initShopPlanner.$inject = ['ShopPlanner'];
-
-function initShopPlanner(ShopPlanner) {
-  return ShopPlanner;
-}
-
-
-withShopPlans.$inject = ['initShopPlanner'];
-
-function withShopPlans(ShopPlanner) {
-  return ShopPlanner.initShopPlans();
-}
-
-
 withBucketStores.$inject = ['$ionicLoading', 'lodash', 'ShopPlanner'];
 
 function withBucketStores($ionicLoading, _, ShopPlanner) {
@@ -230,11 +210,4 @@ function withBucketStores($ionicLoading, _, ShopPlanner) {
       $ionicLoading.hide();
       return ShopPlanner;
     });
-}
-
-
-withFriends.$inject = ['initShopPlanner'];
-
-function withFriends(ShopPlanner) {
-  return ShopPlanner.initFriends();
 }

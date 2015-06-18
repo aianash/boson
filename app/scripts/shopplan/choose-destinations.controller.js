@@ -5,6 +5,7 @@ angular
 ChooseDestinationsController.$inject = [
   '$window',
   '$scope',
+  '$state',
   '$timeout',
   '$ionicActionSheet',
   '$ionicModal',
@@ -48,7 +49,7 @@ ChooseDestinationsController.$inject = [
 //    }
 //    itemTypes: [ <itemType <string>>]
 //  }
-function ChooseDestinationsController($window, $scope, $timeout, $ionicActionSheet, $ionicModal, $ionicLoading, $ionicHistory, _, ShopPlanner) {
+function ChooseDestinationsController($window, $scope, $state, $timeout, $ionicActionSheet, $ionicModal, $ionicLoading, $ionicHistory, _, ShopPlanner) {
 
   var vm = this;
 
@@ -106,9 +107,12 @@ function ChooseDestinationsController($window, $scope, $timeout, $ionicActionShe
       }
     };
 
-    console.log(JSON.stringify(cud));
-    // Call shop planner to create shop plan
-    // and then go to shop plan view
+    ShopPlanner.createNewPlan(cud)
+               .then(function(shopplanId) {
+                  $ionicLoading.hide();
+                  var suid = shopplanId.suid;
+                  $state.go('boson.shopplan.detail', {suid: suid});
+               });
   }
 
   $scope.closeCreatePlan = function() {

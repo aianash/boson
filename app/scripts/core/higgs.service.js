@@ -92,14 +92,9 @@ function HiggsProvider() {
 
       Higgs.prototype.getFeed              = getFeed;
 
-      Higgs.prototype.getFriendsForInvite  = getFriendsForInvite;
-
-
       Higgs.prototype.getShopPlans         = getShopPlans;
       Higgs.prototype.getShopPlan          = getShopPlan;
-      Higgs.prototype.getNewShopPlan       = getNewShopPlan;
-      Higgs.prototype.savePlan             = savePlan;
-
+      Higgs.prototype.createNewPlan        = createNewPlan;
 
       Higgs.prototype.updateQuery          = updateQuery;
       Higgs.prototype.getSearchResults     = getSearchResults;
@@ -258,42 +253,28 @@ function HiggsProvider() {
        * @return {Promise.<ShopPlan>} Promise of a ShopPlan instance
        */
       function getShopPlan(suid) {
-
-        return this._isLoggedIn()
-                  .then(function(loggedIn) {
-                    if(loggedIn) return self._ShopPlans.get(suid);
-                    else return $q.reject(new TypeError('Cant get shopping plan if user not logged in'));
-                  });
+        if(this._isLoggedIn) {
+          return this._ShopPlans.get(suid);
+        } else {
+          console.log("not logged in");
+          // ask for login
+          return $q.reject(new Error("User Not logged in"));
+        }
       }
 
 
       /**
-       * Get new shopping plan
+       * Create a new plan with CUD object
        *
-       * @return {Promise.<ShopPlan>} Promise of a new shopplan
+       * @param {Object} cud ShopPlan CUD Object
        */
-      function getNewShopPlan() {
-        return this._isLoggedIn()
-          .then(function(loggedIn) {
-            if(loggedIn) return self._ShopPlans.create();
-            else $q.reject(new TypeError('Requires user to be logged in'));
-          });
-      }
-
-
-      /**
-       * Save the plan
-       *
-       * @param {Object|Number} param Either plan object with suid or suid or new plan
-       */
-      function savePlan(param) {
-        var suid;
-
-        if(_.isNumber(param)) suid = param;
-        else if(_.isObject(param) && 'suid' in param) suid = param.suid;
-        else if(_.isObject(param) && param.isNewPlan) suid = void 0;
-
-        return this._ShopPlans.save(suid);
+      function createNewPlan(cud) {
+        return this._Piggyback
+                   .POST('shopplan/create', {}, cud)
+                   .then(function(resp) {
+                      if(resp.status === 200) return resp.data;
+                      else return $q.reject(new Error(resp.statusText));
+                   });
       }
 
 
