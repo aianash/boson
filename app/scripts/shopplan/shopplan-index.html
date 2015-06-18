@@ -1,0 +1,72 @@
+<ion-view class="shopping-plans">
+
+  <div ng-if="!hasPlan()">
+    <ion-content class="no-plan">
+        <span>No active plans.</span>
+        <span>Search and select items to start one.</span>
+    </ion-content>
+  </div>
+
+  <div ng-if="hasPlan()">
+    <ion-content>
+      <ion-list class="my-plans">
+        <ion-item class="header">
+          <h2 class="title">My Plans</h2>
+        </ion-item>
+
+        <ion-item id="plan-{{plan.id}}"
+                  ng-repeat="plan in shoppingPlans.myPlans track by $index"
+                  ng-click="showPlan(plan.id)">
+
+          <div class="row plan-detail">
+            <div class="col col-10 plan-icon">
+              <i class="icon ion-bag"></i>
+            </div>
+            <div class="col col-90 plan-descr">
+              <h2 class="title">{{plan.title}}</h2>
+              <p class="shops">
+                <span ng-repeat="dest in plan.dests">{{dest.numShops}} shops on {{dest.areaName}}</span>
+              </p>
+              <p ng-if="plan.date" class="date">planned on {{plan.date | date:'d MMM'}}</p>
+            </div>
+          </div>
+
+
+          <ion-option-button class="icon ion-calendar"
+                             ng-click="setDate($index)"></ion-option-button>
+
+          <ion-option-button class="icon ion-edit"
+                             ng-click="editShoppingPlan($index)"></ion-option-button>
+
+        </ion-item>
+      </ion-list>
+
+      <ion-list class="invitations">
+        <ion-item class="header">
+          <h2 class="title">Invitations</h2>
+        </ion-item>
+
+        <ion-item id="plan-{{plan.id}}"
+                  ng-repeat="plan in shoppingPlans.invitations"
+                  ng-click="showPlan(plan.id)">
+
+          <div class="row plan-detail">
+            <div class="col col-10 plan-icon">
+              <i class="icon ion-bag"></i>
+            </div>
+            <div class="col col-90 plan-descr">
+              <h3 class="friend">{{plan.from}} <span>invited you for</span></h3>
+              <h2 class="title">{{plan.title}}</h2>
+              <p class="shops">
+                <span ng-repeat="dest in plan.dests">{{dest.numShops}} shops on {{dest.areaName}}</span>
+              </p>
+              <p ng-if="plan.date" class="date">planned on {{plan.date | date:'d MMM'}}</p>
+            </div>
+          </div>
+
+        </ion-item>
+      </ion-list>
+
+    </ion-content>
+  </div>
+</ion-view>

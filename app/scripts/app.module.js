@@ -9,11 +9,10 @@ angular.module('boson', [
   /**
    * Feature areas
    */
-  'boson.listings',
-  'boson.friends',
-  'boson.map',
-  'boson.shoppingplan',
-  'boson.search'
+  'boson.login',
+  'boson.feed',
+  'boson.search',
+  'boson.shopplan'
 ]);
 
 

@@ -49,7 +49,7 @@ function CacheProvider() {
 
     })();
 
-    new _Cache(entryLimit);
+    return new _Cache(entryLimit);
   }
 
 }

@@ -1,126 +1,106 @@
 angular
   .module('boson.core')
-  .service('ShopPlanFactory', _ShopPlanFactory);
+  .service('ShopPlanFactory', ShopPlanFactory);
 
-_ShopPlanFactory.$inject  = ['$q', 'KeepFactory'];
+ShopPlanFactory.$inject  = ['lodash', '$q', 'KeepFactory'];
 
-function _ShopPlanFactory($q, KeepFactory) {
+function ShopPlanFactory(_, $q, KeepFactory) {
 
-  var ShopPlan = _ShopPlan($q);
+  var ShopPlan = _ShopPlan(_, $q);
 
-  this.create = function(planId, piggyback, planData) {
-    var keep = KeepFactory.create(planId);
+  /**
+   * Create shopplan
+   *
+   * @param  {Object} shopplanId {createdBy: {uuid}, suid}
+   * @param  {Object} piggyback  Piggyback isntance
+   * @param  {Object} planData   (refer to thrift api ShopPlan)
+   *
+   * @return {Object}            ShopPlan instance
+   */
+  this.create = function(shopplanId, piggyback, data) {
+    var keep = KeepFactory.create(shopplanId.suid);
+    return new ShopPlan(piggyback, keep, shopplanId, data);
+  }
 
-    var shopPlan = new ShopPlan(planId, piggyback, keep);
-    if(planData != null) shopPlan.init(planData);
-    return shopPlan;
+  this.createNew = function(piggyback) {
+    var keep = KeepFactory.create('new-plan');
+    return new ShopPlan(piggyback, keep);
   }
 }
 
 
 /** Closure over dependencies */
-function _ShopPlan($q) {
+function _ShopPlan(_, $q) {
 
-  function ShopPlan(planId, piggyback, keep) {
-    this._Piggyback = piggyback;
+  /**
+   * It represents a new empty plan (when only keep is passed)
+   * Where it holds plan data locally and create the plan on save
+   *
+   * Otherwise when its an existing plan, then it fetches
+   * the data and also holds updates.
+   *
+   * [NOTE]
+   * 1. Revisit Piggy sourcing
+   *
+   * @param {Number} shopplanId {suid: <Number>, createdBy: {uuid}}
+   * @param {Object} piggyback Piggyback instance
+   * @param {Object} keep      Keep instance
+   */
+  function ShopPlan(piggyback, keep, shopplanId, data) {
+    if(shopplanId) {
+      this.shopplanId = shopplanId;
+      this.suid       = shopplanId.suid;
+    }
 
+    this._Piggyback   = piggyback;
 
-    /**
-     * Keep current stores updates to
-     * - stores
-     * - stores.collections
-     * - destinationLocs
-     * - invites
-     *
-     * @type {Keep}
-     */
-    this._Keep = keep;
+    // Keep is used to store add, update and delete for
+    // destinations and invites
+    // where
+    // - destinations - Array.<Destination>
+    // - invites      - Array.<Friend>
+    // - dstores      - Array.<DStore>
+    this._Keep        = keep;
 
-    this._Piggyback.addPiggySource(this._planUpdates); // Mainly source of additions/replace to the plan
-    this._Piggyback.addPiggySource(this._planRemovals);
+    this.isNewPlan    = !shopplanId ? true : false;
 
-    /**
-     * Structure
-     *
-     * {
-     *  id: <string>,                  // Plan Id
-     *
-     *  /** Details that are filled after server processing ////
-     *
-     *  destinations: Array.<Object>,  // More elaborate destination with stores and collection details
-     *  friends: Array.<Object>,       // Friends who accepted invites with details
-     *
-     *
-     *  /** Details that are locally stored for easy access and info to be sent to data ////
-     *
-     *  locations: Array.<Object>,     // locations of stores in the map with only latLng and storeId
-     *  destinationLocs: Array.<Object>, // destination location with only LatLng
-     *  invites: Array.<string>,       // invited users' id
-     *  stores: {                      // Selected store and collections with only id (no detail)
-     *    storeId: {
-     *      id: <same storeId>,
-     *      collections: Array.<itemId>
-     *    }
-     *  }
-     * }
-     *
-     * @type {Object}
-     */
-    this._plan = {
-      id: planId,
-      destinations: [],
-      friends: [],
+    this.isInvitation = false;
 
-      locations: [],
-      destinationLocs: [],
-      invites: [],
-      stores: {}
-    };
+    if(!this.isNewPlan && data) this.init(data);
 
-
-    // Setup Higgs apis used here
-    // there should be some config of higgs
-    // for this
+    // [IMP] [NOTE] To revise after higgs api finalization
     this._apis = {
       plan: {
-        update:   'shopplan/' + this._plan.id + '/update',
-        end:      'shopplan/' + this._plan.id + '/end',
-        detail:   'shppplan/' + this._plan.id + '/detail',
-        remove:   'shopplan/' + this._plan.id + '/remove',
-        map: {
-          locations: 'shopplan/' + this._plan.id + '/map/locations'
-        }
+        create:   'shopplan/create',
+        // cud:      'shopplan/' + this.suid,
+        end:      'shopplan/' + this.suid,
+        detail:   'shopplan/' + this.suid
       }
     };
 
   }
 
+
   // Public
-  ShopPlan.prototype.init = init;
-  ShopPlan.prototype.addStore = addStore;
-  ShopPlan.prototype.removeStore = removeStore;
+  ShopPlan.prototype.init                 = init;
+  ShopPlan.prototype.getDetailed          = getDetailed;
 
-  ShopPlan.prototype.addItem = addItem;
-  ShopPlan.prototype.removeItem = removeItem;
+  ShopPlan.prototype.addDestination       = addDestination;
+  ShopPlan.prototype.removeDestionation   = removeDestionation;
+  ShopPlan.prototype.updateDestination    = updateDestination;
+  ShopPlan.prototype.getStoreLocations    = getStoreLocations;
+  ShopPlan.prototype.getDestinations      = getDestinations;
 
-  ShopPlan.prototype.getMapLocations = getMapLocations;
-  ShopPlan.prototype.selectDestinationLoc = selectDestinationLoc;
-  ShopPlan.prototype.removeDestinationLoc = removeDestinationLoc;
-  ShopPlan.prototype.getDestinationLocs = getDestinationLocs;
+  ShopPlan.prototype.getInvites           = getInvites;
+  ShopPlan.prototype.addToInvitation      = addToInvitation;
+  ShopPlan.prototype.removeFromInvitation = removeFromInvitation;
 
-
-  ShopPlan.prototype.addUserForInvite = addUserForInvite;
-  ShopPlan.prototype.getScheduledInvites = getScheduledInvites;
-
-  ShopPlan.prototype.getDetail = getDetail;
-
-  ShopPlan.prototype.endPlan = endPlan;
-
+  ShopPlan.prototype.save                 = save;
+  ShopPlan.prototype.end                  = end;
 
   // Private
-  ShopPlan.prototype._planRemovals = _planRemovals;
-  ShopPlan.prototype._planUpdates = _planUpdates;
-  ShopPlan.prototype._onPlanUpdate = _onPlanUpdate;
+  ShopPlan.prototype._create              = _create;
+  ShopPlan.prototype._save                = _save;
 
   return ShopPlan;
 
@@ -130,59 +110,42 @@ function _ShopPlan($q) {
   //////////////////////////////////////////////////////
 
 
-
-  function init(data) {
-    this._Keep.merge().thiz(data.stores).to('stores');
-  }
-
-  function addStore(storeId) {
-    this._Keep.add({ifNot: true}).thiz({storeId: {}}).to('stores');
-  }
-
-  function removeStore(storeId) {
-    this._Keep.remove().thiz(storeId).from('stores');
-  }
-
-  function addItem(itemId, storeId) {
-    this._Keep.push().thiz(itemId).to('stores', storeId, 'collections');
-  }
-
-  function removeItem(itemId, storeId) {
-    this._Keep.remove().thiz(itemId).from('stores', storeId, 'collections');
-  }
-
-
   /**
-   * Get map locations of stores in the
-   * current plan.
+   * This updates shop plan fields from the
+   * provided data to this instance
    *
-   * @return {Array.<Object>} Array of locations{lat: number, lng: number, score: number}
+   * @param  {Object} data ShopPlan data object (as returned from server
+   *                       refer thrift api)
    */
-  function getMapLocations() {
-    var self = this;
-
-    // If there has been recent addition in stores
-    // then use api reqest
-    // else fetch from _plan.locations
-    if(this._Keep.has().any('stores'))
-      return this._Piggyback.GET(this._apis.plan.map.locations)
-                 .then(function(resp){
-                    if(resp.status ===  200 && (typeof resp.data === 'array')) {
-                      self._plan.locations = resp.data;
-                      return self._plan.locations;
-                    } else throw new Error('Some internal error');
-                 });
-    else $q.when(this._plan.locations);
+  function init(data) {
+    if('title' in data)   this.title             = data.title;
+    if('isInvitation' in data) this.isInvitation = data.isInvitation;
+    if('dstores' in data) this.dstores           = data.dstores;
+    if('invites' in data) this.invites           = data.invites;
+    if('destinations' in data) this.destinations = data.destinations;
   }
 
+
+  /////////////////////// MAP RELATED /////////////////////////
 
   /**
    * Select a destination in the plan
    *
-   * @param  {Object} dest Destination object containing LatLng and order
+   * @param  {Object} gpsLocation {lat: <Double>, lng: <Double> }
+   * @return {Promise.<Destionation>} Destination object thus created
    */
-  function selectDestinationLoc(dest) {
-    this._Keep.push().thiz(dest).to('destinationLocs');
+  function addDestination(gpsLocation) {
+    var destination = {
+      dtuid: _.now(),
+      address: {
+        gpsLoc: {
+          lat: gpsLocation.lat,
+          lng: gpsLocation.lng
+        }
+      }
+    };
+
+    return this._Keep.push().thiz(destination).to('destinations');
   }
 
 
@@ -190,82 +153,139 @@ function _ShopPlan($q) {
    * Remove destination location from the plan
    *
    * @param  {Object} dest  Destincation object with LatLng and order
+   * @return {Promise.<Number>} Promise of destination unique id
    */
-  function removeDestinationLoc(dest) {
-    this._Keep.remove().thiz(dest).from('destinationLocs');
+  function removeDestionation(dtuid) {
+    return $q.when(this._Keep.remove().thiz({'dtuid': dtuid}).from('destinations').dtuid);
   }
 
 
   /**
-   * Get only latLng of the destinations
-   * from both persisted and not yet persisted destinations.
+   * Update gps location of the destination
    *
-   * @return {[type]} [description]
+   * @param {Number} dtuid Destination unique id
+   * @param {Object} gpsLocation {lat: <Double>, lng: <Double> }
+   * @return {Promise.<Destination>} Promise of new Destination
    */
-  function getDestinationLocs() {
-    var destinations = [];
-    destinations.concat(this._plan.destinationLocs);
-    this._Keep.update().thiz(destinations).from('destinationLocs');
-    return _.uniq(destinations);
+  function updateDestination(dtuid, gpsLocation) {
+    var destination = {
+      dtuid: dtuid,
+      address: {
+        gpsLoc: {
+          lat: gpsLocation.lat,
+          lng: gpsLocation.lng
+        }
+      }
+    };
+
+    return $q.when(this._Keep.update().thiz(destination).where('dtuid', dtuid).to('destinations'));
   }
 
+
+  /**
+   * Get locations of stores in the plan
+   *
+   * @return {Promise.<Array.<DStore>>} [description]
+   */
+  function getStoreLocations() {
+    var self = this;
+
+    return this._Piggyback.GET(this._apis.plan.detail, {fields: ['dstores']})
+      .then(function(resp) {
+        if(resp.status === 200) self.init(resp.data);
+        return self.dstores;
+      });
+  }
+
+
+  /**
+   * Get destinations of a shopplan
+   *
+   * [IMP][TO DO] Update what's fetched from server using the local
+   * additions or updates
+   *
+   * @return {Promise.<Array} [description]
+   */
+  function getDestinations() {
+    var self = this;
+
+    return this._Piggyback.GET(this._apis.plan.detail, {fields: ['destinations']})
+      .then(function(resp) {
+        if(resp.status === 200) self.init(resp.data);
+        return self.destinations;
+      });
+  }
+
+
+  //////////////////// INVITES RELATED /////////////////////////
+
+  function getInvites() {
+    var self = this;
+
+    return this._Piggyback.GET(this._apis.plan.detail, {fields: ['invites']})
+      .then(function(resp) {
+        if(resp.status === 200) self.init(resp.data);
+        return self.invites;
+      });
+  }
 
   /**
    * Add user to invite list
    *
-   * @param {string} userId User Id
+   * @param {Number} uuid User unique id
    */
-  function addUserForInvite(userId) {
-    this._Keep.push().thiz(userId).to('invites');
+  function addToInvitation(uuid) {
+    var friend = {uuid: uuid}
+
+    return $q.when(this._Keep.push().thiz(friend).to('invites'));
   }
 
-
   /**
-   * Remove user from invite list;
+   * Remove user from invitation
    *
-   * @param  {string} userId User's id
+   * @param {Number} uuid user unique id
+   * @return {Promise.<bool>} Promise of success
    */
-  function removeUserFromInvites(userId) {
-    this._Keep.remove().thiz(userId).from('invites');
+  function removeFromInvitation(uuid) {
+    return $q.when(this._Keep.remove().thiz('uuid', uuid).from('invites'));
   }
 
 
-  /**
-   * Get scheduled invites
-   * @return {[type]} [description]
-   */
-  function getScheduledInvites() {
-    var invites = [];
-    this._Keep.update().thiz(invites).from('invites');
-    invites.concat(this._plan.invites);
-    return invites;
-  }
-
+  ////////////////////// OTHERS /////////////////////////////
 
   /**
-   * Get full plan detail
+   * Get the detailed version of this plan
    *
-   * @return {Object} Plan detail object
+   * @return {Object} This ShopPlan instance with details
    */
-  function getDetail() {
+  function getDetailed() {
     var self = this;
-    if(this._Keep.has().any() || this._plan.higgsVersion !== this._plan.version) {
-      return this._Piggyback.GET(this._apis.plan.detail)
-                 .then(function(resp) {
-                    if(resp.status === 200) {
-                      if(typeof resp.data.destinations !== 'undefined')
-                        resp.data.destinations
-                    }
-                 })
-    } else return this._plan;
+
+    return this.Piggyback.GET(this._apis.plan.detail, {fields: ['invites', 'destinations', 'dstores']})
+      .then(function(resp) {
+        if(resp.status === 200) {
+          self.init(resp.data);
+        }
+
+        return self;
+      });
+  }
+
+
+  /**
+   * Save plan
+   */
+  function save() {
+    if(this.isNewPlan) return this._create();
+    else return this._save();
   }
 
 
   /**
    * End plan
    */
-  function endPlan() {
-    this._Piggyback.queue('POST', this._apis.plan.end);
+  function end() {
+    return this._Piggyback.DELETE(this._apis.plan.end);
   }
 
 
@@ -275,64 +295,37 @@ function _ShopPlan($q) {
   ///////////////////////////////////////////////////////////////////
 
 
-  /**
-   * Source of removal related updates to the plan
-   *
-   * @return {Object} Piggyback object
-   */
-  function _planRemovals() {
-    var deferred = $q.defer();
-    deferred.promise.then(this._onPlanUpdate);
+  function _create() {
+    var self = this;
+    var cud  = this._Keep.withinTxn().getCUDS();
 
-    return {
-      method: 'POST',
-      api: this._apis.plan.remove,
-      data: this._Keep.withinTxn().getRemovals(),
-      deferred: deferred
-    };
+    return this.Piggyback.POST(this._apis.plan.create, null, cud)
+      .then(function(resp) {
+        if(resp.status === 200 && resp.data) {
+          // resp.data is ShopPlan (thrift)
+          self.isNewPlan  = false;
+          self.shopplanId = resp.data.shopplanId;
+          self.suid       = shopplanId.suid;
+
+          self.init(resp.data);
+          return true;
+        } else return false;
+      });
   }
 
 
-  /**
-   * Source for lazy plan update requests
-   *
-   * This mainly contains following data stores in Keep
-   * - **destinations** - Array.<Object> - Array of destinations
-   * - **invites** - Array.<string> - userId for invites
-   * - **stores** - Object.<Object> - Stores with their collections to add to plan
-   *
-   * @return {Object} Piggyback object
-   */
-  function _planUpdates() {
-    var deferred = $q.defer();
-    deferred.promise.then(this._onPlanUpdate);
+  function _save() {
+    var self = this;
+    var cud  = this._Keep.withinTxn().getCUDS();
 
-    return {
-      method: 'POST',
-      api: this._apis.plan.update,
-      data: this._Keep.withinTxn().getUpdates(),
-      deferred: deferred
-    };
+    return this._Piggyback.POST(this._apis.plan.cud, null, cud)
+      .then(function(resp) {
+        if(resp.status === 200 && resp.data) {
+          self.init(resp.data); // return summary atleast
+
+          return true;
+        } else return false;
+      });
   }
 
-
-  /**
-   * Response returned by the last update.
-   * The server should return back the _keep_txn_id
-   * that was passed in the request
-   *
-   * @param  {Object} res Plan update response
-   */
-  function _onPlanUpdate(res) {
-    if(resp.status === 200) {
-      var keepTxnId = resp.data._keep_txn_id;
-      this._plan.higgsVersion = resp.data.plan_version;
-
-      // Update transation data to this._plan data
-      this._Keep.txn(keepTxnId).update().thiz(this._plan.stores).from('stores');
-      this._Keep.txn(keepTxnId).update().thiz(this._plan.invites).from('invites');
-      this._Keep.txn(keepTxnId).update().thiz(this._plan.destinationLocs).from('destinationLocs');
-      this._Keep.txn(keepTxnId).done(); // mark transaction as done
-    }
-  }
 }

@@ -1,0 +1,44 @@
+<ion-view class="search-result">
+
+  <div class="bar bar-header bar-light">
+    <button class="button button-fab mini flat icon ion-arrow-left-c back-button"
+            ng-click="src.goBack()"></button>
+    <button class="button button-fab mini flat icon ion-android-home home-button"
+            ng-click="src.goHome()"></button>
+    <button class="button button-fab mini flat icon ion-ios-search-strong search-button"
+            ng-click="src.openSearch()"></button>
+    <button class="button button-fab mini flat icon ion-funnel"
+            ng-click="src.showFilter()"></button>
+  </div>
+
+  <ion-content overflow-scroll="true"
+               class="has-header">
+
+    <ion-list>
+
+      <ion-item ng-repeat="item in src.items"
+                class="flat-ion-item">
+
+        <div class="listing listing-image item-image">
+          <!-- <img ng-src="{{item.productImage.medium}}" /> -->
+          <img src="http://imagizer.imageshack.us/v2/640x480q90/661/7V1Cd4.jpg" />
+        </div>
+
+        <div class="listing item-body">
+          <button class="button button-icon icon ion-ios-heart-outline button-clear"
+                  ng-click="src.toggleItem(item)"
+                  ng-class="{'ion-ios-heart-outline': !src.isItemSelected(item), 'ion-ios-heart': src.isItemSelected(item)}"></button>
+          <h2>{{item.productTitle}}</h2>
+          <div class="list">
+            <span class="size-option" ng-repeat="size in item.sizes">{{size}}</span>
+          </div>
+          <p class="descr">{{item.description}}</p>
+        </div>
+
+      </ion-item>
+
+    </ion-list>
+
+  </ion-content>
+
+</ion-view>

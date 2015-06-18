@@ -1,8 +1,8 @@
 angular
   .module('boson.core')
-  .service('KeepFactory', _KeepFactory);
+  .service('KeepFactory', KeepFactory);
 
-function _KeepFactory() {
+function KeepFactory() {
   var Keep = _Keep();
 
   this.create = function(id) {
@@ -54,6 +54,7 @@ function _Keep() {
   Keep.prototype._getOrCreateMapAt = _getOrCreateMapAt;
   Keep.prototype._getOrCreateArrayAt = _getOrCreateArrayAt;
 
+  return Keep;
 
   //////////////////////////////////////////////////////////////
   /////////////////// Public Functions /////////////////////////

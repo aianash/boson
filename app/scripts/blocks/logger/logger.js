@@ -1,5 +1,3 @@
-'use strict'
-
 angular
   .module('blocks.logger')
   .factory('logger', logger)

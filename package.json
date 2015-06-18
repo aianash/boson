@@ -44,6 +44,7 @@
   },
   "cordovaPlugins": [
     "/home/kumarishan/Projects/ShopLane/phonegap-facebook-plugin",
-    "org.apache.cordova.splashscreen"
+    "org.apache.cordova.splashscreen",
+    "plugin.google.maps"
   ]
 }

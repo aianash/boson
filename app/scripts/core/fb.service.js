@@ -13,10 +13,6 @@ function FBProvider() {
     _FB = (function() {
       function FB() {}
 
-      FB.prototype.isLoggedIn = function() {
-        return $cordovaFacebook.getLoginStatus()
-      };
-
       FB.prototype.login = function() {
         return $cordovaFacebook.login(['public_profile', 'email', 'user_friends'])
       };
@@ -33,7 +29,7 @@ function FBProvider() {
       return FB;
     })();
 
-    new _FB();
+    return new _FB();
   }
 
 };

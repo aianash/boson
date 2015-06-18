@@ -1,2 +1,1 @@
-angular.module('boson.search', [
-  'services.search', 'services.query']);
+angular.module('boson.search', []);

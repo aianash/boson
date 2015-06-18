@@ -1,4 +1,10 @@
 {
   "name": "boson",
-  "app_id": "aa4b78a4"
+  "app_id": "aa4b78a4",
+  "proxies": [
+  	{
+  	  "path": "/v1",
+  	  "proxyUrl": "http://higgs.goshoplane.com:8080/v1"
+  	}
+  ]
 }

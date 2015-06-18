@@ -1,14 +1,14 @@
 angular
   .module('boson.core')
-  .service('Piggyback', _PiggybackFactory);
+  .service('PiggybackFactory', PiggybackFactory);
 
 
-_PiggybackFactory.$inject = ['$http', '$q'];
+PiggybackFactory.$inject = ['$http', '$q'];
 
 /**
  * Factory for creating Piggyback.
  */
-function _PiggybackFactory($http, $q) {
+function PiggybackFactory($http, $q) {
 
   var PiggybackBuilder = _PiggybackBuilder($http, $q);
 
@@ -28,13 +28,13 @@ function _PiggybackBuilder($http, $q) {
    */
   function PiggybackBuilder() {}
 
-  PiggybackBuilder.prototype.forService = forService;
-  PiggybackBuilder.prototype.atHost     = atHost;
-  PiggybackBuilder.prototype.atPort     = atPort;
-  PiggybackBuilder.prototype.forApiVersion = forApiVersion;
-  PiggybackBuilder.prototype.useAccessToken = useAccessToken;
+  PiggybackBuilder.prototype.forService       = forService;
+  PiggybackBuilder.prototype.atHost           = atHost;
+  PiggybackBuilder.prototype.atPort           = atPort;
+  PiggybackBuilder.prototype.forApiVersion    = forApiVersion;
+  PiggybackBuilder.prototype.useAccessToken   = useAccessToken;
   PiggybackBuilder.prototype.withCustomPrefix = withCustomPrefix;
-  PiggybackBuilder.prototype.build = build;
+  PiggybackBuilder.prototype.build            = build;
 
   return PiggybackBuilder;
 
@@ -76,7 +76,7 @@ function _PiggybackBuilder($http, $q) {
   function build() {
 
     this.customPrefix =
-      (typeof this.customPrefix !== 'undefined' ? this.customPrefix + '/' : '')
+      (typeof this.customPrefix !== 'undefined' ? this.customPrefix : '')
 
     var endpoint = 'http://'
                    + this.host + ':'
@@ -119,7 +119,7 @@ function _Piggyback($http, $q) {
     this._piggySources = [];
     this._deferreds = {};
 
-    this._endpoint = endpoint + '/';
+    this._endpoint = endpoint;
     this.name = name;
 
     // If acces_token is enabled then
@@ -130,26 +130,26 @@ function _Piggyback($http, $q) {
   }
 
   // Public
-  Piggyback.prototype.queue = queue;
-  Piggyback.prototype.status = status;
-  Piggyback.prototype.useAccessToken = useAccessToken;
-  Piggyback.prototype.setAccessToken = setAccessToken;
-  Piggyback.prototype.GET = GET;
-  Piggyback.prototype.POST = POST;
-  Piggyback.prototype.addPiggySource = addPiggySource;
+  Piggyback.prototype.queue                    = queue;
+  Piggyback.prototype.status                   = status;
+  Piggyback.prototype.useAccessToken           = useAccessToken;
+  Piggyback.prototype.setAccessToken           = setAccessToken;
+  Piggyback.prototype.GET                      = GET;
+  Piggyback.prototype.POST                     = POST;
+  Piggyback.prototype.addPiggySource           = addPiggySource;
 
   // Private
   Piggyback.prototype._handlePiggybackResponse = _handlePiggybackResponse
-  Piggyback.prototype._hydrateRequestConfig = _hydrateRequestConfig;
-  Piggyback.prototype._addPiggyback = _addPiggyback;
-  Piggyback.prototype._getPiggybackReq = _getPiggybackReq;
-  Piggyback.prototype._updateFromSources = _updateFromSources;
-  Piggyback.prototype._setupPiggyback = _setupPiggyback;
-  Piggyback.prototype._isPiggybackSane = _isPiggybackSane;
-  Piggyback.prototype._addAccessToken = _addAccessToken;
-  Piggyback.prototype._newPiggyId = _newPiggyId;
-  Piggyback.prototype._newPiggyTxnId = _newPiggyTxnId;
-  Piggyback.prototype._purge = _purge;
+  Piggyback.prototype._hydrateRequestConfig    = _hydrateRequestConfig;
+  Piggyback.prototype._addPiggyback            = _addPiggyback;
+  Piggyback.prototype._getPiggybackReq         = _getPiggybackReq;
+  Piggyback.prototype._updateFromSources       = _updateFromSources;
+  Piggyback.prototype._setupPiggyback          = _setupPiggyback;
+  Piggyback.prototype._isPiggybackSane         = _isPiggybackSane;
+  Piggyback.prototype._addAccessToken          = _addAccessToken;
+  Piggyback.prototype._newPiggyId              = _newPiggyId;
+  Piggyback.prototype._newPiggyTxnId           = _newPiggyTxnId;
+  Piggyback.prototype._purge                   = _purge;
 
   return Piggyback;
 
@@ -216,7 +216,7 @@ function _Piggyback($http, $q) {
    * @param {String} accessToken Access token
    */
   function setAccessToken(accessToken) {
-    if(typeof accesstoken === 'string') this._accessToken = accessToken;
+    if(typeof accessToken === 'string') this._accessToken = accessToken;
   }
 
 
@@ -232,9 +232,9 @@ function _Piggyback($http, $q) {
     var config = {
       url: this._endpoint + api,
       method: 'GET',
-      data: data || {},
+      data: data,
       params: params || {},
-      dontPiggyback: dontPiggyback || false
+      dontPiggyback: true // dontPiggyback || false
     };
 
     this._hydrateRequestConfig(config);
@@ -256,11 +256,14 @@ function _Piggyback($http, $q) {
    */
   function POST(api, params, data, dontPiggyback) {
     var config = {
-      url: this.endpoint + api,
+      url: this._endpoint + api,
       method: 'POST',
       data: data || {},
       params: params || {},
-      dontPiggyback: dontPiggyback || false
+      headers: {
+        'Content-Type': 'text/json'
+      },
+      dontPiggyback: true // dontPiggyback || false,
     };
 
     this._hydrateRequestConfig(config);
@@ -404,7 +407,7 @@ function _Piggyback($http, $q) {
    * @return {Object} Piggyback request set to be send
    */
   function _getPiggybackReq() {
-    _updateFromSources();
+    this._updateFromSources();
 
     var piggbacks = this._piggybacks;
     this._piggybacks = [];
@@ -469,7 +472,7 @@ function _Piggyback($http, $q) {
    * @param {Object} params reference $http request config params
    */
   function _addAccessToken(params) {
-    params.access_token = this._accessToken;
+    params.accessToken = this._accessToken;
   }
 
 
